@@ -1,0 +1,328 @@
+﻿﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>提醒管理</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.css" rel="stylesheet" />
+    <link href="/View_Mobile/CSS/szhlextend.css?ver=20160904" rel="stylesheet" />
+
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        #plus_list {
+            height: 2.65rem;
+            width: 2.65rem;
+            position: fixed;
+            right: 0.82rem;
+            bottom: 6rem;
+        }
+
+            #plus_list img {
+                width: 100%;
+                height: auto;
+            }
+    </style>
+</head>
+<body ms-controller="TXList">
+    <div class="page-group">
+        <div class="page page-current" id="pageindex1">
+            <div class="buttons-tab">
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(1)" class="tab-link button external" ms-class-1="active:type=='1'">我创建的</a>
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(2)" class="tab-link button external" ms-class-1="active:type=='2'">提醒我的</a>
+                <a href="#" ms-if="DataID!='-1'" class="tab-link button external active">日程提醒管理</a>
+
+            </div>
+
+            <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50" style="margin-top:2rem" id="touchcontent">
+                <div class="list-container" style="min-height:500px">
+
+                    <div class="card facebook-card animated fadeInUp" ms-repeat-el="ctData">
+                        <div class="ribbon-wrapper-green"><div class="ribbon-green">{{txfs(el)}}</div></div>
+
+                        <div class="card-header no-border" ms-on-click="showdetil(el)">
+                            <div class="facebook-avatar">
+                                <img ms-src="{{ComFunJS.getfile()+'&type=TX&user='+el.CRUser}}" width="40" class="border-r" onerror="javascript: this.src = '/ViewV5/images/head.jpg'">
+                            </div>
+                            <div class="facebook-date head-ft16"> {{ComFunJS.convuser(el.CRUser)}}<span class="ml10 c999 ft14" ms-if="!el.isfold">{{$.timeago(el.CRDate)}}</span></div>
+                            <div class="facebook-date head-ft16" ms-if="el.isfold"><span class="c999 ft14">{{el.CRDate|date("MM月dd日")}}</span></div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999 title-item">提醒方式：</span>
+                                <span>{{covtitle(txsz(el))}}</span>
+                            </div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999 title-item">提醒内容：</span>
+                                <span>{{covtitle(el.TXContent)}}</span>
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="card-content  " ms-visible="el.isfold">
+                            <div class="card-item">
+                                <span class="c999 title-item">提醒人：</span>
+                                <span>{{ComFunJS.convusers(el.TXUser)}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">提醒方式：</span>
+                                <span>{{txfs(el)}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">提醒模式：</span>
+                                <span>{{txsz(el)}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">提醒内容：</span>
+                                <span>{{el.TXContent|html}}</span>
+                            </div>
+                            <!--<div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">提醒人：</span>{{ComFunJS.convusers(el.TXUser)}}</div>
+                            <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">提醒方式：</span>{{txfs(el)}}</div>
+                            <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">提醒模式：</span> <span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{txsz(el)}}</span></div>
+                            <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">提醒内容：</span> <span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{el.TXContent|html}}</span></div>-->
+                            <!--删除-->
+                            <div class="buttons-tab list-op">
+                                <a class="tab-link button external" ms-click="delTXSX(el)" ms-if="el.CRUser==nowuser">
+                                    <i class="iconfont icon-remove"></i>删除
+                                </a>
+                            </div>
+                        </div>
+                        <!--<div class="card-footer no-border" style="display:-webkit-box;padding:0" ms-if="el.CRUser==nowuser">
+                            <a href="#" ms-click="delTXSX(el)"><i class="fa fa-trash-o"></i>&nbsp;删除&nbsp;</a>
+                        </div>-->
+
+                    </div>
+                    <div class="card facebook-card animated" ms-if="ctData.size()==0">
+                        <div class="card-header no-border">
+                            {{loadtip}}
+                        </div>
+                    </div>
+                </div>
+                <div class="infinite-scroll-preloader">
+                    <div class="preloader"></div>
+                </div>
+            </div>
+
+            <!--<span class="animated fadeIn" ms-if="DataID=='-1'" ms-click="addTXSX()" id="plus_btn" style="z-index:99998;opacity:.9"><img src="../images/plus_icon.png"></span>
+            <span class="animated fadeIn" ms-if="DataID=='-1'" ms-click="changefold()" id="plus_list" style="z-index:99998;opacity:.9"><img ms-attr-src="'../images/'+(isfold?'rwglss':'rwglzk')+'.png'"></span>-->
+            <div class="right-panel">
+                <ul>
+                    <li>
+                        <a class="mod-li-icon" ms-click="show()"><img src="../images/plus-serch.png"></a>
+                    </li>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="changefold()" ms-if="DataID=='-1'"><img ms-attr-src="'../images/'+(isfold?'plus-zhedie':'plus-zhankai')+'.png'" src="../images/plus-zhedie.png"></a>
+                    </li>
+                    <li ms-if="DataID!=='-1'">
+                        <a class="mod-li-icon" ms-click="viewall()"><img src="../images/plus-zhankai.png"></a>
+                    </li>
+                    <li>
+                        <a class="mod-li-icon" ms-if="DataID=='-1'" ms-click="addTXSX()"><img src="/View_Mobile/images/plus-add.png"></a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+        <div class="page" id="pageindex2">
+        </div>
+        <div class="search-top" ms-if="isShow">
+
+            <div class="searchbar searchbar-active">
+                <a class="searchbar-cancel" ms-click="GetList()">搜索</a>
+                <a class="searchbar-cancel search-close" ms-click="show()"><i class="iconfont icon-cuo"></i></a>
+                <div class="search-input">
+                    <label class="icon icon-search" for="search"></label>
+                    <input type="search" id="search" placeholder="搜索提醒内容" ms-duplex="search">
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script src="/View_Mobile/JS/touch/toucher.js"></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/raty/jquery.raty.js?v=1.3"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script>
+        var model = avalon.define({
+            $id: "TXList",
+            ctData: [],//数据源
+            loading: false,
+            loadtip: "",//切换页时显示信息
+            nowuser: ComFunJS.getnowuser(),//当前用户
+            isfold: localStorage.getItem("txsxisfold") == "Y" ? true : false,//是否折叠显示
+            changefold: function () {
+                model.isfold = !model.isfold;
+                model.ctData.forEach(function (item) {
+                    item.isfold = model.isfold;
+                })
+                localStorage.setItem("txsxisfold", model.isfold ? "Y" : "N");
+            },//改变折叠状态
+            search: "",
+            isShow: false,
+            show: function () {
+                if (model.search) {
+                    model.search = "";
+                    model.GetList();
+                }
+                if (model.isShow)
+                    model.isShow = false;
+                else {
+                    model.isShow = true;
+                    $("#search").focus();
+                }
+            },
+            GetList: function () {
+                model.ctData.clear();
+                model.loadtip = "";
+                model.page = 1;
+                model.loadMore();
+            },
+            page: 1,
+            pagecount: 8,
+            DataID: ComFunJS.getQueryString("ID", "-1"),//数据ID
+            type: 0,//
+            covtitle: function (title) {
+                return ComFunJS.convstr($("<div>" + title + "</div>").text(), 20);
+            },//转化 TITLE信息
+            showdetil: function (item) {
+                item.isfold = !item.isfold
+            },//展开显示信息
+            vieww: function (el) {
+                //路由加载
+                //window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=HYGL&id=" + el.ID + "&r=" + Math.random();
+                //window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=HYGL&id=" + el.ID + "&PIID=" + el.intProcessStanceid + "&r=" + Math.random();
+            },
+            delTXSX: function (el) {
+                $.confirm('确定要删除此提醒吗？', function () {
+
+                    $.getJSON("/API/VIEWAPI.ashx?Action=TXSX_DELTXSX&r=" + Math.random(), { P1: el.ID }, function (r) {
+
+                        if (r.ErrorMsg == "") {
+                            model.ctData.remove(el);
+                            top.ComFunJS.winsuccess("删除成功！！");
+                        }
+
+                    });
+                });
+            },
+            addTXSX: function (el) {
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=TXSX&r=" + Math.random();
+            },
+            loadMore: function () {
+                if (model.loading) return;
+                model.loading = true;
+                $.getJSON("/API/VIEWAPI.ashx?Action=TXSX_GETTXSXLIST&r=" + Math.random(), { "p": model.page, lb: model.type, ID: model.DataID, P2: -1,Content:model.search }, function (r) {
+                    model.loading = false;
+                    if (r.ErrorMsg == "") {
+                        for (var i = 0; i < r.Result.length; i++) {
+                            r.Result[i].isfold = model.isfold;
+                            if (model.DataID != "-1") {//如果有数据ID，则展开显示
+                                r.Result[i].isfold = true;
+                            }
+                        }
+
+                        model.ctData.pushArray(r.Result);
+                        //判断是否加载完毕
+                        if (r.Result.length < model.pagecount) {
+                            // 加载完毕，则注销无限加载事件，以防不必要的加载
+                            $.detachInfiniteScroll($('.infinite-scroll'));
+                            // 删除加载提示符
+                            $('.infinite-scroll-preloader').remove();
+                            return;
+                        }
+                        $.refreshScroller();
+                        model.page += 1;
+                    }
+
+                });
+
+            },
+            getdata: function (type) {
+                model.type = type;
+                model.ctData.clear();
+                model.loadtip = "正在加载数据... ...";
+                setTimeout("model.loadtip = '没有找到数据哦'", 1500)
+                model.page = 1;
+                model.loadMore();
+            }
+        })
+        avalon.ready(function () {
+            // 注册'infinite'事件处理函数
+            $(document).on('infinite', '.infinite-scroll-bottom', function () {
+                model.loadMore();
+            });
+
+            $.init();
+            if (model.DataID == "-1") {//如果参数中没有数据ID，则默认抓取当前用户数据
+                model.type = 1;
+                util.toucher(document.getElementById('touchcontent'))
+                    .on('swipeLeft', '.list-container', function () {
+                        model.type = model.type == 2 ? 1 : model.type * 1 + 1;
+                        model.getdata(model.type)
+                        return false;
+                    })
+                    .on('swipeRight', '.list-container', function () {
+                        model.type = model.type == 1 ? 2 : model.type * 1 - 1;
+                        model.getdata(model.type)
+                        return false;
+                    })//左右滑动事件
+            }
+            model.getdata(model.type);
+        })
+        function txsz(str) {
+            var html1 = '';
+            var html2 = '';
+            var html3 = '';
+            var html = '';
+
+            //switch (str.Type) {
+            //    case "0": html1 = '短信和微信'; break;
+            //    case "1": html1 = '短信'; break;
+            //    case "2": html1 = '微信'; break;
+            //}
+
+            switch (str.TXType) {
+                case "0": html2 = '立即发送'; break;
+                case "1": html2 = '仅一次,' + str.Date + ' ' + str.Hour + ':' + str.Minute; break;
+                case "2": html2 = '每个工作日的' + str.Hour + ':' + str.Minute; break;
+                case "3": html2 = '每天的' + str.Hour + ':' + str.Minute; break;
+                case "4": html2 = '每周' + str.Days + '的' + str.Hour + ':' + str.Minute; break;
+                case "5": html2 = '每月' + str.Days + '日的' + str.Hour + ':' + str.Minute; break;
+            }
+            if (!(str.TXType == "0" || str.TXType == "1")) {
+                switch (str.CFType) {
+                    case "1": html3 = ',无结束时间'; break;
+                    case "2": html3 = ',' + str.CFCount + '次后结束,已经执行' + (str.ZXCount ? str.ZXCount : '0') + '次'; break;
+                    case "3": html3 = ',结束时间：' + (str.CFJZDate ? str.CFJZDate.substring(0, 10) : ''); break;
+                }
+            }
+            //html = html1 + '提醒,' + html2 + html3;
+            html = html2 + html3;
+            return html;
+        }
+        function txfs(str) {
+            var html1 = '';
+
+            switch (str.Type) {
+                case "0": html1 = '短信微信'; break;
+                case "1": html1 = '短信'; break;
+                case "2": html1 = '微信'; break;
+            }
+
+            return html1;
+        }
+    </script>
+</body>
+
+</html>

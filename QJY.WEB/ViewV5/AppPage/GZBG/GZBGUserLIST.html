@@ -1,0 +1,141 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <title>企捷云</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="/ViewV5/CSS/icfont_qj/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <link href="/ViewV5/CSS/BootOver.css" rel="stylesheet" />
+    <style>
+        .ms-controller, .ms-important, [ms-controller], [ms-important] {
+            visibility: hidden;
+        }
+
+        .szhl_getPeoples {
+            display: none;
+        }
+    </style>
+</head>
+<body ms-controller="GZBGUserLIST">
+    <div class="pt20">
+        <!-- 按条件选择 -->
+        <div class="tab-filter-type">
+            <div class="oh">
+                <h5 class="pull-left tr">报告类型：</h5>
+                <ul class="tab-type ft14">
+                    <li ms-click="SelectXJType('')"><span ms-class-1="active:curXJType==''">全部</span></li>
+                    <li ms-repeat-el="TypeData" ms-click="SelectXJType(el.ID)"><span ms-class-1="active:el.ID==curXJType">{{el.TypeName}}</span></li>
+                </ul>
+            </div>
+
+            <!-- 搜索 -->
+            <div class="oh">
+                <h5 class="pull-left tr">自定义搜索：</h5>
+                <div class="input-group ml15" style="width: 395px; float: left;">
+                    <input type="search" class="form-control" ms-duplex="searchcontent" placeholder="报告内容" style="height: 30px">
+                </div>
+                <span class="btn btn-success" ms-click="GetLIST()" style="float: left; height: 30px;width:100px">搜索</span>
+
+            </div>
+        </div>
+        <!-- 展开更多选项 -->
+        <div class="add-tab ft14 tc mt20" style="display: none;">
+            <span>更多筛选<i class="caret"></i></span>
+        </div>
+        <!--分割线-->
+        <div class="add-tab ft14 tc mt20">
+        </div>
+        <!--工作报告-->  
+        <div class="activity ft14">
+            <div class="activity-list pt20 pb20 " ms-repeat-el="ListData">
+                <div class="head-img pull-left">
+                    <img ms-attr-src="{{ComFunJS.getfile()}}&type=TX&user={{el.CRUser}}" onerror="javascript: this.src = 'images/head.jpg'" style="cursor:pointer;">
+                    <p class="tc c999 ft12 mt5">{{ComFunJS.convertuser(el.CRUser)}}</p>
+                </div>
+                <div class="activity-cont">
+                    <!--<p>部门：{{el.BranchName}}</p>-->
+                    <p>时间：{{el.RBDate|date("yyyy-MM-dd")}}</p>
+                    <p>{{fnFormat(el.RBContent)|html}}<span ms-if="el.Files"><i class="iconfont icon-fj ft14 ml5"></i></span></p>
+                </div>
+                <div class="btn-add">
+                    <a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="查看" ms-click="OpenView(el.ID,el.intProcessStanceid,$event)">
+                        <i class="iconfont icon-look"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="pt20 ft14" ms-if="isnull">
+                <p>暂无数据</p>
+            </div>
+        </div>      
+    </div>
+
+    <script type="text/javascript" src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/JS/layer/extend/layer.ext.js"></script>
+    <script src="/ViewV5/JS/laypage/laypage.js"></script>
+    <script src="/ViewV5/JS/toastr.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script>
+
+        var tempindex = avalon.define({
+            $id: "GZBGUserLIST",
+            curXJType: "",
+            month: ComFunJS.getQueryString("month"),
+            user: ComFunJS.getQueryString("username"),
+            searchcontent: "",
+            ListData: [],
+            TypeData: [],
+            isnull: false,
+            SelectXJType: function (type) {
+                tempindex.curXJType = type;
+                tempindex.GetLIST();
+
+            },
+            fnFormat: function (str) {
+                str = ComFunJS.convstr(str);
+              //  str = str.length > 40 ? str.substring(0, 40) + '...' : str;
+                return str;
+            },
+            GetTypeData: function () {//P1:字典类别，callback:回调函数,p2:字典类别ID
+                $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANSLIST', { P1: 6 }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempindex.TypeData = resultData.Result;
+                    }
+                })
+            },
+
+            GetLIST: function () {
+                tempindex.ListData.clear();
+                $.getJSON('/API/VIEWAPI.ashx?Action=GZBG_GETGZBGUSERLIST',
+                    {
+                        P2: tempindex.searchcontent, P1: tempindex.curXJType, month: tempindex.month, username: tempindex.user
+                    }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            tempindex.ListData = resultData.Result;
+                            if (tempindex.ListData.size() == 0) { tempindex.isnull = true; } else { tempindex.isnull = false; }
+                        }
+                    })
+            },
+            OpenView: function (ID, PIID, event) {
+                location.href = "/ViewV5/AppPage/APPVIEW.html?FormCode=GZBG_GZBG&ID=" + ID + "&PIID=" + PIID + "&isback=Y&r=" + Math.random();
+            },
+        })
+        avalon.ready(function () {
+
+            //类型数据
+            tempindex.GetTypeData();
+            tempindex.GetLIST();
+            ComFunJS.initForm();
+        })
+    </script>
+</body>
+
+
+</html>

@@ -1,0 +1,178 @@
+﻿<style>
+    i {
+        color: red;
+    }
+</style>
+<div class="form-horizontal" style="margin:5px  auto auto 20px; " ms-controller="ADDQYHDN">
+   
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>发起方</label>
+        <div class="col-xs-8">
+            <input type="text" ms-duplex="modelData.FQF" class="form-control  szhl_require" placeholder="请输入活动发起方" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>活动主题</label>
+        <div class="col-xs-8">
+            <input type="text" ms-duplex="modelData.Title" autofocus="autofocus" class="form-control szhl_require" placeholder="请输入活动主题" />
+        </div>
+    </div>
+
+    <div class="form-group" ms-visible="modelData.Type == 0">
+        <label class="col-xs-2 control-label"><i>*</i>活动时间</label>
+        <div class="col-xs-8">
+            <input type="text" ms-duplex="modelData.HDDate" class="form-control szhl_require" placeholder="请输入活动时间" />
+        </div>
+    </div>
+    <div class="form-group" ms-visible="modelData.Type == 0">
+        <label class="col-xs-2 control-label"><i>*</i>活动地址</label>
+        <div class="col-xs-8">
+            <input type="text" ms-duplex="modelData.HD_Adress" class="form-control szhl_require  " placeholder="请输入活动地址" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>参与人员</label>
+        <div class="col-xs-8">
+            <input type="text" ms-duplex="modelData.CYR" class="form-control szhl_require  szhl_getPeoples" placeholder="请输入活动参与人" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>{{modelData.Type==1?'投票':'报名'}}起止时间</label>
+        <div class="col-xs-8">
+            <input type="text" ms-duplex="modelData.StartTime" style="width: 45%; display: inline;" class="szhl_form_date_time form-control szhl_require" placeholder="请输入开始时间" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;—&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="text" ms-duplex="modelData.EndTime" style="width: 45%; display: inline;float:right" class="szhl_form_date_time form-control szhl_require" placeholder="请输入结束时间" />
+        </div>
+    </div>
+    <div ms-visible="modelData.Type == 0">
+        <div class="form-group">
+           
+            <label class="col-xs-2 control-label">报名结果</label>
+            <div class="col-xs-3" style="width: 31.5%;">
+                <select class="form-control" ms-duplex="modelData.TP_IsPublic">
+                    <option value="1">报名人均可见</option>
+                    <option value="0">仅自己可见</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label"><i>*</i>活动内容</label>
+            <div class="col-xs-8">
+                <textarea type="text" id="conContent" ms-duplex="modelData.HD_Content" class="szhl_require szhl_UEEDIT" placeholder="请输入活动内容" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">附件</label>
+            <div class="col-xs-8">
+                <input type="text" ms-duplex="modelData.Files" class="form-control  szhl_Upload" />
+            </div>
+        </div>
+    </div>
+    <div ms-visible="modelData.Type == 1">
+        <div class="form-group">
+           
+            <label class="col-xs-2 control-label">匿名投票</label>
+            <div class="col-xs-3">
+                <select class="form-control" ms-duplex="modelData.TP_IsNM">
+                    <option value="0">关</option>
+                    <option value="1">开</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label"><i>*</i>投票选项</label>
+            <div class="col-xs-8">
+                <div ms-repeat-item="tempmodel.XXItemList" style="display:block;">
+                    <input type="text" ms-duplex="item.OptionText" class="form-control  " placeholder="请输入选项" style=" margin-bottom: 10px;width:90%;" />
+                    <a href="###" ms-if="XXItemList.size() > 2" ms-click="deltpxx(item)" style="float: right; position: relative; top: -35px; right: 6px; "> 删除</a>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">&nbsp;</label>
+            <div class="col-xs-8">
+                <a href="###" ms-click="tpxxs()">添加选项+</a>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">可选项数</label>
+            <div class="col-xs-3">
+                <select class="form-control" ms-duplex="modelData.TP_Type">
+                    <option ms-repeat-item="tpxxnum" ms-attr-value="item.value">{{item.value}}</option>
+                </select>
+            </div>
+            <label class="col-xs-2 control-label">投票结果</label>
+            <div class="col-xs-3">
+                <select class="form-control" ms-duplex="modelData.TP_IsPublic">
+                    <option value="1">投票人均可见</option>
+                    <option value="0">仅自己可见</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var tempmodel = avalon.define({
+        $id: "ADDQYHDN",
+        XXItemList: [{ "OptionText": "" }, { "OptionText": "" }],
+        tpxxnum: [{ "value": 1 }],
+        modelData: {
+            "FQF": ComFunJS.convertuser(ComFunJS.getnowuser()), "Type": 0, "Title": "", "HDDate": "", "Status": "", "CRDate": "", "CRUser": "", "Files": "", "ComId": "", "CYR": ComFunJS.getnowuser()
+            , "StartTime": "", "EndTime": "", "HD_Content": "", "TP_IsNM": 0, "TP_Type": 1, "HD_Adress": "", "TP_IsPublic": 1, "IsPublic": 0
+        },
+        inittemp: function (strId) {
+            tempmodel.modelData.Type = ComFunJS.getQueryString("type", 0);
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?ACTION=QYHD_GETQYHDMODEL', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempmodel.modelData = resultData.Result;
+                        tempmodel.XXItemList = resultData.Result4;
+                        tempmodel.bangdinxxnum();
+                        if (tempmodel.modelData.StartTime && tempmodel.modelData.StartTime.length > 16) {
+                            tempmodel.modelData.StartTime = tempmodel.modelData.StartTime.substring(0, 16);
+                        }
+                        if (tempmodel.modelData.EndTime && tempmodel.modelData.EndTime.length > 16) {
+                            tempmodel.modelData.EndTime = tempmodel.modelData.EndTime.substring(0, 16);
+                        }
+                        setTimeout(" ComFunJS.initForm()", 500)
+                    }
+                })
+            } else {
+                pmodel.isDraft = true;
+                ComFunJS.initForm()
+            }
+        },//初始化
+        tpxxs: function () {
+            tempmodel.XXItemList.push({ "OptionText": "" });
+            tempmodel.bangdinxxnum();
+
+        },
+        //存草稿使用
+        GetDraftData: function () {
+            return { "modelData": tempmodel.modelData.$model, "XXItemList": tempmodel.XXItemList.$model };
+        },
+        SetDraftData: function (vm) {
+            tempmodel.modelData = vm.modelData;
+            tempmodel.XXItemList = vm.XXItemList;
+        } 
+        ,
+        deltpxx: function (item) {
+            tempmodel.XXItemList.remove(item);
+            tempmodel.bangdinxxnum();
+        },
+        bangdinxxnum: function () {
+            tempmodel.tpxxnum = [];
+            var size = tempmodel.XXItemList.size();
+            for (var i = 1; i <= size; i++) {
+                tempmodel.tpxxnum.push({ "value": i });
+            }
+        },
+        SaveData: function (callback) {
+
+            $.post("/API/VIEWAPI.ashx?ACTION=QYHD_ADDQYHD", { P1: JSON.stringify(tempmodel.modelData.$model), P2: JSON.stringify(tempmodel.XXItemList.$model) }, function (result) {
+                return callback.call(this, result);
+            });
+        }
+    });
+</script>

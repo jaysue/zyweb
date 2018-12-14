@@ -1,0 +1,273 @@
+﻿﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>产品管理</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link href="/View_Mobile/CSS/szhlextend.css?ver=20160904" rel="stylesheet" />
+
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        #plus_list {
+            height: 2.65rem;
+            width: 2.65rem;
+            position: fixed;
+            right: 0.82rem;
+            bottom: 6rem;
+        }
+
+            #plus_list img {
+                width: 100%;
+                height: auto;
+            }
+    </style>
+</head>
+<body ms-controller="UI_CPGL_LIST">
+    <div class="page-group">
+        <div class="page page-current" id="pageindex1">
+            <div class="buttons-tab">
+                <a href="#" class="tab-link button external active">产品管理</a>
+
+            </div>
+
+            <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50" style="margin-top:2rem" id="touchcontent">
+                <div class="list-container">
+
+                    <div class="card facebook-card animated fadeInUp" ms-repeat-el="ctData">
+                        <div class="ribbon-wrapper-green">
+                            <div class="ribbon-green">{{el.TypeName}}</div>
+                        </div>
+
+                        <div class="card-header no-border" ms-on-click="showdetil(el)">
+                            <div class="facebook-avatar">
+                                <img ms-src="{{ComFunJS.getfile()+'&type=TX&user='+el.CRUser}}" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">{{ComFunJS.convuser(el.CRUser)}}<span class="ml10 c999 ft14" ms-if="!el.isfold">{{$.timeago(el.CRDate)}}</span></div>
+                            <div class="facebook-date head-ft16" ms-if="el.isfold"><span class="c999 ft14">{{el.CRDate|date("MM月dd日")}}</span></div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999 title-item">产品名称：</span>
+                                <span>{{covtitle(el.Name)}}</span>
+                            </div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999 title-item">产品编号：</span>
+                                <span>{{covtitle(el.BianHao)}}</span>
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="card-content  " ms-visible="el.isfold">
+
+                            <div class="card-item">
+                                <span class="c999 title-item">产品名称：</span>
+                                <span>{{el.Name}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">产品编号：</span>
+                                <span> {{el.BianHao}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.Price">
+                                <span class="c999 title-item">标准单价：</span>
+                                <span>{{el.Price}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.DanWei">
+                                <span class="c999 title-item">销售单位：</span>
+                                <span>{{el.DanWei}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.ChengBen">
+                                <span class="c999 title-item">单位成本：</span>
+                                <span>{{el.ChengBen}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.TypeName">
+                                <span class="c999 title-item">产品分类：</span>
+                                <span>{{el.TypeName}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.Status">
+                                <span class="c999 title-item">产品图片：</span>
+                                <span>{{el.GJZT}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.PContent">
+                                <span class="c999 title-item">产品介绍：</span>
+                                <span>{{el.PContent|html}}</span>
+                            </div>
+                            <div class="card-item" ms-repeat-ext="el.SubExt">
+                                <span class="c999 title-item">{{ext.TableFiledName}}：</span>
+                                <span>{{ext.ExtendDataValue}}</span>
+                            </div>
+                            <ul class="filelist" style="margin-left:.5rem;">
+                                <li ms-repeat-file="el.FileList">
+                                    <img ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="ComFunJS.getfile(file.ID)" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'">
+                                    <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}.{{file.FileExtendName}}</span>
+                                </li>
+                            </ul>
+                            <div class="buttons-tab list-op">
+                                <a class="tab-link button external" ms-click="editCPGL(el)" ms-if="nowuser==el.CRUser">
+                                    <i class="iconfont icon-bianji2"></i>编辑
+                                </a>
+                                <a class="tab-link button external" ms-click="delCPGL(el)" ms-if="nowuser==el.CRUser">
+                                    <i class="iconfont icon-remove"></i>删除
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card facebook-card animated" ms-if="loadtip">
+                        <div class="card-header no-border">
+                            {{loadtip}}
+                        </div>
+                    </div>
+                </div>
+                <div class="infinite-scroll-preloader">
+                    <div class="preloader"></div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <ul>
+                    <li>
+
+                        <a class="mod-li-icon" ms-if="DataID=='-1'" ms-click="changefold()"><img ms-attr-src="'/View_Mobile/images/'+(isfold?'plus-zhedie':'plus-zhankai')+'.png'" src="/View_Mobile/images/plus-zhedie.png"></a>
+
+
+                    </li>
+                    <li>
+
+                        <a class="mod-li-icon" ms-if="DataID=='-1'" ms-click="addCPGL()"><img src="/View_Mobile/images/plus-add.png"></a>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+        <div class="page" id="pageindex2">
+        </div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script src="/View_Mobile/JS/touch/toucher.js"></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/raty/jquery.raty.js?v=1.3"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script>
+        var model = avalon.define({
+            $id: "UI_CPGL_LIST",
+            ctData: [],//数据源
+            loading: false,
+            loadtip: "",//切换页时显示信息
+            nowuser: ComFunJS.getnowuser(),//当前用户
+            isfold: localStorage.getItem("CPGLisfold") == "Y" ? true : false,//是否折叠显示
+            changefold: function () {
+                model.isfold = !model.isfold;
+                model.ctData.forEach(function (item) {
+                    item.isfold = model.isfold;
+                })
+                localStorage.setItem("CPGLisfold", model.isfold ? "Y" : "N");
+            },//改变折叠状态
+            page: 1,
+            pagecount: 8,
+            DataID: ComFunJS.getQueryString("ID", "-1"),//数据ID
+            covtitle: function (title) {
+                return ComFunJS.convstr($("<div>" + title + "</div>").text(), 20);
+            },//转化 TITLE信息
+            showdetil: function (item) {
+                item.isfold = !item.isfold
+            },//展开显示信息
+            addCPGL: function (el) {
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=CPGL&r=" + Math.random();
+            },
+            editCPGL: function (el) {
+                //路由加载
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=CPGL&id=" + el.ID + "&r=" + Math.random();
+            },
+            delCPGL: function (el) {
+                if (event.stopPropagation) {
+                    event.stopPropagation();
+                }
+                $.confirm("确认要删除吗", function () {
+                    $.getJSON('/API/VIEWAPI.ashx?Action=CRM_DELCPBYID', { "P1": el.ID }, function (result) {
+                        if (result.ErrorMsg == "") {
+                            ComFunJS.winsuccess("删除成功");
+                            model.ctData.remove(el);
+                            if (model.ctData.size() == 0) {
+                                model.loadtip = '没有找到数据哦'
+                            }
+                        }
+                    })
+                }
+               )
+
+            },
+            loadMore: function () {
+                if (model.loading) return;
+                model.loading = true;
+                $.getJSON("/API/VIEWAPI.ashx?Action=CRM_GETCPLIST&r=" + Math.random(), { "p": model.page, ID: model.DataID }, function (r) {
+                    model.loading = false;
+                    if (r.ErrorMsg == "") {
+                        if (model.page == 1 && r.Result.length == 0) {
+                            model.loadtip = '没有找到数据哦'
+                        }
+                        for (var i = 0; i < r.Result.length; i++) {
+                            r.Result[i].isfold = model.isfold;
+                            if (model.DataID != "-1") {//如果有数据ID，则展开显示
+                                r.Result[i].isfold = true;
+                            }
+                            r.Result[i].pltype = "1";
+                        }
+
+                        model.ctData.pushArray(r.Result);
+                        //判断是否加载完毕
+                        if (r.Result.length < model.pagecount) {
+                            // 加载完毕，则注销无限加载事件，以防不必要的加载
+                            $.detachInfiniteScroll($('.infinite-scroll'));
+                            // 删除加载提示符
+                            $('.infinite-scroll-preloader').hide();
+                            return;
+                        }
+                        $.refreshScroller();
+                        model.page += 1;
+                    }
+
+                });
+
+            },
+            viewfile: function (file) {
+                if (ComFunJS.isPic(file.FileExtendName)) {
+                    ComFunJS.viewbigimg(this)
+                    return;
+                }
+                if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                    window.location = file.YLUrl;
+                    return;
+                }
+            },//
+            getdata: function () {
+                $.attachInfiniteScroll($('.infinite-scroll'))
+                model.loadtip = "";
+                $('.infinite-scroll-preloader').show();
+                model.ctData.clear();
+                model.page = 1;
+                model.loadMore();
+            },
+        })
+        avalon.ready(function () {
+            // 注册'infinite'事件处理函数
+            $(document).on('infinite', '.infinite-scroll-bottom', function () {
+                model.loadMore();
+            });
+
+            $.init();
+            model.getdata();
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,655 @@
+﻿﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>企业活动</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1476090774_8365302.css">
+    <link href="/View_Mobile/CSS/szhlextend.css?ver=20160904" rel="stylesheet" />
+    <!--<link rel="stylesheet" href="/View_Mobile/CSS/animate.css">-->
+
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        .layermbtn span:first-child {
+            background-color: transparent;
+        }
+
+        #plus_list {
+            height: 2.65rem;
+            width: 2.65rem;
+            position: fixed;
+            right: 0.82rem;
+            bottom: 6rem;
+        }
+
+            #plus_list img {
+                width: 100%;
+                height: auto;
+            }
+
+        .ui-form-item input {
+            margin-top: 15px !important;
+        }
+
+        #skill {
+            list-style: none;
+            padding-top: 30px;
+        }
+
+        #skill {
+            padding-left: 0;
+        }
+
+            #skill li {
+                margin-bottom: 50px;
+                background-color: ActiveBorder;
+                height: 5px;
+                border-radius: 3px;
+            }
+
+                #skill li em {
+                    position: relative;
+                    top: -30px;
+                }
+
+        .expand {
+            height: .2rem;
+            margin: 2px 0;
+            background: #2187e7;
+            display: block;
+            /*box-shadow: 0px 0px 10px 1px rgba(0,198,255,0.4);*/
+        }
+
+        .html5 {
+            width: 70%;
+            -moz-animation: html5 2s ease-out;
+            -webkit-animation: html5 2s ease-out;
+        }
+
+        @-moz-keyframes html5 {
+            0% {
+                width: 0px;
+            }
+
+            100% {
+                width: 70%;
+            }
+        }
+
+        @-webkit-keyframes html5 {
+            0% {
+                width: 0px;
+            }
+
+            100% {
+                width: 70%;
+            }
+        }
+
+
+
+        .list-block {
+            margin: 0;
+        }
+    </style>
+</head>
+<body ms-controller="UI_QYHD_LIST">
+    <div class="page-group">
+        <div class="page page-current" id="pageindex1">
+
+            <div class="buttons-tab">
+                <a ms-if="DataID=='-1'" ms-on-click="getdata(0)" class="tab-link button external" ms-class-1="active:type=='0'">活动列表</a>
+                <a ms-if="DataID=='-1' " ms-on-click="getdata(1)" class="tab-link button external" ms-class-1="active:type=='1'">我创建的</a>
+                <a ms-if="DataID!='-1'" class="tab-link button external active">企业活动</a>
+            </div>
+
+            <div class="content infinite-scroll infinite-scroll-bottom touchcontent" data-distance="50" style="margin-top:2rem" id="touchcontent">
+                <div class="list-container">
+                    <div class="card facebook-card animated fadeInUp" ms-repeat-el="ctData">
+                        <div class="ribbon-wrapper-green">
+                            <div ms-class-1="ribbon-green:el.HDStatus==2" ms-class-2="ribbon-red:el.HDStatus==1" ms-class-3="ribbon-gray:el.HDStatus==0">{{GetHDStatus(el.HDStatus)}}</div>
+                        </div>
+
+                        <div class="card-header no-border" ms-on-click="showdetil(el)">
+                            <div class="facebook-avatar">
+                                <img ms-src="/View_Mobile/Images/icon/{{el.Type==0?'QYHD':'QYTP'}}.png" width="40" class="border-r" onerror="javascript: this.src = '/ViewV5/images/head.jpg'">
+                            </div>
+                            <div class="facebook-date head-ft16">{{el.FQF}}<span class="ml10 c999 ft14" ms-if="!el.isfold">{{$.timeago(el.CRDate)}}</span></div>
+                            <div class="facebook-date head-ft16" ms-if="el.isfold"><span class="c999 ft14">{{el.CRDate|date("MM月dd日")}}</span></div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999 title-item">{{el.Type==0?"报名":"投票"}}截止时间：</span>
+                                <span>{{el.EndTime|date("yyyy-MM-dd HH:mm")}}</span>
+                            </div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999 title-item">活动主题：</span>
+                                <span>{{el.Title}}</span>
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="card-content  " ms-visible="el.isfold">
+                            <div class="card-item">
+                                <span class="c999 title-item">{{el.Type==0?"报名":"投票"}}截止时间：</span>
+                                <span>{{el.EndTime|date("yyyy-MM-dd HH:mm")}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">活动主题：</span>
+                                <span>{{el.Title}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.Type==0">
+                                <span class="c999 title-item">活动时间：</span>
+                                <span>{{el.HDDate}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.Type==0&& el.HD_Adress">
+                                <span class="c999 title-item">活动地址：</span>
+                                <span>{{el.HD_Adress}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.CYUser">
+                                <span class="c999 title-item">参与人：</span>
+                                <span>{{ComFunJS.convusers(el.CYYUser)}}</span>
+                            </div>
+
+                            <div class="card-item" ms-if="el.Type==0">
+                                <span class="c999 title-item">活动内容：</span>
+                                <span>{{el.HD_Content|html}}</span>
+                            </div>
+                            <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-if="el.Type==1&&(el.UserBMCount==0||((el.UserBMCount>0&&el.TP_IsPublic==1)||(el.TP_IsPublic==0&&el.CRUser==nowuser)))">
+                                {{el.TP_Type==1?"单选":"多选"}}，最多只能选择{{el.TP_Type==1?"一项":el.TP_Type+'项'}}
+                                <div class="list-block media-list" ms-if="el.UserBMCount==0&&el.HDStatus==2" style="margin-bottom:0;margin-top:0">
+                                    <ul>
+                                        <li ms-repeat-item="el.OptionList">
+                                            <label class="label-checkbox item-content">
+                                                <input ms-attr-type="el.TP_Type==1?'radio':'checkbox'" ms-attr-id="item.ID" ms-if="el.UserBMCount==0" name="my-radio">
+                                                <div class="item-media"><i class="icon icon-form-checkbox"></i></div>
+                                                <div class="item-inner">
+                                                    <div class="item-subtitle">{{item.OptionText}}</div>
+                                                </div>
+                                            </label>
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+                                <ul id="skill" ms-if="(el.UserBMCount>0&&(el.TP_IsPublic==1||(el.TP_IsPublic==0&&el.CRUser==nowuser)))||el.HDStatus==0">
+                                    <li ms-repeat-item="el.OptionList"><span class="expand" ms-css-width="(el.BMCount!=0?(item.TPCount*100/el.BMCount):0)+'%'"></span><em>{{item.OptionText}}【{{item.TPCount}}票 】{{el.BMCount!=0?((item.TPCount/el.BMCount)*100).toFixed(2):0}}%</em></li>
+                                </ul>
+
+                                <button class="button " ms-click="QYHDTP(el,this)" ms-if="el.UserBMCount==0&&el.HDStatus==2">投票</button>
+                            </div>
+                            <div class="card-content-inner" style="padding-top: 0; padding-top: 0.4rem; padding-bottom: 0;" ms-if="el.Files">
+                                <ul class="filelist">
+                                    <li ms-repeat-file="el.FileList">
+                                        <img ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="{{ComFunJS.getfile(file.ID)}}" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                                        <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div ms-visible="el.PLList.size()>0||el.BMList.size()>0">
+                                <div class="lookright-box">
+                                    <div class="menu-general">
+                                        <ul>
+                                            <li ms-class-1="active:el.pltype==1" ms-on-click="getpldata(el,1)" style="list-style: none;">
+                                                <a>评论</a>
+                                            </li>
+
+                                            <li ms-class-1="active:el.pltype==2" ms-if="el.Type==0&&((el.TP_IsPublic==0&&el.CRUser==nowuser)||el.TP_IsPublic==1)" ms-on-click="getpldata(el,2)"  style="list-style: none;">
+                                                <a>已报名列表</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div id="map">
+                                    <!--跟进-->
+                                    <div style="display: block;" ms-if="el.pltype=='1'">
+                                        <!--评论样式-->
+                                        <div class="crm-dt" ms-repeat-pl="el.PLList">
+                                            <span class="crm-yuan"></span>
+                                            <div class="crm-dt-cont">
+
+                                                <div class="m5">
+                                                    <p class="c999">{{pl.CRUserName}} <span class=" ft14 pull-right">{{pl.CRDate|date("MM月dd日")}}</span></p>
+                                                    <h3 class="crm-xg ft14 mt5" style="word-break:break-all;word-wrap:break-word;">
+                                                        {{ComFunJS.bqhContent(pl.MSGContent)|html}}
+                                                    </h3>
+                                                    <ul class="filelist">
+                                                        <!--repeat428537517786-->
+                                                        <li ms-repeat-file="pl.FileList">
+                                                            <img ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="{{ComFunJS.getfile(file.ID)}}" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                                                            <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="display: block;" class="list-block" ms-if="el.pltype=='2'">
+                                        <ul>
+                                            <li ms-repeat-bm="el.BMList" class="item-content">
+
+                                                <div class="item-inner" style=" padding-top: .4rem;">
+                                                    <div class="item-title" style="-webkit-box-flex: 1;">{{bm.OptionUser}}  {{bm.UserPhone}}</div>
+                                                    <div class="item-after" style="-webkit-box-flex: 1;">
+                                                        <span style="color:red">{{bm.BMNum}}</span>人
+                                                    </div>
+                                                    <!--<div class="card-footer no-border" style="padding: 0; background-color:white;" ms-if="bm.CRUser==nowuser">
+                                                        <a href="#" ms-on-click="DELHT(el)"><i class="fa fa-trash-o"></i>&nbsp;删除&nbsp;</a>
+                                                    </div>-->
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="buttons-tab list-op">
+                                <a class="tab-link button external" ms-click="pl(el)">
+                                    <i class="iconfont icon-xiaoxi"></i>评论
+                                </a>
+                                <a class="tab-link button external" ms-click="QYHDBM(el)" ms-if="el.Type==0">
+                                    <i class="iconfont icon-bianji2"></i>{{el.UserBMCount>0?"已报名":"报名"}}
+                                </a>
+                                <a class="tab-link button external" ms-click="DELForm(el)" ms-if="el.CRUser==nowuser">
+                                    <i class="iconfont icon-remove"></i>撤销
+                                </a>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="card facebook-card animated" ms-if="loadtip">
+                        <div class="card-header no-border">
+                            {{loadtip}}
+                        </div>
+                    </div>
+                </div>
+                <div class="infinite-scroll-preloader">
+                    <div class="preloader"></div>
+                </div>
+
+                <div class="bmdiv" style="display:none">
+                    <div class="list-block">
+                        <ul>
+                            <!-- Text inputs -->
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-input">
+                                            <input type="text" placeholder="联系人姓名" id="lxr">
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-input">
+                                            <input type="tel" placeholder="联系方式" id="lxrsj">
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <!-- Select -->
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-input">
+                                            <input type="tel" placeholder="报名人数" id="bmrs">
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+            <!--<span class="animated fadeIn" ms-if="DataID=='-1'" ms-click="addQYHD()" id="plus_btn" style="z-index:99998;opacity:.9"><img src="../images/plus_icon.png"></span>
+            <span class="animated fadeIn" ms-if="DataID=='-1'" ms-click="changefold()" id="plus_list" style="z-index:99998;opacity:.9"><img ms-attr-src="'../images/'+(isfold?'rwglss':'rwglzk')+'.png'"></span>-->
+            <div class="right-panel">
+                <ul>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="show()"><img src="../images/plus-serch.png"></a>
+                    </li>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="changefold()" ms-if="DataID=='-1'"><img ms-attr-src="'../images/'+(isfold?'plus-zhedie':'plus-zhankai')+'.png'" src="../images/plus-zhedie.png"></a>
+                    </li>
+                    <li ms-if="DataID!=='-1'">
+                        <a class="mod-li-icon" ms-click="viewall()"><img src="../images/plus-zhankai.png"></a>
+                    </li>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="addQYHD()"><img src="/View_Mobile/images/plus-add.png"></a>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+        <div class="page" id="pageindex2">
+        </div>
+        <div class="search-top" ms-if="isShow">
+
+            <div class="searchbar searchbar-active">
+                <a class="searchbar-cancel" ms-click="GetList()">搜索</a>
+                <a class="searchbar-cancel search-close" ms-click="show()"><i class="iconfont icon-cuo"></i></a>
+                <div class="search-input">
+                    <label class="icon icon-search" for="search"></label>
+                    <input type="search" id="search" placeholder="搜索标题" ms-duplex="search">
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="/View_Mobile/JS/touch/toucher.js"></script> 
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/raty/jquery.raty.js?v=1.3"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script>
+        var model = avalon.define({
+            $id: "UI_QYHD_LIST",
+            ctData: [],//数据源
+            loading: false,
+            loadtip: "",//切换页时显示信息
+            nowuser: ComFunJS.getnowuser(),//当前用户
+            isfold: localStorage.getItem("hyglisfold") == "Y" ? true : false,//是否折叠显示
+            changefold: function () {
+                model.isfold = !model.isfold;
+                model.ctData.forEach(function (item) {
+                    item.isfold = model.isfold;
+                })
+                localStorage.setItem("hyglisfold", model.isfold ? "Y" : "N");
+            },//改变折叠状态
+            search: "",
+            isShow: false,
+            show: function () {
+                if (model.search) {
+                    model.search = "";
+                    model.GetList();
+                }
+                if (model.isShow)
+                    model.isShow = false;
+                else {
+                    model.isShow = true;
+                    $("#search").focus();
+                }
+            },
+            GetList: function () {
+                model.ctData.clear();
+                model.loadtip = "";
+                model.page = 1;
+                model.loadMore();
+            },
+            page: 1,
+            pagecount: 8,
+            DataID: ComFunJS.getQueryString("ID", "-1"),//数据ID
+            type: 0,//
+            covtitle: function (title) {
+                return ComFunJS.convstr($("<div>" + title + "</div>").text(), 20);
+            },//转化 TITLE信息
+            showdetil: function (item) {
+                item.isfold = !item.isfold;
+            },
+            addQYHD: function (el) {
+                window.location = "/View_Mobile/UI/UI_QYHD_TYPE.html?r=" + Math.random();
+            }, GetHDStatus: function (HDStatus) {
+                var StatusName = "";
+                switch (HDStatus) {
+                    case 0:
+                        StatusName = "已结束";
+                        break;
+                    case 1:
+                        StatusName = "未开始";
+                        break;
+                    case 2:
+                        StatusName = "正在进行";
+                        break;
+
+                }
+                return StatusName;
+            },
+            viewall: function () {
+                window.location = "/View_Mobile/UI/UI_QYHD_LIST.html?r=" + Math.random();
+            },
+            loadMore: function () {
+                if (model.loading) return;
+                model.loading = true;
+                $.getJSON("/API/VIEWAPI.ashx?Action=QYHD_GETQYHDLIST_PAGE&r=" + Math.random(), { "p": model.page, listType: model.type, ID: model.DataID, P2: model.search }, function (r) {
+                    model.loading = false;
+                    if (r.ErrorMsg == "") {
+                        if (model.page == 1 && r.Result.length == 0) {
+                            model.loadtip = '没有找到数据哦'
+                        }
+                        for (var i = 0; i < r.Result.length; i++) {
+                            r.Result[i].isfold = model.isfold;
+                            if (model.DataID != "-1") {//如果有数据ID，则展开显示
+                                r.Result[i].isfold = true;
+                            }
+                            r.Result[i].pltype = "1";
+                        }
+
+                        model.ctData.pushArray(r.Result);
+                        //判断是否加载完毕
+                        if (r.Result.length < model.pagecount) {
+                            // 加载完毕，则注销无限加载事件，以防不必要的加载
+                            $.detachInfiniteScroll($('.infinite-scroll'));
+                            // 删除加载提示符
+                            $('.infinite-scroll-preloader').hide();
+                            return;
+                        }
+                        $.refreshScroller();
+                        model.page += 1;
+                    }
+
+                });
+
+            },
+            viewfile: function (file) {
+                if (ComFunJS.isPic(file.FileExtendName)) {
+                    ComFunJS.viewbigimg(this)
+                    return;
+                }
+                if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                    window.location = file.YLUrl;
+                    return;
+                }
+            },
+            pl: function (el) {
+                ComFunJS.showCommentNew(function (result) {
+                    $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_ADDCOMENT&r=' + Math.random(), { "P1": result.comment, "MsgType": "QYHD", "MsgLYID": el.ID }, function (resultData) {
+
+                        if (resultData.ErrorMsg == "") {
+                            el.PLList.push(resultData.Result);
+                            top.ComFunJS.winsuccess("评论成功！！");
+                        }
+                    })
+
+                });
+            },
+            getdata: function (type) {
+                $.attachInfiniteScroll($('.infinite-scroll'))
+                model.loadtip = "";
+                $('.infinite-scroll-preloader').show();
+                model.type = type;
+                model.ctData.clear();
+                model.page = 1;
+                model.loadMore();
+            },
+            getpldata: function (el, type) {
+                el.pltype = type;
+            },
+            getplcount: function (el, type) {
+                var num = 0;
+                $(el.PLList).each(function (index, ele) {
+                    if (ele.MsgISShow == type)
+                    { num = num + 1; }
+                })
+                return num;
+            }, DELForm: function (item) {
+                $.confirm('确认要撤销吗？', function () {
+                    $.getJSON("/API/VIEWAPI.ashx?ACTION=QYHD_DELMODEL", { P1: item.ID }, function (result) {
+                        if ($.trim(result.ErrorMsg) == "") {
+                            model.ctData.remove(item);
+                            ComFunJS.winsuccess("操作成功");
+                        }
+                    });
+                })
+            },
+            QYHDBMData: { "UserPhone": "", "OptionUser": "", "BMNum": 1, "HDID": "" },
+            //活动报名
+            QYHDBM: function (el) {
+                $.get('/API/VIEWAPI.ashx?Action=QYHD_GETQYHDITEMBYUSER', { P1: el.ID }, function (resultData) {
+                    resultData = JSON.parse(resultData);
+                    if (resultData.Result) {
+                        model.QYHDBMData = resultData.Result;
+                    } else {
+                        var user = ComFunJS.getnowuserobj();
+                        model.QYHDBMData.OptionUser = user.UserRealName;
+                        model.QYHDBMData.UserPhone = user.mobphone;
+                    }
+                    $(".bmdiv #bmrs").attr("value", model.QYHDBMData.BMNum);
+                    $(".bmdiv #lxrsj").attr("value", model.QYHDBMData.UserPhone);
+                    $(".bmdiv #lxr").attr("value", model.QYHDBMData.OptionUser);
+                    var tc = layer.open({
+                        type: 1,
+                        content: $(".bmdiv").html(),
+                        // content: '<div class="ui-form ui-border-t" ><div class="ui-form-item ui-border-b"><label>联系人姓名</label><input type="text" placeholder="请输入联系人姓名" id="lxr" value="' + model.QYHDBMData.OptionUser + '" /></div><div class="ui-form-item ui-border-b"><label>联系人手机</label><input type="tel" placeholder="请输入联系人手机" id="lxrsj" value="' + model.QYHDBMData.UserPhone + '" /></div><div class="ui-form-item ui-border-b"><label>报名人数</label><input type="tel" placeholder="请输入报名人数" id="bmrs" value="' + model.QYHDBMData.BMNum + '" /></div></div>',
+                        btn: ['确认', '取消'],
+                        shadeClose: true,
+                        yes: function () {
+                            if ($(".layermcont #lxr").val() == "") {
+                                alert("请输入联系人姓名");
+                                return;
+                            }
+                            if ($(".layermcont #lxrsj").val() == "") {
+                                alert("请输入联系人手机");
+                                return;
+                            }
+                            else {
+                                var reg = /^(?:13\d|14\d|15\d|17\d|18\d)-?\d{5}(\d{3}|\*{3})$/;
+                                if (!reg.test($(".layermcont #lxrsj").val())) {
+                                    alert("联系人手机格式错误");
+                                    return;
+                                }
+                            }
+                            if ($(".layermcont #bmrs").val() == "") {
+
+                                alert("请输入报名人数");
+                                return;
+                            }
+                            else {
+                                var reg = /^\+?[1-9][0-9]*$/;
+                                if (!reg.test($(".layermcont #bmrs").val())) {
+
+                                    alert("报名人数输入错误");
+                                    return;
+                                }
+                                else {
+                                    //if (parseInt($("#bmrs").val()) > 100) {
+
+                                    //    alert("报名人数必须小于100");
+                                    //    return;
+                                    //}
+                                }
+                            }
+                            model.QYHDBMData.HDID = el.ID;
+                            model.QYHDBMData.BMNum = $(".layermcont #bmrs").val();
+                            model.QYHDBMData.UserPhone = $(".layermcont #lxrsj").val();
+                            model.QYHDBMData.OptionUser = $(".layermcont #lxr").val();
+
+
+                            $.getJSON('/API/VIEWAPI.ashx?Action=QYHD_ADDQYHDITEM&r=' + Math.random(), { P1: JSON.stringify(model.QYHDBMData.$model) }, function (resultData) {
+
+                                if (resultData.ErrorMsg == "") {
+                                    layer.close(tc);
+                                    el.BMList.push(resultData.Result);
+                                    top.ComFunJS.winsuccess("活动报名成功！");
+                                }
+
+                            })
+                        }, no: function () {
+                        }
+                    })
+                })
+            },
+            QYHDTP: function (el, dom) {
+                {
+                    var Ids = "";
+                    if (el.TP_Type == 1) {
+                        Ids = $(dom).parent().find("input[type=radio]:checked").attr("Id")
+                        if (Ids == "") {
+                            alert("请选择投票选项");
+                            return;
+                        }
+                    } else {
+                        if ($(dom).parent().find("input[type=checkbox]:checked").length == 0) {
+                            alert("请选择投票选项");
+                            return;
+                        }
+                        if (el.TP_Type < $(dom).parent().find("input[type=checkbox]:checked").length) {
+                            alert("最多只能选择" + el.TP_Type + "项");
+                            return;
+                        }
+                        $(dom).parent().find("input[type=checkbox]:checked").each(function () {
+                            Ids += $(this).attr("Id") + ","
+                        })
+                        Ids = Ids.substring(0, Ids.length - 1);
+                    }
+
+                    $.getJSON('/API/VIEWAPI.ashx?ACTION=QYHD_ADDTPITEM', { P1: el.ID, P2: Ids }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            top.ComFunJS.winsuccess("投票成功！");
+                            el.UserBMCount = 1;
+                            el.BMCount = el.BMCount + 1;
+                            $(dom).hide();
+                            el.OptionList.forEach(function (oitem) {
+                                if ($.inArray(oitem.ID+'', Ids.split(','))>-1) {
+                                    oitem.TPCount = oitem.TPCount + 1;
+                                }
+                            })
+
+                        }
+                    })
+                }
+
+            }
+        })
+        avalon.ready(function () {
+            // 注册'infinite'事件处理函数
+            $(document).on('infinite', '.infinite-scroll-bottom', function () {
+                model.loadMore();
+            });
+
+            $.init();
+            if (model.DataID == "-1") {//如果参数中没有数据ID，则默认抓取当前用户数据
+                util.toucher(document.getElementById('touchcontent'))
+      .on('swipeLeft', '.list-container', function () {
+          model.type = model.type == 1 ? 0 : 1;
+          model.getdata(model.type)
+          return false;
+      })
+      .on('swipeRight', '.list-container', function () {
+          model.type = model.type == 0 ? 1 : 0;
+          model.getdata(model.type)
+          return false;
+      })//左右滑动事件
+            }
+            model.getdata(model.type);
+          
+        })
+    </script>
+</body>
+
+</html>

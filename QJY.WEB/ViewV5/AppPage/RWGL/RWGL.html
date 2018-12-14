@@ -1,0 +1,231 @@
+﻿<style>
+    i {
+        color: red;
+    }
+
+    .col-xs-5 {
+        padding-right: 0px;
+    }
+</style>
+<div class="form-horizontal" ms-controller="RWGL">
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i> 任务类型</label>
+        <div class="col-xs-5" style="padding-right:0">
+            <select class="form-control " ms-duplex="modelData.LeiBie">
+                <option ms-repeat-item="ColumnData" ms-attr-value="item.ID" ms-attr-selected="item.ID==modelData.LeiBie?'selected':''">{{item.TypeName}}</option>
+            </select>
+
+        </div>
+        <span class="input-group-addon" style="width:72px;height:34px;" ms-if="isADD=='1'" data-toggle="modal" data-target="#UpdateZD">添加</span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>任务截止日期</label>
+        <div class="col-xs-5">
+            <input class="szhl_form_date form-control szhl_require " ms-duplex="modelData.RWJZDate" />
+        </div>
+    </div>
+   
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>负责人</label>
+        <div class="col-xs-5">
+            <input type="text" class="form-control szhl_getPeoples szhl_require" signle="Y" ms-duplex="modelData.RWFZR" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>任务标题</label>
+        <div class="col-xs-5">
+            <input class="form-control szhl_require " ms-duplex="modelData.RWTitle" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label">关联项目</label>
+        <div class="col-xs-5">
+            <!--<input class="form-control szhl_require " ms-duplex="modelData.RWTitle" />-->
+            <input type="text" class="form-control szhl_select ">
+        </div> 
+        <span class="input-group-addon" style="width:40px;height:34px;" ms-if="modelData.XMID" ms-click="ClearXM()"> <i class="iconfont icon-shanchu ft14 " style="color:white"></i></span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>任务内容</label>
+        <div class="col-xs-9">
+            <textarea class="szhl_require szhl_UEEDIT" umheight="200" id="conRW" ms-duplex="modelData.RWContent"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-xs-2 control-label">参与人</label>
+        <div class="col-xs-9">
+            <input type="text" class="form-control szhl_getPeoples" ms-duplex="modelData.RWCYR">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label">抄送人</label>
+        <div class="col-xs-9">
+            <input type="text" ms-duplex="modelData.KHFXRS" class="form-control szhl_getPeoples" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label">附件</label>
+        <div class="col-xs-9">
+            <input type="text" class="szhl_Upload form-control" ms-duplex="modelData.Files" />
+        </div>
+    </div>
+
+    <div ms-if="ErrorMsg">
+        {{ErrorMsg}}
+    </div>
+
+    <!--模态框 添加工作报告类型-->
+    <div class="modal fade" id="UpdateZD" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 500px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">分类管理</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label"><span class="Required " style="color:red">*</span>分类名称</label>
+                            <input type="text" class="form-control szhl_require" style="width: 200px" placeholder="请输入分类" ms-duplex="zditem.TypeName" />
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label">分类描述</label>
+                            <textarea type="text" rows="3" class="form-control" style="width: 200px" placeholder="分类描述" ms-duplex="zditem.Remark1" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-success" id="conaddForder" ms-click="SaveZiDian()">确&nbsp;&nbsp;认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var tempmodel = avalon.define({
+        $id: "RWGL",
+        name: "任务管理",
+        iswf: false,//是否属于流程表单
+        isADD: "",
+        XMData: [],
+        ColumnData: [],
+        ZiDianData: { Class: "7", TypeName: "", Remark1: "" },
+        zditem: { TypeName: "", Remark1: "" },
+        ErrorMsg: "",
+        modelData: { "RWStatus": "0", "LeiBie": "", "RWContent": "", "RWTitle": "", "RWJZDate": "", "RWFZR": ComFunJS.getnowuser(), "RWCYR": "", "TopID": "", "Files": "", "IsTX": false, "KHFXRS": "", "XMID": "" },
+        inittemp: function (strId) {
+            if (top.model.SelModel) {
+                top.model.SelModel.FunData.forEach(function (i) {
+                    if (i.PageCode == '/ViewV5/BASE/ZDLIST') {
+                        tempmodel.isADD = "1";
+                    }
+                })
+            }
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 7 }, function (resultData) {
+                if (resultData.ErrorMsg == "" && resultData.Result.length > 0) {
+                    tempmodel.ColumnData = resultData.Result;
+                    if (!tempmodel.modelData.LeiBie) {
+                        tempmodel.modelData.LeiBie = resultData.Result[0].ID
+                    };
+                }
+            })
+            $.getJSON('/API/VIEWAPI.ashx?Action=XMGL_GETXMLIST',{}, function (resultData) {
+                if (resultData.ErrorMsg == "" && resultData.Result.length > 0) {
+                    tempmodel.XMData = resultData.Result;
+                    tempmodel.XM();
+                }
+            })
+            if (strId) {
+                $.getJSON('/API/VIEWAPI.ashx?Action=RWGL_GETRWGLMODEL', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        if (resultData.Result) {
+                            resultData.Result[0].IsTX = resultData.Result[0].IsTX == "True" ? true : false;
+                            tempmodel.modelData = resultData.Result[0];
+                        } else {
+                            tempmodel.ErrorMsg = "没有找到数据哦";
+                        }
+                        setTimeout(" ComFunJS.initForm()", 500)
+                    }
+                })
+            } else {
+              
+                pmodel.isDraft = true;
+                ComFunJS.initForm();
+            }
+        }, SaveData: function (callback, btdom) {
+            if (!tempmodel.modelData.LeiBie) {
+                top.ComFunJS.winwarning("请选择任务类型");
+                $(btdom).attr("disabled", false).find(".fa").hide();//转圈样式去掉
+                return;
+            }
+            if (!tempmodel.modelData.RWJZDate) {
+                top.ComFunJS.winwarning("请选择任务截止时间");
+                $(btdom).attr("disabled", false).find(".fa").hide();//转圈样式去掉
+                return;
+            }
+            if ($("#tx").hasClass("checked")) {
+                tempmodel.modelData.IsTX = true;
+            }
+            else {
+                tempmodel.modelData.IsTX = false;
+            }
+            $.post("/API/VIEWAPI.ashx?ACTION=RWGL_ADDRWGL", { P1: JSON.stringify(tempmodel.modelData.$model) }, function (result) {
+                return callback.call(this,result);
+            });
+        }, SaveZiDian: function () {  //添加新的任务类型
+            tempmodel.ZiDianData.TypeName = tempmodel.zditem.TypeName;
+            tempmodel.ZiDianData.Remark1 = tempmodel.zditem.Remark1;
+            if (!tempmodel.ZiDianData.TypeName) {
+                ComFunJS.winwarning("请输入分类名称");
+                return;
+            }
+            $.post("/API/VIEWAPI.ashx?ACTION=XTGL_SAVETYPEMODEL", { P1: JSON.stringify(tempmodel.ZiDianData.$model) }, function (result) {
+                if ($.trim(result.ErrorMsg) == "") {
+                    tempmodel.zditem = { TypeName: "", Remark1: "" };
+                    tempmodel.modelData.LeiBie = tempmodel.zditem.TypeName;
+                    //tempmodel.ZiDianData = { Class: tempindex.ClassID, TypeName: "", Remark1: "" };
+                    ComFunJS.winsuccess("操作成功");
+                    $('#UpdateZD').modal('hide');
+                    //刷新类型下拉框中的类型
+                    $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 7 }, function (resultData) {
+                        if (resultData.ErrorMsg == "" && resultData.Result.length > 0) {
+                            tempmodel.ColumnData = resultData.Result;
+                            if (!tempmodel.modelData.LeiBie) {
+                                tempmodel.modelData.LeiBie = result.Result.ID;
+                            };
+                        }
+                    })
+                }
+                //更新任务管理页面类型
+                top.model.GetTypeData("7");
+            });
+        },
+        cktx: function () {
+            $("#tx").toggleClass("checked");
+        }, XM: function () {
+            tempmodel.XMData.forEach(function (item) {
+                if (item.ID == tempmodel.modelData.XMID) {
+                    $(".szhl_select").val(item.XMMC);
+                }
+            })
+            if ($(".szhl_select").length > 0) {
+                var tabsel = $(".szhl_select").YanSelect({
+                    valueindex: 0,//值对应列
+                    textindex: 1,
+                    dataobj: tempmodel.XMData,
+                    isCanAdd: false,
+                    columns: [{ "fieldname": "ID", "text": "序号", "width": "50px" }, { "fieldname": "XMMC", "text": "项目名称" }],
+                    afterSelect: function (dom) {
+                        tempmodel.modelData.XMID = dom.attr('dataid')
+                    }
+                });
+            }
+        }, ClearXM: function () {
+            $(".szhl_select").val("");
+            tempmodel.modelData.XMID ="";
+        }
+    })
+ 
+</script>

@@ -1,0 +1,35 @@
+﻿
+<div style="background-color:#F8F8F8" ms-controller="HYSVIEW">
+
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "HYSVIEW",
+            PCode: "HYGL",
+            InitWigetData: function (strId) {
+                model.title = "会议室";
+                model.ShowColumns.pushArray(
+                [{ ColName: "Name", ColText: "会议室名称", IsSel: true },
+                      { ColName: "Location", ColText: "位置", IsSel: true},
+                      { ColName: "RNRS", ColText: "可容纳人数", IsSel: true},
+                      { ColName: "IsDMT", ColText: "是否有多媒体", IsSel: true },
+                      { ColName: "IsTYY", ColText: "是否有投影仪", IsSel: true },
+                      { ColName: "Remark", ColText: "备注", IsSel: true },
+                      { ColName: "IsDel", ColText: "状态", IsSel: true}
+                ]);
+
+                if (model.strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_GETHYSMODEL', { P1: strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            model.modelData = resultData.Result;
+                            setTimeout(" ComFunJS.initForm()", 500)
+                        }
+                    })
+                }
+            }
+        });
+        avalon.ready(function () {
+        })
+    </script>
+</div>

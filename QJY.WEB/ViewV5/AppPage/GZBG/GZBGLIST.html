@@ -1,0 +1,229 @@
+﻿<div  ms-controller="GZBGLIST">
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="AddView('GZBG')"><i class="iconfont icon-jiahao ft12 mr5"></i>添加工作报告</button>
+        <a class="btn btn-info btn-lg" ms-click="dcgzbg()"><i class="iconfont icon-dc ft12 mr5"></i>导出</a>
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">事项类型：</h5>
+            <ul class="tab-type ft14">
+                <!--<li><span class="active" ms-click="SelectType('0')">全部</span></li>-->
+                <li ms-click="SelectType('1')"><span class="active">我创建的</span></li>
+                <li ms-click="SelectType('2')"><span>下属报告</span></li>
+                <li ms-click="SelectType('3')"><span>抄送我的</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">报告类型：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectXJType('')"><span class="active">全部</span></li>
+                <li ms-repeat-el="TypeData" ms-click="SelectXJType(el.ID)"><span>{{el.TypeName}}</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">创建时间：</h5>
+            <ul class="tab-type ft14">
+                <li><span class="active" ms-click="SelectTime('')">全部</span></li>
+                <li ms-click="SelectTime('1')"><span>近一周</span></li>
+                <li ms-click="SelectTime('2')"><span>近一月</span></li>
+                <li>
+                    <span ms-click="SelectTime('3','1')">自定义</span>
+                    <div class="pull-right ml10 zdy-text c999" ms-visible="curXJTime=='3'">
+                        <input type="text" class="szhl_form_date szhl_require null" ms-duplex="starTime">
+                        -
+                        <input type="text" class="szhl_form_date szhl_require null" ms-duplex="endTime">
+                        <input type="button" ms-click="SelectTime('3')" value="确定" style="width: 50px; background-color: #12B8F6; color: #ffffff" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- 搜索 -->
+        <div class="oh">
+            <h5 class="pull-left tr">自定义搜索：</h5>
+            <ul class="tab-type ft14" ms-if="UserCustomData.size()>0">
+                <li ms-repeat-item="UserCustomData" ms-click="selectCustom(item.DataContent)"><span>{{item.DataContent}}<i class="iconfont icon-chenghao-copy" ms-click="DelCustomData(item,$event)"></i></span></li>
+            </ul>
+            <div class="input-group ml15" style="width: 395px; float: left;">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" placeholder="搜索姓名,部门,报告内容" style="height: 30px">
+                <span class="input-group-addon" ms-click="SaveUserGroup()">添加自定义搜索项</span>
+            </div>
+            <span class="btn btn-success" ms-click="GetLIST()" style="float: left; height: 30px;width:100px">搜索</span>
+            <i class="iconfont icon-wenhao ft16;" style="color:#ccc;position:relative;top:5px;left:10px;" data-toggle="tooltip" title="请输入查询条件点击搜索进行查询，您还可以点击添加自定义搜索项按钮保存查询条件"></i>
+        </div>
+        <!-- 展开更多选项 -->
+        <div class="add-tab ft14 tc mt20" style="display: none;">
+            <span>更多筛选<i class="caret"></i></span>
+        </div>
+    </div>
+    <!--分割线-->
+    <div class="add-tab ft14 tc mt20">
+    </div>
+    <!--工作报告-->
+    <div class="activity ft14">
+        <div class="activity-list pt20 pb20 " ms-repeat-el="tmpListData" ms-click="ViewForm('GZBG_GZBG',el.ID,'',$event)">
+            <div class="head-img pull-left">
+                <img ms-attr-src="{{ComFunJS.getfile()}}&type=TX&user={{el.CRUser}}" onerror="javascript: this.src = 'images/head.jpg'" style="cursor:pointer;">
+                <p class="tc c999 ft12 mt5">{{ComFunJS.convertuser(el.CRUser)}}</p>
+            </div>
+            <div class="activity-cont">
+                <!--<p>部门：{{el.BranchName}}</p>-->
+                <p>时间：{{el.RBDate|date("yyyy-MM-dd")}}</p>
+                <p>{{ComFunJS.FnFormat(el.RBContent,{"format": "text"})|html}}</p>
+                <p ms-if="el.FileList||el.PLList"><span class="mr10" ms-if="el.PLList.size()>0"><i class="iconfont icon-pinglun  ft14 ml5"></i>({{el.PLList.size()}})</span><span class="mr10" ms-if="el.FileList&&el.FileList.size()>0"><i class="iconfont icon-fj mr5 ft14"></i>({{el.FileList.size()}})</span></p>
+            </div>            
+            <div class="btn-add">
+                <a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="编辑" ms-if="el.CRUser==userName" ms-click="EditViewNOWF('GZBG',el.ID,'',$event)">
+                    <i class="iconfont icon-bianji"></i>
+                </a>
+                <a class="cz-btn ft18 sc-color tip" data-toggle="tooltip" title="删除" ms-if="el.CRUser==userName" ms-click="DELGZBG(el,$event)">
+                    <i class="iconfont icon-shanchu"></i>
+                </a>
+            </div>
+        </div>
+        <div class="pt20 ft14" ms-if="isnull">
+            <p>暂无数据</p>
+        </div> 
+        <div class="ui-datatable-page ft14 pl20">
+
+            <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+            <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                <span>共{{model.page.total}}条记录</span>
+                <span ms-visible="model.page.total>model.pageNum[0].num">
+                    选择每页条数
+                    <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                        <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                    </select>
+                </span>
+            </div>
+
+        </div>
+    </div>
+   
+</div>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+    var tempindex = avalon.define({
+        $id: "GZBGLIST",
+        curXJType: "",
+        curXJTime: "",
+        starTime: "",
+        endTime: "",
+        tmpListData: [],
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        SelectXJType: function (type) {
+            tempindex.curXJType = type;
+            tempindex.GetLIST();
+
+        },
+        selectCustom: function (searchc) {
+            model.search.searchcontent = searchc;
+            tempindex.GetLIST();
+        },
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        SaveUserGroup: function () {
+            if (!model.search.searchcontent) {
+                return;
+            }
+            $.post("/API/VIEWAPI.ashx", { Action: "XTGL_ADDUSERGROUP", P1: model.search.searchcontent, "DataType": "GZBGQUERY" }, function (result) {
+                if ($.trim(result.ErrorMsg) == "") {
+                    model.UserCustomData.push(result.Result);
+                }
+            })
+        },
+        SelectTime: function (type, item) {
+            tempindex.curXJTime = type;
+            if (!item) {
+                if (type == '3') {
+                    var a = (Date.parse(tempindex.starTime) - Date.parse(tempindex.endTime)) / 3600 / 1000;
+                    if (a > 0) {
+                        ComFunJS.winwarning("开始时间不能大于结束时间");
+                    } else {
+                        tempindex.GetLIST();
+                    }
+                } else {
+                    tempindex.starTime = "";
+                    tempindex.endTime = "";
+                    tempindex.GetLIST();
+                }
+            }
+        },
+        InitWigetData: function () {
+            //显示的列名
+            model.ShowColumns.clear();
+            //类型数据
+            model.GetTypeData("6");
+            model.GetCustomData("GZBGQUERY");
+            tempindex.GetLIST();
+            ComFunJS.initForm();
+        },
+
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=GZBG_GETGZBGLIST',
+                {
+                    p: 1, type: model.search.seartype,
+                    P2: model.search.searchcontent,
+                    pagecount: model.page.pagecount,
+                    P1: tempindex.curXJType,
+                    time: tempindex.curXJTime,
+                    starTime: tempindex.starTime,
+                    endTime: tempindex.endTime
+                }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempindex.tmpListData = resultData.Result;
+                        if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                        model.page.total = resultData.Result1;
+                        laypage({
+                            cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                            pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //
+                            curr: 1, //初始化当前页
+                            skin: 'molv',
+                            jump: function (e) { //触发分页后的回调
+                                if (e.curr != model.page.pageindex) {
+                                    $.getJSON('/API/VIEWAPI.ashx?Action=GZBG_GETGZBGLIST', { p: e.curr, type: model.search.seartype, P2: model.search.searchcontent, pagecount: model.page.pagecount, P1: tempindex.curXJType, time: tempindex.curXJTime, starTime: tempindex.starTime, endTime: tempindex.endTime }, function (resultData) {
+                                        if (resultData.ErrorMsg == "") {
+                                            tempindex.tmpListData = resultData.Result;
+                                        }
+                                    })
+                                    model.page.pageindex = e.curr;
+                                }
+                            }
+                        });
+                    }
+                })
+        },
+        dcgzbg: function () {
+            if (model.page.total > 0) {
+                $(this).attr("href", "/API/VIEWAPI.ashx?Action=GZBG_EXPORTGZBG&type=" + model.search.seartype + "&P2=" + model.search.searchcontent + "&pagecount=" + model.page.total + "&P1=" + tempindex.curXJType + "&time=" + tempindex.curXJTime + "&starTime=" + tempindex.starTime + "&endTime=" + tempindex.endTime);
+            }
+            else {
+                top.ComFunJS.winwarning("无数据");
+            }
+        },
+        DELGZBG: function (item, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            top.ComFunJS.winconfirm("确认要删除吗", function () {
+                $.post('/API/VIEWAPI.ashx?Action=GZBG_DELGZBGBYID', { "P1": item.ID }, function (result) {
+                    if (result.ErrorMsg == "") {
+                        top.ComFunJS.winsuccess("删除成功");
+                        tempindex.tmpListData.remove(item);
+                    }
+                })
+            }, function () { })
+        }
+    })
+    //# sourceURL=GZBGLIST.js;
+</script>
+

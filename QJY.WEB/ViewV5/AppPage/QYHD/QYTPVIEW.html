@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>投票页面</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1473753044_842232.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+</head>
+<body style="background-color: #F8F8F8; height: 100%;" ms-controller="QYTPVIEW">
+    <div class="padding20">
+        <div class="card card3 mb20">
+            <div class="detail-nav">
+                <div class="tab-kh nav-bt">
+                    <span class="cur"><i class="iconfont icon-bookmark"></i>投票信息</span>
+                </div>
+            </div>
+            <div class="padding20 ft14 c666">
+                <div class="tp-box pb20">
+                    <p class="list">发起方：{{modelData.FQF}}</p>
+                    <p class="list">发起时间：{{modelData.StartTime|date("yyyy-MM-dd HH:mm")}}</p>
+                    <p class="list">
+                        投票截止时间：
+                        <span ms-if="edit==0">
+                            {{modelData.EndTime|date("yyyy-MM-dd HH:mm")}}
+                            <span style="color: red; margin-left: 5px;" ms-if="modelData.Status==1&&ISTP=='N'">投票已结束</span>
+                            <a href="###" class="c-default" style="margin-left:5px;" ms-if="modelData.CRUser == ComFunJS.getnowuser() && modelData.Status!=1" ms-click="edittp()">编辑</a>
+                        </span>
+                        <span ms-if="edit==1">
+                            <input type="text" ms-duplex="modelData.EndTime" style="width: 170px; display: inline;" class="szhl_form_date_time " placeholder="请输入结束时间" />
+                            <a href="###" class="c-default" style="margin-left:5px;" ms-if="modelData.CRUser == ComFunJS.getnowuser()" ms-click="editdate()">确定</a>
+                            <a href="###" class="c-default" style="margin-left:5px;" ms-if="modelData.CRUser == ComFunJS.getnowuser()" ms-click="edittp()">取消</a>
+                        </span>
+                    </p>
+                    <p class="list">{{modelData.TP_IsNM == 1?"匿名投票":"实名投票"}}，最多选择{{modelData.TP_Type}}项</p>
+                </div>
+                <div class="tp-box pb20 pt20" ms-if="ISTP=='N'">
+                    <p class="list pb10 mb20">{{modelData.Title|html}}</p>
+                    <div class="tp-list" ms-repeat-item="XXItem">
+                        <div class="icheckbox_square-blue" ms-attr-id="item.ID">
+                            <input type="checkbox" ms-attr-id="ckdan{{item.ID}}" name="check" ms-attr-value="item.ID">
+                            <span class="iconfont icon-check ft12"></span>
+                        </div>
+                        <label ms-attr-for="ckdan{{item.ID}}">{{item.OptionText}}</label>
+                    </div>
+                    <div class="tc" ms-if="modelData.Status!=1">
+                        <button type="button" class="btn btn-info pl20 pr20" ms-click="savetp()">投票</button>
+                    </div>
+                </div>
+                <div class="tp-box pb20 pt20" ms-visible="ISTP=='Y'">
+                    <p class="list pb10 mb10">{{modelData.Title|html}}<a class="c-default ml15">已投票</a></p>
+                    <div class="tp-progress" ms-repeat-item="tpcount" ms-visible=" (modelData.TP_IsPublic==1 || modelData.CRUser == ComFunJS.getnowuser())">
+                        <div class="progress" style="width:60%;">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="60"
+                                 aria-valuemin="0" aria-valuemax="100" ms-css-width="{{(item.num/tpshuliang)*100}}%">
+                            </div>
+                            <div class="tp-title c666">
+                                {{item.OptionText}}
+                            </div>
+                            <div class="tp-title c666 ps">
+                                {{item.num}}票&nbsp;{{((item.num/tpshuliang)*100).toFixed(2)}}%
+                            </div>
+                        </div>
+                        <div class="ckxq" style="display:block;" ms-if="modelData.CRUser == ComFunJS.getnowuser()||(modelData.TP_IsNM == 0 && item.num > 0)"><a class=" c-default">查看详情</a></div>
+                        <div class="tp-man mt10 padding10 c999" style="width:60%;">
+                            <span ms-repeat-el="item.tpr" style="margin-left:15px;">{{ComFunJS.convertuser(el)}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="c-default mt10">
+                    <i class="iconfont icon-rencopy"></i>
+                    {{tpResultitem}}人已经参与投票
+                    <a class="c-default ml10" ms-if="modelData.CRUser == ComFunJS.getnowuser() && ISTP=='N'" ms-click="SeeJG()">查看投票结果>></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script type="text/javascript">
+
+        $(document).on("click", ".icheckbox_square-blue", function () {
+            if ($(this).hasClass("checked")) {
+                $(this).removeClass("checked");
+            }
+            else {
+                if ($(".checked").length == model.modelData.TP_Type || $(".checked").length > model.modelData.TP_Type) {
+                    $(".checked:first").removeClass("checked");
+                }
+                $(this).toggleClass("checked");
+            }
+        });//勾选框
+
+        var strId = ComFunJS.getQueryString("ID");
+        var model = avalon.define({
+            $id: "QYTPVIEW",
+            modelData: {},
+            XXItem: [],
+            tpResultitem: "",
+            ISTP: "",
+            duoxuan: [],
+            edit: 0,
+            tpcount: [],
+            tpshuliang: "",
+            GETQYTP: function () {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?ACTION=QYHD_GETQYTPMODEL', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        model.modelData = resultData.Result;
+                        if (model.modelData.EndTime && model.modelData.EndTime.length > 16) {
+                            model.modelData.EndTime = model.modelData.EndTime.substring(0, 16);
+                        }
+                        model.tpResultitem = resultData.Result2;
+                        model.ISTP = resultData.Result4;
+                        if (model.ISTP == "N") {
+                            model.XXItem = resultData.Result1;
+                        } else {
+                            model.tpcount = resultData.Result1;
+                            model.tpshuliang = resultData.Result3;
+                        }
+
+                    }
+                })
+            },
+            savetp: function () {
+                var tp = "";
+                $(".checked").each(function () {
+                    tp += $(this).attr("id") + ',';
+                })
+                tp = tp.replace(/,$/g, "");
+                if (tp.split(',').length > model.modelData.TP_Type) {
+                    top.ComFunJS.winwarning("最多选择" + model.modelData.TP_Type + "项");
+                    return;
+                }
+                if (tp == "") {
+                    top.ComFunJS.winwarning("请选择投票选项");
+                    return;
+                }
+                $.getJSON('/API/VIEWAPI.ashx?ACTION=QYHD_ADDTPITEM', { P1: strId, P2: tp }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        top.ComFunJS.winsuccessnew("操作成功");
+                    }
+                    else {
+                        top.ComFunJS.winwarning(resultData.ErrorMsg);
+                    }
+                    model.GETQYTP();
+                })
+            }, tpcountList: function () {
+                $.getJSON('/API/VIEWAPI.ashx?ACTION=QYHD_TPCOUNTLIST', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        model.tpcount = resultData.Result;
+                        model.tpshuliang = resultData.Result1;
+                    }
+                })
+            }, SEETPR: function (ID) {
+                if (model.modelData.TP_IsNM == 0) {
+                    $('#xzr' + ID).toggle();
+                }
+            }, edittp: function () {
+                if (model.edit == 1)
+                    model.edit = 0;
+                else
+                    model.edit = 1;
+            }, editdate: function () {
+                $.post("/API/VIEWAPI.ashx?ACTION=QYHD_ADDQYHD", { P1: JSON.stringify(model.modelData.$model) }, function (resultData) {
+                    model.edittp();
+                });
+            }, SeeJG: function () {
+                //ComFunJS.winviewformright("/ViewV5/AppPage/QYHD/TPJGVIEW.html?ID=" + strId + "&r=" + Math.random(), "投票结果", "550", "600");
+                window.location.href = "/ViewV5/AppPage/QYHD/TPJGVIEW.html?ID=" + strId;
+            }
+        });
+        avalon.ready(function () {
+            model.GETQYTP();
+            ComFunJS.initForm();
+        })
+
+        $(document).on("click", ".ckxq", function () {
+            $(this).next().slideToggle();
+        });
+    </script>
+</body>
+
+</html>

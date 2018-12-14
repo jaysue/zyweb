@@ -1,0 +1,350 @@
+﻿﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>用车列表</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link href="/View_Mobile/CSS/szhlextend.css?ver=20160904" rel="stylesheet" />
+    <!--<link rel="stylesheet" href="/View_Mobile/CSS/animate.css">-->
+
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        #plus_list {
+            height: 2.65rem;
+            width: 2.65rem;
+            position: fixed;
+            right: 0.82rem;
+            bottom: 6rem;
+        }
+
+            #plus_list img {
+                width: 100%;
+                height: auto;
+            }
+
+        .badge {
+            position: absolute;
+            top: .3rem;
+            z-index: 100;
+            height: .4rem;
+            min-width: .4rem;
+            padding: 0;
+            font-size: .4rem;
+            line-height: .4rem;
+            color: white;
+            vertical-align: top;
+            background: red;
+            border-radius: .5rem;
+            margin-left: .1rem;
+        }
+    </style>
+</head>
+<body ms-controller="YCList">
+    <div class="page-group">
+        <div class="page page-current" id="pageindex1">
+            <div class="buttons-tab">
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(1)" class="tab-link button external" ms-class-1="active:type=='1'">我创建的</a>
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(2)" class="tab-link button external" ms-class-1="active:type=='2'">待我审核<span class="badge" ms-if="shNum&&shNum!='0'"></span>
+                </a>
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(3)" class="tab-link button external" ms-class-1="active:type=='3'">我已审核</a>
+                <a href="#" ms-if="DataID!='-1'" class="tab-link button external active">用车管理</a>
+
+            </div>
+
+            <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50" style="margin-top: 2rem" id="touchcontent">
+                <div class="list-container">
+
+                    <div class="card facebook-card animated fadeInUp" ms-repeat-el="ctData">
+                        <div class="ribbon-wrapper-green" ms-if="el.StateName!='-1'">
+                            <div class="ribbon-green">{{el.StateName}}</div>
+                        </div>
+                        <div class="card-header no-border" ms-on-click="showdetil(el)">
+                            <div class="facebook-avatar">
+                                <img ms-src="{{ComFunJS.getfile()+'&type=TX&user='+el.CRUser}}" width="40" class="border-r" onerror="javascript: this.src = '/ViewV5/images/head.jpg'">
+                            </div>
+                            <div class="facebook-date head-ft16">{{ComFunJS.convuser(el.SYUser)}}<span class="ml10 c999 ft14" ms-if="!el.isfold">{{$.timeago(el.CRDate)}}</span></div>
+                            <div class="facebook-date head-ft16" ms-if="el.isfold"><span class="c999 ft14">{{el.CRDate|date("MM月dd日")}}</span></div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999 title-item">使用车辆：</span>
+                                <span ms-if="el.CarID">{{covtitle(el.CarBrand+'-'+el.CarNum)}}</span><span ms-if="!el.CarID">无</span>
+                            </div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999 title-item">使用说明：</span>
+                                <span>{{covtitle(el.Remark)}}</span>
+                            </div>
+                            <div style="clear: both"></div>
+                        </div>
+
+                        <div class="card-content  " ms-visible="el.isfold">
+                            <div class="card-item">
+                                <span class="c999 title-item">用车时间：</span>
+                                <span>{{el.StartTime|date("yyyy-MM-dd HH:mm")}} ~ {{el.EndTime|date("yyyy-MM-dd HH:mm")}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">起止地点：</span>
+                                <span>{{el.StartAddress}} ~ {{el.EndAddress}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">行程类别：</span>
+                                <span>{{el.XCType}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">使用车辆：</span>
+                                <span>{{el.CarID?el.CarBrand+'-'+el.CarNum : '无'}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.JSR">
+                                <span class="c999 title-item">驾驶员：</span>
+                                <span>{{ComFunJS.convuser(el.JSR)}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.SYRS">
+                                <span class="c999 title-item">用车人数：</span>
+                                <span>{{el.SYRS}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">使用说明：</span>
+                                <span>{{el.Remark|html}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.StateName!='-1'">
+                                <span class="c999 title-item">审核状态：</span>
+                                <span>{{el.StateName|html}}</span>
+                            </div>
+                            <div class="card-content-inner" style="padding-top: 0; padding-top: 0.4rem; padding-bottom: 0;" ms-if="el.Files">
+                                <ul class="filelist">
+                                    <li ms-repeat-file="el.FileList">
+                                        <img ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="/ViewV5/Base/DownFile.aspx?fileId={{file.ID}}" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'"/>
+                                        <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="buttons-tab list-op">
+                         
+                                <a class="tab-link button external" ms-click="vieww(el)" ms-if="(type=='2' || DataID!=-1) &&el.StateName=='正在审批'">
+                                    <i class="iconfont icon-shenpi"></i>审核
+                                </a>
+                                <a class="tab-link button external" ms-click="vieww(el)" ms-if="type!='2' && el.CRUser==nowuser">
+                                    <i class="iconfont icon-view"></i>查看
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card facebook-card animated" ms-if="loadtip">
+                        <div class="card-header no-border">
+                            {{loadtip}}
+                        </div>
+                    </div>
+                </div>
+                <div class="infinite-scroll-preloader">
+                    <div class="preloader"></div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <ul>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="show()">
+                            <img src="../images/plus-serch.png"></a>
+                    </li>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="changefold()" ms-if="DataID=='-1'">
+                            <img ms-attr-src="'../images/'+(isfold?'plus-zhedie':'plus-zhankai')+'.png'" src="../images/plus-zhedie.png"></a>
+                    </li>
+                    <li ms-if="DataID!=='-1'">
+                        <a class="mod-li-icon" ms-click="viewall()">
+                            <img src="../images/plus-zhankai.png"></a>
+                    </li>
+                    <li ms-if="DataID=='-1'">
+
+                        <a class="mod-li-icon" ms-click="addYCGL()">
+                            <img src="/View_Mobile/images/plus-add.png"></a>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+        <div class="page" id="pageindex2">
+        </div>
+        <div class="search-top" ms-if="isShow">
+
+            <div class="searchbar searchbar-active">
+                <a class="searchbar-cancel" ms-click="GetList()">搜索</a>
+                <a class="searchbar-cancel search-close" ms-click="show()"><i class="iconfont icon-cuo"></i></a>
+                <div class="search-input">
+                    <label class="icon icon-search" for="search"></label>
+                    <input type="search" id="search" placeholder="搜索使用说明、出发或到达地点等" ms-duplex="search">
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script src="/View_Mobile/JS/touch/toucher.js"></script>
+
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/raty/jquery.raty.js?v=1.3"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script>
+
+        var model = avalon.define({
+            $id: "YCList",
+            ctData: [],//数据源
+            loading: false,
+            loadtip: "",//切换页时显示信息
+            nowuser: ComFunJS.getnowuser(),//当前用户
+            isfold: localStorage.getItem("ycglisfold") == "Y" ? true : false,//是否折叠显示
+            changefold: function () {
+                model.isfold = !model.isfold;
+                model.ctData.forEach(function (item) {
+                    item.isfold = model.isfold;
+                })
+                localStorage.setItem("ycglisfold", model.isfold ? "Y" : "N");
+            },//改变折叠状态
+            search: "",
+            isShow: false,
+            show: function () {
+                if (model.search) {
+                    model.search = "";
+                    model.GetList();
+                }
+                if (model.isShow)
+                    model.isShow = false;
+                else {
+                    model.isShow = true;
+                    $("#search").focus();
+                }
+            },
+            GetList: function () {
+                model.ctData.clear();
+                model.loadtip = "";
+                model.page = 1;
+                model.loadMore();
+            },
+            shNum: 0,
+            page: 1,
+            pagecount: 8,
+            DataID: ComFunJS.getQueryString("ID", "-1"),//数据ID
+            type: 0,//
+            covtitle: function (title) {
+                return ComFunJS.convstr($("<div>" + title + "</div>").text(), 20);
+            },//转化 TITLE信息
+            showdetil: function (item) {
+                item.isfold = !item.isfold
+            },//展开显示信息
+            vieww: function (el) {
+                //路由加载
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=YCGL&id=" + el.ID + "&PIID=" + el.intProcessStanceid + "&r=" + Math.random();
+            },
+            addYCGL: function (el) {
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=YCGL&r=" + Math.random();
+            },
+
+            viewall: function () {
+                window.location = "/View_Mobile/UI/UI_YCGL_LIST.html?r=" + Math.random();
+            },
+            loadMore: function () {
+                if (model.loading) return;
+                model.loading = true;
+                $.getJSON("/API/VIEWAPI.ashx?Action=YCGL_GETYCGLLIST&r=" + Math.random(), { P1: model.type, "p": model.page, ID: model.DataID, Content: model.search }, function (r) {
+                    model.loading = false;
+                    if (r.ErrorMsg == "") {
+                        if (model.page == 1 && r.Result.length == 0) {
+                            model.loadtip = '没有找到数据哦'
+                        }
+                        for (var i = 0; i < r.Result.length; i++) {
+                            r.Result[i].isfold = model.isfold;
+                            if (model.DataID != "-1") {//如果有数据ID，则展开显示
+                                r.Result[i].isfold = true;
+                            }
+                        }
+
+                        model.ctData.pushArray(r.Result);
+                        //判断是否加载完毕
+                        if (r.Result.length < model.pagecount) {
+                            // 加载完毕，则注销无限加载事件，以防不必要的加载
+                            $.detachInfiniteScroll($('.infinite-scroll'));
+                            // 删除加载提示符
+                            $('.infinite-scroll-preloader').hide();
+                            return;
+                        }
+                        $.refreshScroller();
+                        model.page += 1;
+                    }
+
+                });
+
+            },
+            viewfile: function (file) {
+                if (ComFunJS.isPic(file.FileExtendName)) {
+                    ComFunJS.viewbigimg(this)
+                    return;
+                }
+                if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                    window.location = file.YLUrl;
+                    return;
+                }
+            },//文件查看方法
+            getdata: function (type) {
+                $.attachInfiniteScroll($('.infinite-scroll'))
+                model.loadtip = "";
+                $('.infinite-scroll-preloader').show();
+                model.type = type;
+                model.ctData.clear();
+                //model.loadtip = "正在加载数据... ...";
+                //setTimeout("model.loadtip = '没有找到数据哦'", 1500)
+                model.page = 1;
+                model.loadMore();
+                model.getSHNum();
+            },
+            getSHNum: function () {//抓取审核数量
+                $.getJSON("/API/VIEWAPI.ashx?Action=LCSP_GETMODELDSHQTY&r=" + Math.random(), { P1: "YCGL" }, function (r) {
+                    if (r.ErrorMsg == "") {
+                        if (r.Result.length > 0) {
+                            model.shNum = r.Result[0].QTY;
+                        } else {
+                            model.shNum = 0;
+                        }
+                    }
+                })
+            },
+        })
+        avalon.ready(function () {
+            // 注册'infinite'事件处理函数
+            $(document).on('infinite', '.infinite-scroll-bottom', function () {
+                model.loadMore();
+            });
+
+            $.init();
+            if (model.DataID == "-1") {//如果参数中没有数据ID，则默认抓取当前用户数据
+                model.type = 1;
+                util.toucher(document.getElementById('touchcontent'))
+                .on('swipeLeft', '.list-container', function () {
+                    model.type = model.type == 3 ? 1 : model.type * 1 + 1;
+                    model.getdata(model.type)
+                    return false;
+                })
+                .on('swipeRight', '.list-container', function () {
+                    model.type = model.type == 1 ? 3 : model.type * 1 - 1;
+                    model.getdata(model.type)
+
+                    return false;
+                })//左右滑动事件
+            }
+            model.getdata(model.type);
+        })
+    </script>
+</body>
+
+</html>

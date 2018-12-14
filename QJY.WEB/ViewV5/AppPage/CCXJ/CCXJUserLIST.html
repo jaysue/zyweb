@@ -1,0 +1,151 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <title>企捷云</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="/ViewV5/CSS/icfont_qj/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css"> 
+    <link href="/ViewV5/CSS/BootOver.css" rel="stylesheet" />
+    <style>
+        .ms-controller, .ms-important, [ms-controller], [ms-important] {
+            visibility: hidden;
+        }
+
+        .szhl_getPeoples {
+            display: none;
+        }
+       
+    </style>
+</head>
+<body ms-controller="CCXJUserLIST">
+    <div style="margin-top:1rem;">
+
+        <!-- 按条件选择 -->
+        <div class="tab-filter-type">
+            <div class="oh">
+                <h5 class="pull-left tr">报告类型：</h5>
+                <ul class="tab-type ft14">
+                    <li ms-click="SelectXJType('')"><span ms-class-1="active:curXJType==''">全部</span></li>
+                    <li ms-repeat-el="TypeData" ms-click="SelectXJType(el.ID)"><span ms-class-1="active:el.ID==curXJType">{{el.TypeName}}</span></li>
+                </ul>
+            </div>
+            <!-- 搜索 -->
+            <div class="oh">
+                <div class="input-group ml15" style="width:295px;">
+                    <input type="text" class="form-control" ms-duplex="searchcontent" placeholder="搜索主要事由">
+                    <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+                </div>
+            </div>
+        </div>
+        <!-- 表格 -->
+        <div class="default-tab ft14 pt20">
+            <table class="table table-striped table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th class="tc">
+                        </th> 
+                        <th>
+                            类型
+                        </th>
+                        <th>
+                            开始时间
+                        </th>
+                        <th>
+                            结束时间
+                        </th>
+                        <th>
+                            天数
+                        </th>
+                        <th>
+                            申请人
+                        </th>
+                        <th>
+                            申请时间
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ms-repeat-el="ListData" >
+                        <td class=" tc"></td>
+                        <td>{{el.TypeName}}</td>
+                        <td>{{el.StarTime|date("yyyy-MM-dd")}}</td>
+                        <td>{{el.EndTime|date("yyyy-MM-dd")}}</td>
+                        <td>{{el.Daycount}}</td>
+                        <td>{{ComFunJS.convertuser(el.CRUser)}}</td>
+                        <td>{{el.CRDate|date("yyyy-MM-dd")}}</td>
+                        <td>
+                            <a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="查看" ms-click="OpenView(el.ID,el.intProcessStanceid,$event)">
+                                <i class="iconfont icon-look"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                </tbody>
+                <tfoot>
+                    <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+                </tfoot>
+            </table>
+         
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/JS/layer/extend/layer.ext.js"></script>
+    <script src="/ViewV5/JS/laypage/laypage.js"></script>
+    <script src="/ViewV5/JS/toastr.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script>
+
+        var tempindex = avalon.define({
+            $id: "CCXJUserLIST",
+            curXJType: "",
+            month: ComFunJS.getQueryString("month"),
+            user: ComFunJS.getQueryString("username"),
+            type: ComFunJS.getQueryString("type"),
+            searchcontent: "",
+            ListData: [],
+            isnull: false, 
+            TypeData: [],
+            SelectXJType: function (type) {
+                tempindex.curXJType = type;
+                tempindex.GetLIST();
+
+            },
+            GetTypeData: function () {//P1:字典类别，callback:回调函数,p2:字典类别ID
+                $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANSLIST', { P1: 1 }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempindex.TypeData = resultData.Result;
+                        tempindex.curXJType = tempindex.type;
+                    }
+                })
+            }, 
+            GetLIST: function () {
+                tempindex.ListData.clear();
+                $.getJSON('/API/VIEWAPI.ashx?Action=CCXJ_GETCCXJUSERLIST', { P1: tempindex.curXJType, Content: tempindex.searchcontent, month: tempindex.month, username: tempindex.user }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempindex.ListData = resultData.Result;
+                        if (tempindex.ListData.size() == 0) { tempindex.isnull = true; } else { tempindex.isnull = false; }
+                    }
+                })
+            }, OpenView: function (ID, PIID,event) {
+                location.href = "/ViewV5/AppPage/APPVIEW.html?FormCode=CCXJ_CCXJ&ID=" + ID + "&PIID=" + PIID + "&isback=Y&r=" + Math.random();
+            }
+        })
+        avalon.ready(function () {
+            tempindex.GetTypeData();
+            tempindex.curXJType = tempindex.type;
+            tempindex.GetLIST();
+            ComFunJS.initForm();
+        })
+    </script>
+</body>
+
+</html>

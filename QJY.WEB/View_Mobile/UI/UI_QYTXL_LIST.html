@@ -1,0 +1,515 @@
+﻿<html class="pixel-ratio-1">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>通讯录</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <!-- Google Web Fonts -->
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1476090774_8365302.css">
+    <link rel="stylesheet" type="text/css" href="/View_Mobile/CSS/add.css">
+    <link href="/View_Mobile/UI/CRM/css/reset.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/View_Mobile/UI/CRM/css/default.css">
+    <style>
+                .ms-controller, .ms-important, [ms-controller], [ms-important] {
+            visibility: hidden;
+        }
+        .bar-tab {
+            bottom: 0;
+            width: 100%;
+            height: 2rem;
+            padding: 0;
+            table-layout: fixed;
+        }
+            .bar-tab .tab-item {
+                position: relative;
+                display: table-cell;
+                width: 1%;
+                height: 2rem;
+                color: #666;
+                text-align: center;
+                vertical-align: middle;
+            }
+                .bar-tab .tab-item .icon ~ .tab-label {
+                    display: block;
+                    font-size: .5rem;
+                    position: relative;
+                    top: .15rem;
+                }
+    </style>
+</head>
+<body>
+    <div class="page-group" ms-controller="TXLLIST">
+        <div class="page page-current" id="pageindex1">
+            <div class="content native-scroll " style="padding-bottom: 2.5rem;">
+                <!-- 搜索 -->
+                <div class="search-all">
+                    <div class="searchbar">
+                        <div class="search-input">
+                            <label class="icon icon-search" for="search"></label>
+                            <input type="search" id='search' placeholder='搜索姓名/拼音/电话' style="border-color: #fff;" ms-duplex="searstr" />
+                            <!--<span href="###" style="position:absolute;top:0;right:0;color:#ccc;" ms-click="selecttype()"><i class="iconfont icon-gavin-copy" style="font-size: 22px; color: #666; line-height: 1.4rem;"></i></span>-->
+                        </div>
+                    </div>
+                </div>
+                <!-- 最近联系人 -->
+                <div ms-visible="show==1">
+
+                    <div class="list-block media-list no-margin" ms-visible="zuijin.size()>0">
+                        <ul>
+                            <li ms-repeat-user="zuijin" ms-visible="(searstr&&(user.UserRealName.indexOf(searstr)!=-1||user.mobphone.indexOf(searstr)!=-1))||!searstr" ms-click="chekuser(user)">
+                                <div class="item-content">
+                                    <div class="item-media">
+                                        <img ms-attr-src="{{ComFunJS.getfile()+'&type=TX&user='+user.UserName}}" style="width:44px;height:44px;" class="border3">
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title-row">
+                                            <div class="item-title">{{user.UserRealName.length==2?user.UserRealName.substring(0,1)+'&nbsp;&nbsp;&nbsp;&nbsp;'+user.UserRealName.substring(1):user.UserRealName}}</div>
+                                        </div>
+                                        <div class="item-subtitle c999">{{user.mobphone}}</div>
+                                        <div class="operation-tx" >
+                                            <a ms-click="dianhua(user,$event)" external><i class="iconfont icon-iphone txl-icon"></i></a>
+                                            <!--<a ms-click="weixin(user,$event)" external class="openwxchat"><i class="iconfont icon-messag txl-icon"></i></a>-->
+                                            <a ms-click="duanxin(user,$event)" external><i class="iconfont icon-xin txl-icon"></i></a>
+                                            <a ms-click="delu(user,$event)" external><i class="iconfont icon-remove txl-icon"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- 列表 -->
+                <div class="list-block media-list no-margin" ms-visible="show==2 && AllUser.size()>0 && !searstr">
+                    <ul class="sort_box">
+                        <!--<li class="list-group-title" style="display:none;">A</li>-->
+                        <li class="sort_list" ms-repeat-user="AllUser" ms-visible="(searstr&&(user.UserRealName.indexOf(searstr)!=-1||user.mobphone.indexOf(searstr)!=-1))||!searstr" ms-click="chekuser(user)">
+                            <div class="item-content">
+                                <div class="item-media">
+                                    <img ms-attr-src="{{ComFunJS.getfile()+'&type=TX&user='+user.UserName}}" style="width:44px;height:44px;" class="border3">
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title num_name">{{user.UserRealName.length==2?user.UserRealName.substring(0,1)+'&nbsp;&nbsp;&nbsp;&nbsp;'+user.UserRealName.substring(1):user.UserRealName}}</div>
+                                    </div>
+                                    <div class="item-subtitle c999">{{user.mobphone}}</div>
+                                    <div class="operation-tx" >
+                                        <a ms-click="dianhua(user,$event)" external><i class="iconfont icon-iphone txl-icon"></i></a>
+                                        <!--<a ms-click="weixin(user,$event)" external class="openwxchat"><i class="iconfont icon-messag txl-icon"></i></a>-->
+                                        <a ms-click="duanxin(user,$event)" external><i class="iconfont icon-xin txl-icon"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div id="letter" style="display: none;"></div>
+                    <div class="initials"><ul></ul></div>
+                </div>
+
+                <div class="group-list" ms-visible="show==3 || (searstr && show==2)">
+
+                    <div class="list-block no-margin" ms-repeat-item="USERModel" >
+                        <ul ms-visible="!searstr">
+                            <li class="item-content" ms-on-click="entbm(item,this)">
+                                <div class="item-inner">
+                                    <div class="item-title"><span class="sanjiao"></span>{{item.DeptName}}</div>
+                                    <div class="item-after">({{item.DeptUserNum}})</div>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="showusernm" style="display:none;" ms-include="'tmpltree'" ms-visible="searstr">
+
+                        </div>
+                    </div>
+                    <div class="list-block media-list no-margin" ms-visible="DeptUser&&DeptUser.size()>0">
+                        <ul>
+                            <li ms-repeat-user="DeptUser" ms-visible="(searstr&&(user.UserRealName.indexOf(searstr)!=-1||user.mobphone.indexOf(searstr)!=-1))||!searstr" ms-click="chekuser(user)">
+                                <div class="item-content">
+                                    <div class="item-media">
+                                        <img ms-attr-src="{{ComFunJS.getfile()+'&type=TX&user='+user.UserName}}" style="width:44px;height:44px;" class="border3">
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title-row">
+                                            <div class="item-title">{{user.UserRealName.length==2?user.UserRealName.substring(0,1)+'&nbsp;&nbsp;&nbsp;&nbsp;'+user.UserRealName.substring(1):user.UserRealName}}</div>
+                                        </div>
+                                        <div class="item-subtitle c999">{{user.mobphone}}</div>
+                                        <div class="operation-tx" >
+                                            <a ms-click="dianhua(user,$event)" external><i class="iconfont icon-iphone txl-icon"></i></a>
+                                            <!--<a ms-click="weixin(user,$event)" external class="openwxchat"><i class="iconfont icon-messag txl-icon"></i></a>-->
+                                            <a ms-click="duanxin(user,$event)" external><i class="iconfont icon-xin txl-icon"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <script type="avalon" id="tmpltree">
+                        <div class="list-block no-margin left10" ms-repeat-item="item.SubDept" >
+                            <ul ms-visible="!searstr">
+                                <li class="item-content" ms-on-click="entbm(item,this)">
+                                    <div class="item-inner">
+                                        <div class="item-title"><span class="sanjiao"></span>{{item.DeptName}}</div>
+                                        <div class="item-after">({{item.DeptUserNum}})</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="showusernm" style="display: none; " ms-include="'tmpltree'" ms-visible="searstr">
+                            </div>
+                        </div>
+                        <div class="list-block media-list no-margin">
+                            <ul>
+                                <li ms-repeat-user="item.DeptUser" ms-visible="(searstr&&(user.UserRealName.indexOf(searstr)!=-1||user.mobphone.indexOf(searstr)!=-1))||!searstr" ms-click="chekuser(user)">
+                                    <div class="item-content">
+                                        <div class="item-media">
+                                            <img ms-attr-src="{{ComFunJS.getfile()+'&type=TX&user='+user.UserName}}" style="width:44px;height:44px;" class="border3">
+                                        </div>
+                                        <div class="item-inner">
+                                            <div class="item-title-row">
+                                                <div class="item-title">{{user.UserRealName.length==2?user.UserRealName.substring(0,1)+'&nbsp;&nbsp;&nbsp;&nbsp;'+user.UserRealName.substring(1):user.UserRealName}}</div>
+                                            </div>
+                                            <div class="item-subtitle c999">{{user.mobphone}}</div>
+                                            <div class="operation-tx" >
+                                                <a ms-click="dianhua(user,$event)" external><i class="iconfont icon-iphone txl-icon"></i></a>
+                                                <!--<a ms-click="weixin(user,$event)" external class="openwxchat"><i class="iconfont icon-messag txl-icon"></i></a>-->
+                                                <a ms-click="duanxin(user,$event)" external><i class="iconfont icon-xin txl-icon"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </script>
+                </div>
+            </div>
+
+            <nav class="bar bar-tab" style="z-index:200">
+                <a class="tab-item external" ms-class-1="active:show==1" ms-click="selecttype(1)">
+                    <span class="icon icon-star" style="font-size:1rem;top:0"></span>
+                    <span class="tab-label" style="top:0">最近</span>
+                </a>
+                <a class="tab-item external" ms-class-1="active:show==2" ms-click="selecttype(2)">
+                    <span class="icon icon-card" style="font-size:1rem;top:0"></span>
+                    <span class="tab-label" style="top:0">联系人</span>
+                </a>
+                <a class="tab-item external" ms-class-1="active:show==3" ms-click="selecttype(3)">
+                    <span class="icon icon-friends" style="font-size:1rem;top:0"></span>
+                    <span class="tab-label" style="top:0">组织机构</span>
+                </a>
+            </nav>
+        </div>
+        <div class="page" id="pageindex2" ms-include-src="/View_Mobile/UI/UI_QYTXL_INFO.html?r={{rdm}}" data-include-rendered='Temprender'></div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js"></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/jquery.charfirst.pinyin.js"></script>
+    <script src="/View_Mobile/JS/sort.js"></script>
+    <script>
+        var modeltxl = avalon.define({
+            $id: "TXLLIST",
+            searstr: "",
+            zuijin: [],
+            qycode: "",
+            entbm: function (bm, dom) {//折叠部门
+                $(dom).parent().parent().find(".showusernm").eq(0).toggle();
+                if ($(dom).find(".sanjiao").hasClass('active')) {
+                    $(dom).find(".sanjiao").toggleClass('active');
+                }
+                else {
+                    $(dom).find(".sanjiao").toggleClass('active');
+                }
+            },
+            USERModel: [],
+            DeptUser:[],
+            AllUser: [],
+            show: 1,
+            xzuser: "",
+            rdm: Math.random(),
+            Temprender: function () {
+
+                if (typeof (modeltxlinfo) != "undefined") {
+                    modeltxlinfo.GetWXUser(modeltxl.xzuser);
+                }
+            },//组件加载完成事件
+            selecttype: function (type) {
+                modeltxl.show = type;
+            },
+            GetWXUser: function () {//获取用户数据接口
+                $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETWXUSER', {}, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        modeltxl.USERModel = resultData.Result;
+                        modeltxl.AllUser = resultData.Result1;
+                        modeltxl.qycode = resultData.Result2;
+                        modeltxl.DeptUser = resultData.Result3;
+
+                        var user = window.localStorage.getItem("Latelyuser" + modeltxl.qycode);
+                        if (user) {
+                            modeltxl.zuijin = JSON.parse(user);
+                        } else {
+                            modeltxl.selecttype(2);
+                        }
+                        initsort();
+                    }
+                })
+            },
+            chekuser: function (item) {
+                modeltxl.puuser(item);
+
+                modeltxl.xzuser = item.UserName;
+                modeltxl.rdm = Math.random();
+                $.router.loadPage("#pageindex2")
+                //window.location = "/View_Mobile/UI/UI_QYTXL_INFO.html?user=" + item.UserName + "&r=" + Math.random();
+            }, dianhua: function (item, event) {
+                if (event) {
+                    event.stopPropagation();
+                }
+                modeltxl.puuser(item);
+                $(this).attr("href", 'tel:' + item.mobphone);
+            },
+            weixin: function (item, event) {
+                if (event) {
+                    event.stopPropagation();
+                }
+                modeltxl.puuser(item);
+                ComFunJS.openEntChat(item.UserName);
+            },
+            duanxin: function (item, event) {
+                if (event) {
+                    event.stopPropagation();
+                }
+                modeltxl.puuser(item);
+                $(this).attr("href", 'sms:' + item.mobphone);
+            }, puuser: function (item) {
+                try {
+                    var ishas = "";
+                    modeltxl.zuijin.forEach(function (el) {
+                        if (el.UserName == item.UserName) {
+                            modeltxl.zuijin.remove(el);
+                        }
+                    })
+                    modeltxl.zuijin.unshift(item);
+                    window.localStorage.removeItem("Latelyuser" + modeltxl.qycode);
+                    if (modeltxl.zuijin.size() > 0) {
+                        window.localStorage.setItem("Latelyuser" + modeltxl.qycode, JSON.stringify(modeltxl.zuijin));
+                    }
+                } catch (e) {
+                    window.localStorage.removeItem("Latelyuser" + modeltxl.qycode);
+                }
+
+            }, delu: function (item, event) {
+                try {
+                    if (event) {
+                        event.stopPropagation();
+                    }
+                    modeltxl.zuijin.forEach(function (el) {
+                        if (el.UserName == item.UserName) {
+                            modeltxl.zuijin.remove(el);
+                        }
+                    })
+
+                    window.localStorage.removeItem("Latelyuser" + modeltxl.qycode);
+                    if (modeltxl.zuijin.size() > 0) {
+                        window.localStorage.setItem("Latelyuser" + modeltxl.qycode, JSON.stringify(modeltxl.zuijin));
+                    }
+                } catch (e) {
+                    window.localStorage.removeItem("Latelyuser" + modeltxl.qycode);
+                }
+            }
+        })
+        avalon.ready(function () {
+            modeltxl.GetWXUser();
+            //if (modeltxl.zuijin.size() >0) {
+            //   modeltxl.selecttype(1);
+            //} else {
+            //    modeltxl.selecttype(2);
+            //}
+            //初始化微信配置
+            ComFunJS.initwxConfig();
+        })
+        //# sourceURLqytxllist.js;
+    </script>
+    <style type="text/css">
+        .search-all {
+            position: relative;
+            right: 0;
+            left: 0;
+            z-index: 10;
+            height: 2.2rem;
+            padding-right: .5rem;
+            padding-left: .5rem;
+            background-color: #efeff4;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .no-margin {
+            margin: 0;
+        }
+
+        .border3 {
+            border-radius: 3px;
+        }
+
+        .c999 {
+            color: #999;
+        }
+
+        .txl-icon {
+            color: #72b29f;
+            font-size: 1em;
+        }
+
+        .operation-tx {
+            display: inline-block;
+            position: absolute;
+            right: .85rem;
+            font-size: 1em;
+            top: 50%;
+            margin-top: -0.6em;
+        }
+
+            .operation-tx a {
+                padding: .5em .3em;
+            }
+
+        .bgfff {
+            background: #fff;
+        }
+
+        .zj-list {
+            float: left;
+            width: 20%;
+            text-align: center;
+        }
+
+        .kz {
+            overflow: hidden;
+            background: #fff;
+            padding-bottom: 1em;
+        }
+
+        .zj-list span {
+            display: block;
+            font-size: 1em;
+            margin-top: .3em;
+            color: #999;
+        }
+
+        .sanjiao {
+            width: 0;
+            height: 0;
+            border-top: .4em solid transparent;
+            border-left: .4em solid #D9D9D9;
+            border-bottom: .4em solid transparent;
+            display: inline-block;
+            margin-right: 5px;
+            padding-left: 6px;
+        }
+
+            .sanjiao.active {
+                transform: rotate(90deg);
+            }
+
+        .list-block .item-after {
+            font-size: .7em;
+        }
+
+        .left10 {
+            padding-left: 10px;
+            background: #fff;
+        }
+
+        .item-title {
+            font-size: .8em;
+        }
+
+        .list-block .item-subtitle {
+            font-size: .7em;
+            margin-top: .4em;
+        }
+
+        .list-block .item-divider, .list-block .list-group-title {
+            color: #999;
+        }
+
+
+        .user-name {
+            color: #fff;
+            font-size: 1.5em;
+            line-height: 1.3rem;
+            padding-bottom: 0rem;
+        }
+
+        .user-name2 {
+            font-size: 1em;
+        }
+
+        .ftbig {
+            font-size: 1em;
+            color: #6caf9b;
+        }
+
+        #letter {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+            font-size: 75px;
+            color: #555;
+            text-align: center;
+            line-height: 100px;
+            background: rgba(145,145,145,0.6);
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            margin: -50px 0px 0px -50px;
+            z-index: 99;
+            display: none;
+        }
+
+            #letter img {
+                width: 50px;
+                height: 50px;
+                float: left;
+                margin: 25px 0px 0px 25px;
+            }
+
+        .sort_letter {
+            height: 30px;
+            line-height: 30px;
+            padding-left: 20px;
+            color: #787878;
+            font-size: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .initials {
+            position: fixed;
+            top: 2.2rem;
+            right: 0px;
+            height: 100%;
+            width: 25px;
+            /*padding-right: 10px;*/
+            text-align: center;
+            font-size: 12px;
+            z-index: 999;
+            background: rgba(145,145,145,0);
+        }
+
+            .initials li {
+                width: 25px;
+            }
+
+        .list-group-title {
+            font-size: .5rem;
+        }
+    </style>
+</body>
+</html>

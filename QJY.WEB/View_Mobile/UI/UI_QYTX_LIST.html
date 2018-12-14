@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>通讯录</title>
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    <link href="../css/reset.css" rel="stylesheet" type="text/css">
+    <link href="../css/base.css" rel="stylesheet" type="text/css">
+
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        .logo img {
+            width: 1.5rem;
+        }
+
+        .wite {
+            background: #fff;
+        }
+
+        .userimg {
+            float: right;
+            width: 1.25rem;
+            margin-top: 0.5rem;
+            height: 1.25rem;
+        }
+
+        .block_nav > li > a > i img {
+            border-radius: 1rem;
+        }
+        .header .hessmsg i:before {
+            content: "";
+            display: block;
+            width: 8px;
+            height: 8px;
+            position: absolute;
+            right: .6rem;
+            top: 0.4rem;
+            border-radius: 8px;
+            background-color: #f15a4a;
+        }
+    </style>
+</head>
+<body ms-controller="QYTXLIST"  ms-class-1="address:contentcode=='TEMP_INDEX_TXL'">
+    <div class="page page-current " id="pageindex1" ms-class="wite:contentcode!='TEMP_INDEX_TXL'">
+        <header class="bar bar-nav header"  ms-if="contentcode!='TEMP_INDEX_TXL'">
+            <a href="#" class="logo" style="display:none"><img ms-src="{{ComFunJS.getfile(userData.QYinfo.LogoID)}}">  {{userData.QYinfo.QYName}}</a>
+            <a href="#pageindex2" class="text-hide hessmsg"><i></i><img class="userimg" src="../images/message-nor.png"></a>
+            <!--<a href="#pageindex2" class="text-hide"><img class="userimg" ms-attr-src="/ToolS/DownFile.aspx?type=TX&user={{userData.User.UserName}}"></a>-->
+            <!--<a href="javascript:void(0)" class="user-btn search-btn text-hide">搜索</a>-->
+        </header>
+        <div class="content" ms-include-src="/View_Mobile/UI/TEMP/{{contentcode}}.html?ver={{rdm}}" data-include-rendered='render'>
+        </div>
+        <footer class="footer" style="height: 2.2rem;display:none">
+            <ul class="footer_nav clearfix">
+                <li class="mess" ms-class="active:contentcode=='TEMP_INDEX_MSG'" ms-click="gomenu('TEMP_INDEX_MSG')"><a href="#" external><i></i><span>消息</span></a></li>
+                <li class="job " ms-class="active:contentcode=='TEMP_INDEX_WORK'" ms-click="gomenu('TEMP_INDEX_WORK')"><a href="#" external><i></i><span>工作</span></a></li>
+                <li style="background-color:white" class="address" ms-class="active:contentcode=='TEMP_INDEX_TXL'" ms-click="gomenu('TEMP_INDEX_TXL')"><a href="#" external><i></i><span>通讯录</span></a></li>
+            </ul>
+        </footer>
+    </div>
+    <div class="page" id='pageindex2'>
+        <div ms-include-src="/View_Mobile/UI/TEMP/{{modlecode}}.html?ver={{rdm}}" data-include-rendered='render1'></div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script>$.config = { autoInit: true }</script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script> 
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script type="text/javascript">
+        var model = avalon.define({
+            $id: "QYTXLIST",
+            contentcode: "TEMP_INDEX_TXL",
+            userData: {},
+            modlecode: "",
+            scrollTop: "0",
+            rdm:Math.random(),
+            gomenu: function (contentcode) {
+                model.contentcode = contentcode;
+            },
+            render: function () {
+                if (tempmodeltxl) {
+                    tempmodeltxl.inittemp();
+                    tempmodeltxl.isseltype = false;
+                    document.title = tempmodeltxl.name;
+                }
+                avalon.templateCache = null;
+            }
+         
+        });
+
+      
+        avalon.ready(function () {
+            $.getJSON("/API/VIEWAPI.ashx?Action=XTGL_GETUSERINFO", {}, function (r) {
+                if (r.ErrorMsg == "") {
+                    model.userData = r.Result;
+                    $(".logo").show('normal')
+                }
+            })
+
+        })
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,210 @@
+﻿﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>考勤签到</title>
+    <link href="/View_Mobile/CSS/style.css" rel="stylesheet" type="text/css">
+    <style>
+        .amap-logo {
+            display: none !important;
+        }
+
+        .amap-copyright {
+            display: none !important;
+        }
+
+        #map h3 {
+            margin: 0 !important;
+        }
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+    </style>
+</head>
+<body ms-controller="MKQQD">
+    <div class="contmobile">
+        <div class="page page1">
+
+            <div id="map" style="height:10rem;width:100%;"></div>
+
+            <!--<div class="qd-logo" style="font-size:1.8em">常州大学</div>
+            <div class="qd-logo">教室：<span id="js"></span></div>-->
+
+            <div ms-if="QDData.ID" style="margin-top:2rem;font-size:1rem;">签到时间：{{QDData.KQDate.substring(11,16)}}</div>
+            <div ms-if="QTData.ID" style="font-size:1rem;">签退时间：{{QTData.KQDate.substring(11,16)}}</div>
+
+            <div class="btn-qd" ms-click="SaveData()" style="top: 25rem;">
+                <!--<p id="time">08:29:23</p>-->
+            </div>
+
+            <!--<div class="qd-msg">
+                <img src="images/head.png" class="tx-qd">
+                <div class="msg-qd">
+                    <a href="weizhi.html" style="text-align:left">姓名:<span id="xm"></span> <br />学号：<span id="xh"></span> </a>
+                </div>
+            </div>-->
+        </div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160603"></script>
+    <script language="javascript" src="http://webapi.amap.com/maps?v=1.3&key=00fe526c7af6452674306b68a5cc8590"></script>
+    <script>
+        $(document).on("click", ".amap-geo", function () {
+            if ($("#bz")) {
+                $("#bz").text("正在定位中...");
+            }
+        });
+
+        var map = new AMap.Map('map', function () {
+            view: new AMap.View2D({
+                //center: new AMap.LngLat(116.397428, 39.90923),
+                //zoom: 10
+            })
+        });
+        map.plugin(["AMap.ToolBar"], function () {
+            toolBar = new AMap.ToolBar();
+            map.addControl(toolBar);
+        });
+        var geolocation;
+        var geocoder;
+        map.plugin(["AMap.Geocoder"], function () {
+            geocoder = new AMap.Geocoder({
+                radius: 1000,
+                extensions: "all"
+            });
+        });
+        map.plugin('AMap.Geolocation', function () {
+            geolocation = new AMap.Geolocation({
+                enableHighAccuracy: true,//是否使用高精度定位，默认:true
+                timeout: 10000,          //超过10秒后停止定位，默认：无穷大
+                buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+                zoomToAccuracy: true,      //定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+                //showButton: false,
+                //buttonPosition: 'LB'
+            });
+            map.addControl(geolocation);
+            geolocation.getCurrentPosition();
+            AMap.event.addListener(geolocation, 'complete', onComplete);//返回定位信息
+            AMap.event.addListener(geolocation, 'error', onError);      //返回定位出错信息
+        });
+
+        function onComplete(data) {
+            tempmodel.modelData.Longitude = data.position.getLng();
+            tempmodel.modelData.Latitude = data.position.getLat();
+            var position = [data.position.getLng(), data.position.getLat()];
+            //var marker = new AMap.Marker({
+            //    map: map,
+            //    position: position
+            //});
+            geocoder.getAddress(position, function (status, result) {
+                if (status === 'complete' && result.info === 'OK') {
+                    geocoder_CallBack(result);
+                }
+            });
+            //$(".load").toggleClass("szhlloading");
+        }
+        function geocoder_CallBack(data) {
+            var address = data.regeocode.formattedAddress; //返回地址描述
+            tempmodel.modelData.Position = address;
+            tempmodel.Position = address;
+            addmarker();
+        }
+        function onError(data) {
+            var str = "定位失败!";
+            switch (data.info) {
+                case 'PERMISSION_DENIED':
+                    str += '浏览器阻止了定位操作';
+                    break;
+                case 'POSITION_UNAVAILBLE':
+                    str += '无法获得当前位置';
+                    break;
+                case 'TIMEOUT':
+                    str += '定位超时';
+                    break;
+                default:
+                    str += '未知错误';
+                    break;
+            }
+            tempmodel.Position = str;
+        }
+        //查询结果的marker和infowindow
+        function addmarker() {
+            var lngX = tempmodel.modelData.Longitude;
+            var latY = tempmodel.modelData.Latitude;
+
+            var infoWindow = new AMap.InfoWindow({
+                content: "<h3 id='bz' style=\"font-size: .8rem;color:#00a6ac;\">  " + tempmodel.Position + "</h3>",//+ TipContents(d.type, d.address, d.tel),
+                size: new AMap.Size(300, 0),
+                autoMove: true
+            });
+
+            infoWindow.open(map, new AMap.LngLat(lngX, latY));
+        }
+
+        var tempmodel = avalon.define({
+            $id: "MKQQD",
+            name: "外勤签到",
+            Position: "正在定位中...",
+            modelData: { "Position": "", "Longitude": "", "Latitude": "", "Type": "" },
+            QDData: {},
+            QTData: {},
+            inittemp: function (strId) {
+                $.getJSON('/API/VIEWAPI.ashx?Action=KQGL_GETKQGZ', {}, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        if (resultData.Result1.length > 0) {
+                            tempmodel.modelData.Type = "1";
+                            tempmodel.QDData = resultData.Result1[0];
+                            $(".btn-qd").css("background-image", "url(/View_Mobile/images/qt.png)");
+                        }
+                        else {
+                            tempmodel.modelData.Type = "0";
+                        }
+
+                        if (resultData.Result2.length > 0) {
+                            tempmodel.modelData.Type = "2";
+                            tempmodel.QTData = resultData.Result2[0];
+                            $(".btn-qd").css("background-image", "url(/View_Mobile/images/yqt.png)");
+                        }
+                    }
+                })
+            },//初始化
+            SaveData: function () {
+                if(tempmodel.modelData.Type != "2"){
+                //if (!tempmodel.QDData.ID || !tempmodel.QTData.ID) {
+                    if (!tempmodel.modelData.Position) {
+                        top.ComFunJS.winwarning("请先获取位置");
+                        return;
+                    }
+
+                    $.getJSON("/API/VIEWAPI.ashx?ACTION=KQGL_ADDKQJL&r=" + Math.random(), { P1: tempmodel.modelData.Type, P2: tempmodel.modelData.Position, "long": tempmodel.modelData.Longitude, "lat": tempmodel.modelData.Latitude }, function (result) {
+                        if (result.ErrorMsg == "") {
+                            if (tempmodel.modelData.Type == "0") {
+                                tempmodel.QDData = result.Result;
+                                tempmodel.modelData.Type = "2";
+                                $(".btn-qd").css("background-image", "url(/View_Mobile/images/yqd.png);");
+                            }
+                            else if (tempmodel.modelData.Type == "1") {
+                                tempmodel.QTData = result.Result;
+                                tempmodel.modelData.Type = "2";
+                                $(".btn-qd").css("background-image", "url(/View_Mobile/images/yqt.png)");
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        avalon.ready(function () {
+            //$.showPreloader();
+
+            tempmodel.inittemp();
+        })
+    </script>
+</body>
+
+</html>

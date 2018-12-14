@@ -1,0 +1,198 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="/ViewV5/CSS/icfont_qj/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <link href="/ViewV5/CSS/BootOver.css" rel="stylesheet" />
+    <style>
+        .ms-controller, .ms-important, [ms-controller], [ms-important] {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body ms-controller="XZLXR">
+    <div style="margin-top:1rem;">
+
+        <!-- 按条件选择 -->
+        <div class="tab-filter-type">
+            <div class="oh">
+                <h5 class="pull-left tr">类型：</h5>
+                <ul class="tab-type ft14">
+                    <!--<li><span class="active" ms-click="SelectType('0')">全部</span></li>-->
+                    <li ms-click="SelectXJType('1')"><span class="active">我创建的</span></li>
+                    <li ms-click="SelectXJType('2')"><span>下属联系人</span></li>
+                </ul>
+            </div>
+            <!-- 搜索 -->
+            <div class="oh">
+                <div class="input-group ml15" style="width:295px;">
+                    <input type="text" class="form-control" ms-duplex="searchcontent" placeholder="搜索姓名">
+                    <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+                </div>
+            </div>
+        </div>
+        <!-- 表格 -->
+        <div class="default-tab ft14 pt20">
+            <table class="table table-striped table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th class="tc">
+                        </th>
+                        <th>
+                            姓名
+                        </th>
+                        <th>
+                            所属客户
+                        </th>
+                        <th>
+                            性别
+                        </th>
+                        <th>
+                            手机
+                        </th>
+                        <th>
+                            固话
+                        </th>
+                        <th>
+                            地址
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ms-repeat-el="tmpListData">
+                        <td class=" tc">
+                            <div class="icheckbox_square-blue" ms-click="xz(el)">
+                                <input type="checkbox">
+                                <span class="iconfont icon-check ft12"></span>
+                            </div>
+                        </td>
+                        <td ms-click="xztr(el)">{{el.UserXM}}</td>
+                        <td ms-click="xztr(el)">{{el.KHName}}</td>
+                        <td ms-click="xztr(el)">{{el.UserSex}}</td>
+                        <td ms-click="xztr(el)">{{el.TelePhone}}</td>
+                        <td ms-click="xztr(el)">{{el.MobilePhone}}</td>
+                        <td ms-click="xztr(el)">{{el.Address}}</td>
+                    </tr>
+
+                </tbody>
+                <tfoot>
+                    <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+                </tfoot>
+            </table>
+            <div class="ui-datatable-page ft14 pl20">
+
+                <div id="pageDiv" ms-visible="page.total>pageNum[0].num" class="pull-right"></div>
+                <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                    <span>共{{page.total}}条记录</span>
+                    <span ms-visible="page.total>pageNum[0].num">
+                        选择每页条数
+                        <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="page.pagecount">
+                            <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==page.pagecount?'selected':''">{{pg.num}}</option>
+                        </select>
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/JS/layer/extend/layer.ext.js"></script>
+    <script src="/ViewV5/JS/laypage/laypage.js"></script>
+    <script src="/ViewV5/JS/toastr.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script>
+
+        var tempindex = avalon.define({
+            $id: "XZLXR",
+            curXJType: "",
+            searchcontent: "",
+            tmpListData: [],
+            isnull: false,
+            page: { pageindex: 1, pagecount: 10, total: 0 }, //分页参数
+            pageNum: [{ "num": 10 }, { "num": 20 }, { "num": 30 }, { "num": 50 }, { "num": 100 }],
+            SelectXJType: function (type) {
+                tempindex.curXJType = type;
+                tempindex.GetLIST();
+
+            },
+            search: { seartype: "1", searchcontent: "" },
+            GetLIST: function () {
+                tempindex.page.pageindex = 1;
+                tempindex.tmpListData.clear();
+                $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETKHLXRLIST', { p: 1, P1: tempindex.search.seartype, pagecount: tempindex.page.pagecount, Content: tempindex.searchcontent }, function (resultData) {
+                        tempindex.tmpListData = resultData.Result;
+                        tempindex.page.total = resultData.Result1;
+                        if (tempindex.tmpListData.size() == 0) { tempindex.isnull = true; } else { tempindex.isnull = false; }
+                        laypage({
+                            cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                            pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / tempindex.page.pagecount), //通过后台拿到的总页数
+                            curr: 1, //初始化当前页
+                            skin: 'molv',
+                            jump: function (e) { //触发分页后的回调
+                                if (e.curr != tempindex.page.pageindex) {
+                                    $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETKHLXRLIST', { p: e.curr, P1: tempindex.search.seartype, pagecount: tempindex.page.pagecount, Content: tempindex.searchcontent }, function (resultData) {
+                                            tempindex.tmpListData = resultData.Result;
+                                    })
+                                    tempindex.page.pageindex = e.curr;
+                                }
+                            }
+                        });
+                })
+            },
+            xzel: {},
+            xz: function (el) {
+                $(this).toggleClass("checked");
+                if ($(this).hasClass("checked")) {
+                    tempindex.xzel = el;
+                    $(this).parent().parent().siblings().find(".icheckbox_square-blue").each(function () {
+                        $(this).removeClass("checked");
+                    })
+                }
+                else {
+                    tempindex.xzel = {};
+                }
+            },
+            xztr: function (el) {
+                var obj = $(this).parent().find(".icheckbox_square-blue");
+                $(obj).each(function () {
+                    $(this).toggleClass("checked");
+                    if ($(this).hasClass("checked")) {
+                        tempindex.xzel = el;
+                        $(this).parent().parent().siblings().find(".icheckbox_square-blue").each(function () {
+                            $(this).removeClass("checked");
+                        })
+                    }
+                    else {
+                        tempindex.xzel = {};
+                    }
+                })
+            }
+        })
+        avalon.ready(function () {
+            tempindex.GetLIST();
+        })
+        function getlxr() {
+            if (tempindex.xzel.ID) {
+                return tempindex.xzel;
+            }
+            else {
+                top.ComFunJS.winwarning("请选择联系人");
+                return false;
+            }
+        }
+        //# sourceURL=CCXJUserLIST.js;
+    </script>
+</body>
+
+</html>

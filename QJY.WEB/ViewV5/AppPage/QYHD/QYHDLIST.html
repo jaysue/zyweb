@@ -1,0 +1,173 @@
+﻿<div ms-controller="QYHDLIST">
+    <!-- 添加按钮 -->
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="Add()"><i class="iconfont icon-jiahao ft12 mr5"></i>添加{{curXJType=='1'?'投票':'活动'}}</button>
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">事项类型：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectType('0')"><span class="active">全部</span></li>
+                <li ms-click="SelectType('1')"><span>我创建的</span></li>
+            </ul>
+        </div>
+      
+        <div class="oh">
+            <div class="input-group ml15" style="width:295px;">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" ms-attr-placeholder="搜索企业{{curXJType=='1'?'投票':'活动'}}标题">
+                <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+            </div>
+        </div>
+    </div>
+    <!-- 展开更多选项 -->
+    <div class="add-tab ft14 tc mt20" style="display:none;">
+        <span>更多筛选<i class="caret"></i></span>
+    </div>
+    <!-- 表格 -->
+    <div class="default-tab ft14 pt20">
+        <table class="table table-striped table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th class="tc">
+                        序号
+                    </th>
+                    <th>发起方</th>
+                    <th>活动类型</th>
+                    <th>标题</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>参与状态</th>
+                    <th>活动状态</th>
+                    <th style="width: 80px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-el="tmpListData"  ms-on-mouseover="mouseover" ms-on-mouseout="mouseout">
+                    <td class=" tc">
+                        {{$index+1+page.pagecount*(page.pageindex-1)}}
+                    </td>
+                    <td>{{el.FQF}}</td>
+                    <td>企业{{curXJType=='1'?'投票':'活动'}}</td>
+                    <td class="lk" ms-click="View(el.ID,el.Type)">{{ComFunJS.convstr(el.Title)}}</td>
+                    <td>{{el.StartTime|date("yyyy-MM-dd HH:mm")}}</td>
+                    <td>{{el.EndTime|date("yyyy-MM-dd HH:mm")}}</td>
+                    <td>{{hdzt(el.HDStatus)}}</td>
+                    <td>{{el.UserBMCount>0?"已":"未"}}{{curXJType=='1'?'投票':'报名'}}</td>
+                    <td>
+                        <span class="tool" style="display: none;">
+                            <a class="cz-btn ft18 sc-color tip" data-toggle="tooltip" title="撤销" ms-if="el.CRUser==userName" ms-click="DELForm(el,$event)">
+                                <i class="iconfont icon-shanchu"></i>
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+            </tfoot>
+        </table>
+        <div class="ui-datatable-page ft14 pl20">
+
+            <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+            <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                <span>共{{model.page.total}}条记录</span>
+                <span ms-visible="model.page.total>model.pageNum[0].num">
+                    选择每页条数
+                    <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                        <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                    </select>
+                </span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var tempindex = avalon.define({
+        $id: "QYHDLIST",
+        curXJType: "0",
+        tmpListData: [],
+        Add: function () {
+            ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=QYHD&type=" + tempindex.curXJType, "企业" + (tempindex.curXJType == '1' ? '投票' : '活动'), "1000");
+        },
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        SelectXJType: function (type) {
+            tempindex.curXJType = type;
+            tempindex.GetLIST();
+        },
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        InitWigetData: function (arr) {
+            tempindex.curXJType = arr;
+            model.search.seartype = '0';
+            tempindex.GetLIST();
+        },
+        hdzt: function (hds) {
+            var str = "";
+            switch (hds) {
+                case 0: str = '已结束'; break;
+                case 1: str = '未开始'; break;
+                case 2: str = '正在进行'; break;
+            }
+            return str;
+        },
+        View: function (id, type) {
+            if (type == 0) {
+                ComFunJS.winviewform("/ViewV5/AppPage/QYHD/QYHDVIEW.html?ID=" + id + "&r=" + Math.random(), "查看");
+            }
+            else {
+                ComFunJS.winviewform("/ViewV5/AppPage/QYHD/QYTPVIEW.html?ID=" + id + "&r=" + Math.random(), "投票");
+            }
+        },
+        DELForm: function (item, event) {
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            }
+            ComFunJS.winconfirm("确认要撤销活动吗？", function () {
+                $.post("/API/VIEWAPI.ashx?ACTION=QYHD_DELMODEL", { P1: item.ID }, function (result) {
+                    if ($.trim(result.ErrorMsg) == "") {
+                        tempindex.tmpListData.remove(item);
+                        ComFunJS.winsuccessnew("操作成功");
+                    }
+                });
+            })
+        },
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=QYHD_GETQYHDLIST_PAGE', { p: 1, listType: model.search.seartype, P2: model.search.searchcontent, P1: tempindex.curXJType, pagecount: model.page.pagecount }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempindex.tmpListData = resultData.Result;
+                    if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                    model.page.total = resultData.Result1;
+                    laypage({
+                        cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                        pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //通过后台拿到的总页数
+                        curr: 1, //初始化当前页
+                        skin: 'molv',
+                        jump: function (e) { //触发分页后的回调
+                            if (e.curr != model.page.pageindex) {
+                                $.getJSON('/API/VIEWAPI.ashx?Action=QYHD_GETQYHDLIST_PAGE', { p: e.curr, listType: model.search.seartype, P2: model.search.searchcontent, P1: tempindex.curXJType, pagecount: model.page.pagecount }, function (resultData) {
+                                    if (resultData.ErrorMsg == "") {
+                                        tempindex.tmpListData = resultData.Result;
+                                    }
+                                })
+                                model.page.pageindex = e.curr;
+                            }
+                        }
+                    });
+                }
+            })
+        }
+    })
+    //@ sourceURL=QYHDLIST.js;
+</script>

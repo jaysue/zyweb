@@ -1,0 +1,376 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>企业活动</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<link rel="stylesheet" href="//at.alicdn.com/t/font_1473753044_842232.css">-->
+
+    <link rel="stylesheet" href="/ViewV5/CSS/icfont_qj/iconfont.css" />
+
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <style>
+    </style>
+</head>
+
+<body style="background-color: #F8F8F8; height: 100%;" ms-controller="QYHDVIEW">
+    <div class="padding20">
+        <div class="card card3 mb20">
+            <div class="detail-nav">
+                <div class="tab-kh nav-bt">
+                    <span class="cur"><i class="iconfont icon-bookmark"></i>活动信息</span>
+                </div>
+            </div>
+            <div class="detail-con">
+                <div class="detail-item" ms-repeat-el="ShowColumns" ms-visible="modelData[el.ColName]+''" ms-class-1="{{el.class}}">
+                    <span class="item-tit">{{el.ColText}}</span>
+                    <div class="item-con">{{FnFormat(modelData[el.ColName],el)|html}}</div>
+                </div>
+                <div class="detail-item" ms-repeat-ext="modelData.SubExt">
+                    <span class="item-tit">{{ext.TableFiledName}}</span>
+                    <div class="item-con">{{ext.ExtendDataValue}} </div>
+                </div>
+                <div class="detail-item" ms-if="tpData&&tpData.size()!=0">
+                    <span class="item-tit">附件</span>
+                    <div class="fj clearfix mt10">
+                        <div class="pull-left" ms-repeat-file="tpData">
+                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="img-rounded:ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="{{ComFunJS.getfile(file.ID)}}&width=45&height=45" ms-attr-imgyt="{{ComFunJS.getfile(file.ID)}}"  style="cursor:zoom-in;border-radius:2px" />
+
+                            <img ms-click="viewfile(file)" style="height:45px;width:45px" ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                            <div class="fj-cont c999 ft12">
+                                <p class="word-break">{{file.Name}}.{{file.FileExtendName}}<span>({{Math.round(file.FileSize/1024)}}kb)</span></p>
+                                <p class="mt5">
+                                    <a ms-attr-href="{{file.YLUrl}}" ms-if="file.YLUrl" target="_blank">预览</a>
+                                    <a ms-attr-href="'/ViewV5/Base/DownFile.aspx?MD5='+file.FileMD5">下载</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pl20 mb10">
+                <button class="btn btn-info" ms-click="AddPL()"><i class="iconfont icon-pinglun mr5 ft14"></i>添加评论</button>
+                <button class="btn btn-info" ms-click="BM()" ms-if="modelData.HDStatus!=0">{{isbm=='Y'?'已报名':'报名'}}</button>
+            </div>
+            <div class="padding20">
+                <div class="lookright-box">
+                    <div class="menu-general ft14">
+                        <ul>
+                            <li class="active">
+                                <a>评论({{plData.size()}})</a>
+                            </li>
+                            <li ms-if="modelData.TP_IsPublic==1 || modelData.CRUser == ComFunJS.getnowuser()">
+                                <a>报名列表({{bmData.size()}})</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="map">
+                    <div>
+                        <!--<div class="crm-dt clearfix nopadding pt20">
+                            <button class="btn btn-info pull-right" ms-click="addGJ()"><i class="iconfont icon-jiahao ft12 mr5"></i>添加评论</button>
+                        </div>-->
+                        <div class="crm-dt" ms-repeat-item="plData">
+                            <span class="crm-yuan"></span>
+                            <div class="crm-dt-cont">
+                                <i class="bg"></i>
+                                <span class="wt"></span>
+                                <div style="margin:10px 30px;" class="c666">
+                                    <p class="c999">{{ComFunJS.convertuser(item.CRUser)}} <span class="pull-right">{{item.CRDate|date("yyyy年MM月dd日 HH:mm")}}</span></p>
+                                    <h3 class="crm-xg ft14 mt5">{{ComFunJS.bqhContent(item.MSGContent)|html}}</h3>
+                                    <div class="fj clearfix mt10" ms-if="item.FileList&&item.FileList.size()!=0">
+                                        <div class="pull-left" ms-repeat-file="item.FileList">
+                                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="img-rounded:ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="/ViewV5/Base/DownFile.aspx?fileId={{file.ID}}&width=45&height=45" ms-attr-imgyt="/ViewV5/Base/DownFile.aspx?fileId={{file.ID}}" style="cursor:zoom-in;border-radius:2px" />
+
+                                            <img ms-click="viewfile(file)" style="height:45px;width:45px" ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                                            <div class="fj-cont c999 ft12">
+                                                <p class="word-break">{{file.Name}}.{{file.FileExtendName}}<span>({{Math.round(file.FileSize/1024)}}kb)</span></p>
+                                                <p class="mt5">
+                                                    <a ms-attr-href="{{file.YLUrl}}" ms-if="file.YLUrl" target="_blank">预览</a>
+                                                    <a ms-attr-href="'/ViewV5/Base/DownFile.aspx?MD5='+file.FileMD5">下载</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:none;margin:10px;">
+                        <div class="default-tab ft14">
+                            <table class="table table-striped table-responsive table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>联系人</th>
+                                        <th>联系电话</th>
+                                        <th>报名人数</th>
+                                        <th>报名时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ms-repeat-item="bmData">
+                                        <td>{{item.OptionUser}}</td>
+                                        <td>{{item.UserPhone}}</td>
+                                        <td>{{item.BMNum}}</td>
+                                        <td>{{item.CRDate}}</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="BMModal" role="dialog">
+                <div class="modal-dialog" role="document" style="width: 500px">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">报名信息</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-xs-4 control-label">联系人</label>
+                                    <input type="text" class="col-xs-6 form-control " ms-duplex="BMXX.OptionUser" style="width:auto;" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-xs-4 control-label">联系电话</label>
+                                    <input type="text" class="col-xs-6 form-control " ms-duplex="BMXX.UserPhone" style="width:auto;" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-xs-4 control-label">报名人数</label>
+                                    <input type="text" class="col-xs-6 form-control " ms-duplex="BMXX.BMNum" style="width:auto;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            <button type="button" class="btn btn-success" id="conaddForder" ms-click="SaveBM()">确&nbsp;&nbsp;认</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script type="text/javascript">
+        $(".padding20 .lookright-box .menu-general ul li").each(function (i) {
+            $(this).click(function () {
+                $(this).addClass("active").siblings().removeClass("active");
+                $("#map>div:eq(" + i + ")").show().siblings().hide();
+            });
+        });
+
+        var model = avalon.define({
+            $id: "QYHDVIEW",
+            modelData: {},
+            ShowColumns: [],
+            tpData: [],
+            plData: [],
+            bmData: [],
+            isbm: '',
+            userName: ComFunJS.getnowuser(),
+            strId: ComFunJS.getQueryString("ID"),
+            BMXX: { "UserPhone": top.model.UserData.mobphone, "OptionUser": top.model.UserData.UserRealName, "BMNum": 1, "HDID": ComFunJS.getQueryString("ID") },
+            GetModelData: function () {
+                if (model.strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=QYHD_GETQYHDLIST_PAGE', { p: 1, ID: model.strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            if (resultData.Result.length > 0) {
+                                model.modelData = resultData.Result[0];
+                                model.tpData = resultData.Result[0].FileList;
+                                model.plData = resultData.Result[0].PLList;
+                                model.bmData = resultData.Result[0].BMList;
+                                if (model.bmData.length > 0) {
+                                    $(model.bmData).each(function (inx, itm) {
+                                        if (itm.CRUser == model.userName) {
+                                            model.isbm = 'Y';
+                                            model.BMXX = itm;
+                                        }
+                                    })
+                                }
+                                setTimeout(" ComFunJS.initForm()", 500)
+                            }
+                        }
+                    })
+                }
+            },
+            AddPL: function () {
+                ComFunJS.winbtnwin("/ViewV5/Base/APP_COMMENT.html?ID=" + model.modelData.ID + "&Type=QYHD&UserName=" + model.modelData.CRUser + "&r=" + Math.random(), "评论", 600, 400, {}, function (layero, index) {
+                    var frameid = $("iframe", $(layero)).attr('id');
+                    var plnr = ComFunJS.isIE() ? window.frames[frameid].getpl() : window.frames[frameid].contentWindow.getpl();
+
+                    if (plnr.ID) {
+                        model.plData.push(plnr);
+                        ComFunJS.winsuccess("评论成功");
+                        layer.close(index);
+                    }
+
+                })
+            },
+            BM: function () {
+                $("#BMModal").modal("show");
+            },
+            SaveBM: function () {
+                if (!model.BMXX.OptionUser) {
+                    ComFunJS.winwarning("请输入联系人姓名");
+                    return;
+                }
+                if (!model.BMXX.UserPhone) {
+                    ComFunJS.winwarning("请输入联系人手机");
+                    return;
+                }
+                else {
+                    var reg = /^(?:13\d|14\d|15\d|17\d|18\d)-?\d{5}(\d{3}|\*{3})$/;
+                    if (!reg.test(model.BMXX.UserPhone)) {
+                        ComFunJS.winwarning("联系人手机格式错误");
+                        return;
+                    }
+                }
+                if (!model.BMXX.BMNum) {
+                    ComFunJS.winwarning("请输入报名人数");
+                    return;
+                }
+                else {
+                    var reg = /^\+?[1-9][0-9]*$/;
+                    if (!reg.test(model.BMXX.BMNum)) {
+                        ComFunJS.winwarning("报名人数输入错误");
+                        return;
+                    }
+                }
+                $.post("/API/VIEWAPI.ashx?ACTION=QYHD_ADDQYHDITEM", { P1: JSON.stringify(model.BMXX.$model) }, function (result) {
+                    if (result.ErrorMsg == "") {
+                        if (model.isbm == 'Y') {
+                            $(model.bmData).each(function (inx, itm) {
+                                if (itm.CRUser == model.userName) {
+                                    itm.OptionUser = model.BMXX.OptionUser;
+                                    itm.UserPhone = model.BMXX.UserPhone;
+                                    itm.BMNum = model.BMXX.BMNum;
+                                }
+                            })
+                        }
+                        else {
+                            model.isbm = 'Y';
+                            model.bmData.push(result.Result);
+                            model.BMXX = result.Result;
+                        }
+                        ComFunJS.winsuccess("报名成功");
+                        $("#BMModal").modal("hide");
+                    }
+                    else {
+                        ComFunJS.winwarning(result.ErrorMsg);
+                    }
+                });
+            },
+            viewfile: function (file) {
+                if (ComFunJS.isPic(file.FileExtendName)) {
+                    ComFunJS.viewbigimg(this)
+                    return;
+                }
+                if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                    window.open(file.YLUrl);
+                    return;
+                }
+            },
+            FnFormat: function (str, fmt) { //格式化
+                str = str + "";
+                if (str && fmt.format) {
+
+                    switch (fmt.format) {
+                        case "dateformat": //日期格式，默认yyyy-mm-dd
+                            {
+                                str = ComFunJS.getnowdate("yyyy-mm-dd", str);
+                            }
+                            break;
+                        case "timeformat": //日期格式，默认yyyy-mm-dd
+                            {
+                                str = ComFunJS.getnowdate("yyyy-mm-dd hh:mm", str);
+                            }
+                            break;
+                        case "username": //用户id转成为用户名
+                            {
+                                str = ComFunJS.convertuser(str);
+                            }
+                            break;
+                        case "qrcode": //二维码图片展示
+                            {
+                                str = "<img src='" + str + "' style='width:60px;height:60px;' />"
+                            }
+                            break;
+                        case "bqh"://表情转换
+                            {
+                                return ComFunJS.bqhContent(str);
+                            }
+                            break;
+                        case "text"://截取字符串
+                            {
+                                str = ComFunJS.convstr(str);
+                            }
+                            break;
+                        case "hdlx"://活动类型
+                            {
+                                switch (str) {
+                                    case "0": str = '企业活动'; break;
+                                    case "1": str = '企业投票'; break;
+                                }
+                            }
+                            break;
+                        case "hdzt"://活动状态
+                            {
+                                switch (str) {
+
+                                    case "0": str = '已结束'; break;
+                                    case "1": str = '未开始'; break;
+                                    case "2": str = '正在进行'; break;
+                                }
+                            }
+                            break;
+                        default: {
+
+                        }
+                    }
+
+
+                }
+                if (fmt.len) {
+                    str = str.length > fmt.len ? str.substring(0, fmt.len) + '...' : str;
+                }
+                return str;
+            }
+        });
+        avalon.ready(function () {
+            model.ShowColumns.clear();
+            model.ShowColumns.pushArray([
+                { "ColName": "FQF", "ColText": "发起方", "IsSel": true, "class": "width50" },
+                { "ColName": "Type", "ColText": "活动类型", "IsSel": true, "class": "width50", "format": "hdlx" },
+                { "ColName": "StartTime", "ColText": "开始时间", "IsSel": true, "class": "width50", "format": "timeformat" },
+                { "ColName": "EndTime", "ColText": "结束时间", "IsSel": true, "class": "width50", "format": "timeformat" },
+                { "ColName": "HDDate", "ColText": "活动时间", "IsSel": true, "class": "width50" },
+                { "ColName": "HDStatus", "ColText": "活动状态", "IsSel": true, "class": "width50", "format": "hdzt" },
+                { "ColName": "Title", "ColText": "活动标题", "IsSel": true },
+                { "ColName": "HD_Adress", "ColText": "活动地址", "IsSel": true },
+                { "ColName": "HD_Content", "ColText": "活动内容", "IsSel": true }
+            ]);
+
+            model.GetModelData();
+        })
+    </script>
+</body>
+
+</html>

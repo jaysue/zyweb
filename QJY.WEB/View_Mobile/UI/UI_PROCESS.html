@@ -1,0 +1,362 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <style type="text/css">
+        .ui-border {
+            padding: 10px;
+        }
+
+        .ui-list > li {
+            margin: 3px;
+        }
+
+        .ui-border {
+            background-color: #fff;
+        }
+
+            .ui-border .v {
+                border-top: solid 1px #ede8e8;
+                padding: 5px;
+                margin-top: 10px;
+                font-size: 12px;
+            }
+
+                .ui-border .v span {
+                    font-size: 10px;
+                    float: right;
+                }
+
+        .ui-label-s {
+            margin-right: 5px;
+        }
+
+        .ui-select {
+            border: none;
+            border: 0;
+            background-color: #fff;
+            appearance: none;
+            -moz-appearance: none; /* Firefox */
+            -webkit-appearance: none; /* Safari 和 Chrome */
+        }
+
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+    </style>
+    <title>流程审批</title>
+    <script type="text/javascript">
+        var width = 0;
+
+        //var strID = ComFunJS.getQueryString("ID");
+        //var strPIID = ComFunJS.getQueryString("PIID");
+        //var strCODE = ComFunJS.getQueryString("CODE");
+
+        var psmodel = avalon.define({
+            $id: "splist",
+            lcdata: [],
+            spData: {},
+            urData: [],
+            zsurData: [],
+            shr: "",
+            shyj: "",
+            zsshr: "",
+            iscansp: "",
+            isedit: "",
+
+            pstype: "",
+            isxsshr: "",
+
+            formcode: model.code,
+            formpiid: "",
+            formpdid: "",
+            formid: "",
+            formsh: model.sh,
+            savedata: function (bdid) {
+
+                $.getJSON("/API/VIEWAPI.ashx?ACTION=LCSP_STARTWF&r=" + Math.random(), { P1: psmodel.formcode, P2: psmodel.shr, PDID: psmodel.formpdid, DataID: bdid }, function (result) {
+                    model.lg.hide();
+                    if ($.trim(result.ErrorMsg) == "") {
+                        $("button").hide();
+                        var el = $.tips({
+                            content: "保存成功！",
+                            stayTime: 2000,
+                            type: "success"
+                        })
+                        el.on("tips:hide", function () {
+                            //window.location.reload();
+                            window.location.replace(location.href);
+                        })
+                    }
+                    else {
+                       
+                        $.tips({
+                            content: "保存失败",
+                            stayTime: 2000,
+                            type: "warn"
+                        })
+                    }
+                });
+            }
+        });
+        function yz() {
+            if (psmodel.isxsshr && !psmodel.shr) {
+                model.lg.hide();
+                $.tips({
+                    content: "请选择审核人",
+                    stayTime: 2000,
+                    type: "warn"
+                })
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        function load() {
+            width = document.documentElement.clientWidth;
+            if (model.ptype) {
+                psmodel.pstype = model.ptype;
+                if (!psmodel.formsh && psmodel.pstype == "0") {
+                    psmodel.isxsshr = "Y";
+                }
+            }
+            if (strId) {
+                psmodel.formpiid = model.modelData.intProcessStanceid;
+                psmodel.formid = model.modelData.ID;
+                $.getJSON("/API/VIEWAPI.ashx?action=LCSP_GETWFDATA&r=" + Math.random(), { P1: psmodel.formpiid }, function (r) {
+                    psmodel.spData = r.Result;
+                    psmodel.lcdata = r.Result1;
+                    psmodel.lcdata.remove(psmodel.lcdata[0]);
+
+                    psmodel.iscansp = $.parseJSON(r.Result2).ISCANSP == "Y";//判断当前用户是否具有审批权限
+                    psmodel.pstype = r.Result3;
+
+                    if (r.Result4) {
+                        psmodel.isedit = r.Result4;//是否可编辑 
+                        if (model.isedit || model.isedit=="") {
+                            model.isedit = r.Result4
+                        }
+                    }
+
+                    shzt();
+                    model.lg.hide();
+                })
+            }
+            else {
+
+                if (model.pdid) {
+                    psmodel.formpdid = model.pdid;
+                }
+                $.getJSON("/API/VIEWAPI.ashx?ACTION=LCSP_GETSPUSERLIST&r=" + Math.random(), { P1: psmodel.formcode, PDID: psmodel.formpdid, PIID: psmodel.formpiid }, function (result) {
+                    if (result.ErrorMsg == "") {
+                        if (result.Result.length > 0) {
+                            psmodel.urData = result.Result;
+                            psmodel.shr = result.Result[0].UserName;
+                        }
+                    }
+                    model.lg.hide();
+                });
+            }
+        };
+
+
+        function spzt(strsp) {
+
+            if (strsp == "1") {
+                return '<div class="ui-badge-muted" style="background-color:green;float:right;  margin-top: 4px;">已审批</div>';
+            }
+            else if (strsp == "-1") {
+                return '<div class="ui-badge" style="float:right;  margin-top: 4px;">已退回</div>';
+            }
+            else if (strsp == "0") {
+                return '<div class="ui-badge-muted" style="float:right;  margin-top: 4px;">正在审批</div>';
+            }
+        }
+
+        function ty() {
+            psmodel.shyj = "同意";
+
+            ComFunJS.showSH("200", psmodel.shyj, function (nr) {
+                var lg = $.loading({
+                    content: '保存中...',
+                })
+                if (psmodel.isedit == "Y")
+                {
+                    model.savedata();
+                }
+                psmodel.shyj = nr;
+                $.getJSON("/API/VIEWAPI.ashx?ACTION=LCSP_MANAGEWF&r=" + Math.random(), { P1: psmodel.formpiid, P2: psmodel.shyj, formcode: psmodel.formcode, ID: psmodel.formid }, function (result) {
+                    lg.hide();
+                    if ($.trim(result.ErrorMsg) == "") {
+                        $(".ui-footer").hide();
+                        var el = $.tips({
+                            content: "审核成功",
+                            stayTime: 2000,
+                            type: "success"
+                        })
+                        el.on("tips:hide", function () {
+                            //window.location.href = "UI_QJCC_LIST.html?r=" + Math.random();
+                            window.location.reload();
+                        })
+                    }
+                    else {
+                        $.tips({
+                            content: "审核失败，原因：" + result.ErrorMsg,
+                            stayTime: 2000,
+                            type: "warn"
+                        })
+                    }
+                });
+            })
+        }
+
+        function zs() {
+            psmodel.shyj = "同意";
+            $.getJSON("/API/VIEWAPI.ashx?ACTION=LCSP_GETSPUSERLIST&r=" + Math.random(), { P1: psmodel.formcode, PDID: psmodel.formpdid, PIID: psmodel.formpiid }, function (result) {
+                if (result.ErrorMsg == "") {
+                    psmodel.zsurData = result.Result;
+                    if (result.Result.length > 0) {
+                        psmodel.zsshr = result.Result[0].UserName;
+
+                        ComFunJS.showZSSH("200", $(".zsr").html(), function (nr, zsr) {
+                            var lg = $.loading({
+                                content: '保存中...',
+                            })
+                            psmodel.shyj = nr;
+                            psmodel.zsshr = zsr;
+                            $.getJSON("/API/VIEWAPI.ashx?ACTION=LCSP_MANAGEWF&r=" + Math.random(), { P1: psmodel.formpiid, P2: psmodel.shyj, SHUser: psmodel.zsshr, formcode: psmodel.formcode, ID: psmodel.formid }, function (result) {
+                                lg.hide();
+                                if ($.trim(result.ErrorMsg) == "") {
+                                    $(".ui-footer").hide();
+                                    var el = $.tips({
+                                        content: "审核成功",
+                                        stayTime: 2000,
+                                        type: "success"
+                                    })
+                                    el.on("tips:hide", function () {
+                                        //window.location.href = "UI_QJCC_LIST.html?r=" + Math.random();
+                                        window.location.reload();
+                                    })
+                                }
+                                else {
+                                    $.tips({
+                                        content: "审核失败，原因：" + result.ErrorMsg,
+                                        stayTime: 2000,
+                                        type: "warn"
+                                    })
+                                }
+                            });
+                        })
+                    } else {
+                        $.tips({
+                            content: "没有审核人",
+                            stayTime: 2000,
+                            type: "warn"
+                        })
+                    }
+                }
+                else {
+                    $.tips({
+                        content: "审核人加载失败" ,
+                        stayTime: 2000,
+                        type: "warn"
+                    })
+                }
+            });
+
+        }
+
+        function th() {
+            psmodel.shyj = "拒绝";
+
+
+            ComFunJS.showSH("200", psmodel.shyj, function (nr) {
+                var lg = $.loading({
+                    content: '保存中...',
+                })
+                $.getJSON("/API/VIEWAPI.ashx?ACTION=LCSP_REBACKWF&r=" + Math.random(), { P1: psmodel.formpiid, P2: psmodel.shyj, formcode: psmodel.formcode, ID: psmodel.formid }, function (result) {
+                    lg.hide();
+                    if ($.trim(result.ErrorMsg) == "") {
+                        $(".ui-footer").hide();
+                        var el = $.tips({
+                            content: "审核成功",
+                            stayTime: 2000,
+                            type: "success"
+                        })
+                        el.on("tips:hide", function () {
+                            //window.location.href = "UI_QJCC_LIST.html?r=" + Math.random();
+                            window.location.reload();
+                        })
+                    }
+                    else {
+                        $.tips({
+                            content: "审核失败，原因：" + result.ErrorMsg,
+                            stayTime: 2000,
+                            type: "warn"
+                        })
+                    }
+                });
+            })
+        }
+
+        //# sourceURL=PROCESS.js;
+    </script>
+</head>
+<body>
+    <div ms-controller="splist">
+        <div ms-if="isxsshr">
+            <div class="ui-form-item ui-border-b">
+                <label>审核人</label>
+                <div class="ui-select ui-border-b">
+                    <select ms-duplex="shr" class="shr">
+                        <option ms-repeat-item="urData" ms-attr-value="item.UserName">{{item.UserRealName}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-footer ui-footer-stable ui-btn-group ui-border-t" ms-if="iscansp">
+            <button class="ui-btn-lg ui-btn-primary" onclick="ty()">
+                审批
+            </button>
+            <button class="ui-btn-lg" onclick="zs()" ms-if="pstype==0">
+                转审
+            </button>
+            <button class="ui-btn-lg ui-btn-danger" onclick="th()">
+                退回
+            </button>
+        </div>
+
+        <section ms-if="formsh">
+            <div class="ui-form ui-border-t" style="padding-bottom:56px">
+                <ul class="ui-list ui-list-pure" style="background-color:#f6f0f0;">
+                    <li class="ui-border ui-label-list" ms-repeat-el="lcdata">
+                        <p>
+                            <span ms-if="pstype==0" class="ui-txt-info" style="padding-right:20px">
+                                {{el.userrealname}}
+                            </span>
+                            <span ms-if="pstype==1" class="ui-txt-info" style="padding-right:20px">
+                                {{el.TaskAssInfo}}<span ms-if="el.EndTime">({{el.userrealname}})</span>
+                            </span>
+                            <span class="ui-txt-info" ms-if="el.EndTime">{{el.EndTime|date("yyyy-MM-dd HH:mm:ss")}}</span>
+                            <span>{{spzt(el.state)|html}}</span>
+                        </p>
+                        <p class="ui-txt-justify" ms-if="el.EndTime">审核意见：{{el.TaskUserView}}</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="ui-form-item ui-border-b" style="height:1px">
+            </div>
+        </section>
+        <div class="zsr" style="display:none">
+            <div class="ui-select ui-border-b " style="-webkit-box-flex: 1;line-height:30px">
+                <select ms-duplex="zsshr">
+                    <option ms-repeat-item="zsurData" ms-attr-value="item.UserName">{{item.UserRealName}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

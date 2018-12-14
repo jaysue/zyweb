@@ -1,0 +1,666 @@
+﻿﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>客户管理</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1470730253_188452.css">
+    <!--<link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.css" rel="stylesheet" />-->
+    <link href="/View_Mobile/CSS/szhlextend.css?ver=20160904" rel="stylesheet" />
+    <link rel="stylesheet" href="/View_Mobile/CSS/animate.css">
+
+    <style type="text/css">
+        .list-fj-item{overflow:hidden}
+         .list-fj-item img {
+            width: 3rem;
+            height: 3rem;
+            float: left;
+            margin-right:.5rem;
+        }
+        .bt h2 {
+            float: left;
+            color: #fff;
+            font-size:.5rem;
+            font-weight: 400;
+           
+            background: #91cebe;
+            margin:-.25rem 0 0 1rem;
+            padding: 0 .6rem;
+           
+            position: absolute;
+            z-index: 2;
+            top: 0;
+        }
+
+            .bt h2 em {
+                width: 0;
+                height: 0;
+                border-bottom:.25rem solid #5CA994;
+                border-left:.25rem solid transparent;
+                position: absolute;
+                left: -.25rem;
+                top: 0;
+            }
+        .show-op{padding-top:.5rem;}
+        .picker-2{position:absolute;right:.0rem;padding:.5rem;top:0;color:#999;}
+    </style>
+</head>
+<body>
+    <div class="page-group">
+        <div class="page page-current" id="pageindex1">
+            <div class="buttons-tab">
+                <a class="tab-link button external active">日报</a>
+                <!--<a class="tab-link button external">周报</a>-->
+                <a class="tab-link button external">月报</a>
+            </div>
+            <div class="content infinite-scroll infinite-scroll-bottom" style="margin-top:2rem">
+                <div class="list-container">
+                    <!--展开带头像-->
+                    <div class="card facebook-card animated fadeInUp show-op">
+                        <!--<div class="ribbon-wrapper-green"><div class="ribbon-green">工作日报</div></div>-->
+                        <div class="bt">
+                            <h2> <em></em> 用户协议 </h2>
+                        </div>
+                        <a class="picker-2"><i class="iconfont icon-jikediancanicon13"></i></a>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" style="width:2rem;height:2rem;" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16 head-name-hide">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2 head-cont-hide">报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-item">
+                                <span class="c999 title-item">报告日期：</span>
+                                <span>2015-11-20</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999">报告日期：</span>
+                                <span>本周工作报告 1.整理首页登录需求，发给理想，请外人协助完成（预计下周完成微信扫码登录功能） 2.完成新版切换工作，包括菜单，新的系统管理首页，新的引导页，新的组织机构管理页（本周完成） 3.标准化框架，各模块流程图完善，为测试人员测试工作做准备 4.html5即时通讯页面及需求整理，页面整合完成，功能预计下周能完成 5.培训平台考试模块制作开始编写后台管理代码 6.系统管理模块测试工作安排 7.快递打印工作推动，需求已经整理好发给兼职人员，说周一给我答复 8.文件七牛云存储接口工作的推动，目前遇到难题，卡了，正在解决，希望本周能有进展</span>
+                            </div>
+                            <ul class="filelist" style="margin-left:.5rem;">
+                                <!--repeat428537517786-->
+                                <li>
+                                    <img class="" src="/ToolS/DownFile.aspx?fileId=1728">
+                                    <span class="fileinfo">saas上线前问题汇总</span>
+                                </li><!--repeat428537517786-->
+                                <li>
+                                    <img class="" src="/ToolS/DownFile.aspx?fileId=1729">
+                                    <span class="fileinfo">企捷云微信办公v3.0用户手册</span>
+                                </li><!--repeat428537517786-->
+                                <li>
+                                    <img class="" src="/ToolS/DownFile.aspx?fileId=1730">
+                                    <span class="fileinfo"></span>
+                                </li><!--repeat428537517786-->
+                                <li>
+                                    <img class="" src="/ToolS/DownFile.aspx?fileId=1731">
+                                    <span class="fileinfo">微信绑定银行卡</span>
+                                </li><!--repeat428537517786--><!--repeat428537517786:end-->
+                            </ul>
+                            <div class="buttons-tab list-op">
+                                <a class="tab-link button external">
+                                    <i class="iconfont icon-xiaoxi"></i>评论
+                                </a>
+                                <a class="tab-link button external">
+                                    <i class="iconfont icon-bianji2"></i>编辑
+                                </a>
+                                <a class="tab-link button external">
+                                    <i class="iconfont icon-remove"></i>删除
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--展开不带头像--流程审批-->
+                    <div class="card facebook-card animated fadeInUp show-op ">
+                        <!--<div class="ribbon-wrapper-green"><div class="ribbon-green">意向客户</div></div>-->
+                        <div class="bt">
+                            <h2> <em></em> 用户协议 </h2>
+                        </div>
+                        <div class="card-content p5">
+                            <div class="card-item">
+                                <span class="c999 title-item">创建日期：</span>
+                                <span>2015-11-20</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">审批类型：</span>
+                                <span>加班申报表</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">加班时长：</span>
+                                <span>3小时</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!--展开不带头像--流程审批-->
+                    <div class="card facebook-card animated fadeInUp show-op ">
+                        <!--<div class="ribbon-wrapper-green"><div class="ribbon-green">意向客户</div></div>-->
+                        <div class="bt">
+                            <h2> <em></em> 用户协议 </h2>
+                        </div>
+                        <a class="picker-2"><i class="iconfont icon-picker3"></i></a>
+                        <div class="card-content p5">
+                            <div class="card-item">
+                                <span class="c999 title-item">创建日期：</span>
+                                <span>2015-11-20</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">审批类型：</span>
+                                <span>加班申报表</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--未展开带操作按钮-->
+                    <div class="card facebook-card animated fadeInUp">
+                        <div class="ribbon-wrapper-green"><div class="ribbon-green">工作日报</div></div>                      
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+
+
+                    <div class="card facebook-card animated fadeInUp">
+                        <div class="ribbon-wrapper-green"><div class="ribbon-green">工作日报</div></div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+
+                    <div class="card facebook-card animated fadeInUp">
+                        <div class="ribbon-wrapper-green"><div class="ribbon-green">工作日报</div></div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+
+                    <div class="card facebook-card animated fadeInUp">
+                        <div class="ribbon-wrapper-green"><div class="ribbon-green">工作日报</div></div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+
+                    <div class="card facebook-card animated fadeInUp">
+                        <div class="ribbon-wrapper-green"><div class="ribbon-green">工作日报</div></div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+
+                    <div class="card facebook-card animated fadeInUp show-op">
+                        <div class="bt">
+                            <h2> <em></em> 用户协议 </h2>
+                        </div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+
+                    <div class="card facebook-card animated fadeInUp show-op">
+                        <div class="bt">
+                            <h2> <em></em> 工作日报 </h2>
+                        </div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                    <div class="card facebook-card animated fadeInUp show-op">
+                        <div class="bt">
+                            <h2> <em></em> 用户协议 </h2>
+                        </div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                    <div class="card facebook-card animated fadeInUp show-op">
+                        <div class="bt">
+                            <h2> <em></em> 用户协议 </h2>
+                        </div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                    <div class="card facebook-card animated fadeInUp show-op">
+                        <div class="bt">
+                            <h2> <em></em> 用户协议 </h2>
+                        </div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+
+                    <div class="card facebook-card animated fadeInUp show-op">
+                        <div class="bt">
+                            <h2> <em></em> 用户协议 </h2>
+                        </div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                    <div class="card facebook-card animated fadeInUp show-op">
+                        <div class="bt">
+                            <h2> <em></em> 用户协议 </h2>
+                        </div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                    <div class="card facebook-card animated fadeInUp show-op">
+                        <div class="bt">
+                            <h2> <em></em> 用户协议 </h2>
+                        </div>
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                    <!--未展开-->
+                    <div class="card facebook-card">
+                        <!--<div class="ribbon-wrapper-green"><div class="ribbon-green">工作日报</div></div>-->
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                    <!--未展开-->
+                    <div class="card facebook-card">
+                        <!--<div class="ribbon-wrapper-green"><div class="ribbon-green">工作日报</div></div>-->
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                                <p>张理想</p>
+                            </div>
+                            <div class="facebook-date head-ft16"><span class="c999 ">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告报告工作6报告工作报告</div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                    <!--crm 我创建的-->
+                    <div class="card facebook-card show-op">
+                        <!--<div class="ribbon-wrapper-green"><div class="ribbon-green">意向客户</div></div>-->
+
+                        <div class="card-content pt5">
+                            <div class="card-item">
+                                <span class="c999 title-item">客户名称:</span>
+                                <span>李小姐</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999">联系电话：</span>
+                                <span>18702456789</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999">负责人：</span>
+                                <span>王小小</span>
+                            </div>
+                            <!--默认隐藏 点击时 显示-->
+                            <div class="card-content">
+                                <div class="card-item">
+                                    <span class="c999 title-item">跟进状态:</span>
+                                    <span>意向</span>
+                                </div>
+                                <div class="card-item">
+                                    <span class="c999">客户来源：</span>
+                                    <span>研讨会</span>
+                                </div>
+                            </div>
+                            <!--跟进记录-->
+                            <div>
+                                <div class="lookright-box">
+                                    <div class="menu-general">
+                                        <ul>
+                                            <li class="active">
+                                                <a>跟进</a>
+                                            </li>
+                                            <li class="">
+                                                <a>联系人</a>
+                                            </li>
+                                            <li class="">
+                                                <a>合同</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div id="map">
+                                    <!--跟进-->
+                                    <div style="display: block;">
+                                        <div class="crm-dt">
+                                            <span class="crm-yuan"></span>
+                                            <div class="crm-dt-cont">
+
+                                                <div class="m5">
+                                                    <p class="c999">张理想 &gt; 微信  初访<span class="pull-right ft14">2天</span></p>
+                                                    <h3 class="crm-xg ft14 mt5">顺序从在徐秀珍在</h3>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--评论样式-->
+                                        <div class="crm-dt">
+                                            <span class="crm-yuan"></span>
+                                            <div class="crm-dt-cont">
+
+                                                <div class="m5">
+                                                    <p class="c999">张理想<span class=" ft14 pull-right">2016-11-30</span></p>
+                                                    <h3 class="crm-xg ft14 mt5">顺序从在徐秀珍在</h3>
+                                                    <p><div class="item-after pfdv"><img alt="1" src="/View_Mobile/JS/raty/images/star-on.png" title="100">&nbsp;<img alt="2" src="/View_Mobile/JS/raty/images/star-on.png" title="100">&nbsp;<img alt="3" src="/View_Mobile/JS/raty/images/star-on.png" title="100">&nbsp;<img alt="4" src="/View_Mobile/JS/raty/images/star-on.png" title="100">&nbsp;<img alt="5" src="/View_Mobile/JS/raty/images/star-on.png" title="100"><input name="score" type="hidden" value="5" readonly=""></div></p>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--联系人-->
+                                    <div>
+                                        <div class="crm-dt-cont m35">
+                                            <div class="m5">
+                                                <div class="">
+                                                    <span class="c999 title-item">客户名称:</span>
+                                                    <span>李小姐</span>
+                                                </div>
+
+                                                <div class="">
+                                                    <span class="c999">负责人：</span>
+                                                    <span>王小小</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="crm-dt-cont m35">
+                                            <div class="m5">
+                                                <div class="">
+                                                    <span class="c999 title-item">客户名称:</span>
+                                                    <span>李小姐</span>
+                                                </div>
+                                                <div class="">
+                                                    <span class="c999">联系电话：</span>
+                                                    <span>18702456789</span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buttons-tab list-op">
+                            <a class="tab-link button external">
+                                <i class="iconfont icon-bianji2"></i>编辑
+                            </a>
+                            <a class="tab-link button external create-actions">
+                                <i class="iconfont icon-add3"></i>新增
+                            </a>
+                        </div>
+                    </div>
+                    <!--crm 其他人创建的-->
+                    <div class="card facebook-card show-op">
+                        
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar">
+                                <img src="https://img.alicdn.com/imgextra/i3/2101874475/TB2rJLinFXXXXavXpXXXXXXXXXX_!!2101874475.jpg_430x430q90.jpg" width="40" class="border-r">
+                            </div>
+                            <div class="facebook-date head-ft16">张理想<span class="ml10 c999 ft14">2016-11-30</span></div>
+                            <div class="facebook-date word-break2">
+                                <span class="c999 title-item">客户名称:</span>
+                                <span>李小姐</span>
+                            </div>
+                            <div class="facebook-date word-break2">
+                                <span class="c999 title-item">客户名称:</span>
+                                <span>李小姐</span>
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="card-content pt5">
+                            <div class="card-item">
+                                <span class="c999 title-item">客户名称:</span>
+                                <span>李小姐</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999">联系电话：</span>
+                                <span>18702456789</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999">负责人：</span>
+                                <span>王小小</span>
+                            </div>
+                            <!--默认隐藏 点击时 显示-->
+                            <div class="card-content">
+                                <div class="card-item">
+                                    <span class="c999 title-item">跟进状态:</span>
+                                    <span>意向</span>
+                                </div>
+                                <div class="card-item">
+                                    <span class="c999">客户来源：</span>
+                                    <span>研讨会</span>
+                                </div>
+                            </div>
+                            <!--跟进记录-->
+                            <div>
+                                <div class="lookright-box">
+                                    <div class="menu-general">
+                                        <ul>
+                                            <li class="active">
+                                                <a>跟进</a>
+                                            </li>
+                                            <li class="">
+                                                <a>联系人</a>
+                                            </li>
+                                            <li class="">
+                                                <a>合同</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div id="map">
+                                    <!--跟进-->
+                                    <div style="display: block;">
+                                        <div class="crm-dt">
+                                            <span class="crm-yuan"></span>
+                                            <div class="crm-dt-cont">
+
+                                                <div class="m5">
+                                                    <p class="c999">张理想 &gt; 微信  初访<span class="pull-right ft14">2天</span></p>
+                                                    <h3 class="crm-xg ft14 mt5">顺序从在徐秀珍在</h3>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--评论样式-->
+                                        <div class="crm-dt">
+                                            <span class="crm-yuan"></span>
+                                            <div class="crm-dt-cont">
+
+                                                <div class="m5">
+                                                    <p class="c999">张理想<span class=" ft14 pull-right">2016-11-30</span></p>
+                                                    <h3 class="crm-xg ft14 mt5">顺序从在徐秀珍在
+                                                    
+                                                    </h3>
+                                                    <ul class="filelist">
+                                                        <!--repeat428537517786-->
+                                                        <li>
+                                                            <img class="" src="/ToolS/DownFile.aspx?fileId=1728">
+                                                            <span class="fileinfo">saas上线前问题汇总</span>
+                                                        </li><!--repeat428537517786-->
+                                                        <li>
+                                                            <img class="" src="/ToolS/DownFile.aspx?fileId=1729">
+                                                            <span class="fileinfo">企捷云微信办公v3.0用户手册</span>
+                                                        </li><!--repeat428537517786-->
+                                                        <li>
+                                                            <img class="" src="/ToolS/DownFile.aspx?fileId=1730">
+                                                            <span class="fileinfo"></span>
+                                                        </li><!--repeat428537517786-->
+                                                        <li>
+                                                            <img class="" src="/ToolS/DownFile.aspx?fileId=1731">
+                                                            <span class="fileinfo">微信绑定银行卡</span>
+                                                        </li><!--repeat428537517786--><!--repeat428537517786:end-->
+                                                    </ul>
+                                                    <p><div class="item-after pfdv"><img alt="1" src="/View_Mobile/JS/raty/images/star-on.png" title="100">&nbsp;<img alt="2" src="/View_Mobile/JS/raty/images/star-on.png" title="100">&nbsp;<img alt="3" src="/View_Mobile/JS/raty/images/star-on.png" title="100">&nbsp;<img alt="4" src="/View_Mobile/JS/raty/images/star-on.png" title="100">&nbsp;<img alt="5" src="/View_Mobile/JS/raty/images/star-on.png" title="100"><input name="score" type="hidden" value="5" readonly=""></div></p>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--联系人-->
+                                    <div>
+                                        <div class="crm-dt-cont m35">
+                                            <div class="m5">
+                                                <div class="">
+                                                    <span class="c999 title-item">客户名称:</span>
+                                                    <span>李小姐</span>
+                                                </div>
+
+                                                <div class="">
+                                                    <span class="c999">负责人：</span>
+                                                    <span>王小小</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="crm-dt-cont m35">
+                                            <div class="m5">
+                                                <div class="">
+                                                    <span class="c999 title-item">客户名称:</span>
+                                                    <span>李小姐</span>
+                                                </div>
+                                                <div class="">
+                                                    <span class="c999">联系电话：</span>
+                                                    <span>18702456789</span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buttons-tab list-op">
+                            <a class="tab-link button external">
+                                <i class="iconfont icon-bianji2"></i>编辑
+                            </a>
+                            <a class="tab-link button external create-actions">
+                                <i class="iconfont icon-add3"></i>新增
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script src="/View_Mobile/JS/touch/toucher.yanjs"></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/raty/jquery.raty.js?v=1.3"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script>
+        $(document).on('click', '.create-actions', function () {
+            var buttons1 = [
+              {
+                  text: '请选择您要新增的项',
+                  label: true
+              },
+              {
+                  text: '新增合同',
+
+
+              },
+              {
+                  text: '新增联系人',
+
+              },
+              {
+                  text: "新增客户"
+              },
+            ];
+            var buttons2 = [
+              {
+                  text: '取消',
+                
+              }
+            ];
+            var groups = [buttons1, buttons2];
+            $.actions(groups);
+        });
+    </script>
+
+</body>
+
+</html>

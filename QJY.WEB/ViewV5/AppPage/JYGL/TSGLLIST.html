@@ -1,0 +1,318 @@
+﻿<div ms-controller="TSGLLIST">
+    <!-- 添加按钮 -->
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="AddView('JYGL_TSGL')"><i class="iconfont icon-jiahao ft12 mr5"></i>添加图书</button>
+        <button type="button" class="btn btn-primary btn-lg" ms-click="$('#JYZD').modal('show');"><i class="iconfont icon-shezhi ft12 mr5"></i>借阅设置</button>
+
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">图书类型：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectTSType('')"><span class="active">全部</span></li>
+                <li ms-repeat-el="TypeData" ms-click="SelectTSType(el.ID)"><span>{{el.TypeName}}</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">借阅状态：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectJYType('')"><span class="active">全部</span></li>
+                <li ms-click="SelectJYType('0')"><span>可借阅</span></li>
+                <li ms-click="SelectJYType('1')"><span>借阅中</span></li>
+
+            </ul>
+        </div>
+        <!-- 搜索 -->
+        <div class="oh">
+            <div class="input-group ml15" style="width:295px;">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" placeholder="搜索图书名称">
+                <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+            </div>
+        </div>
+    </div>
+    <!-- 展开更多选项 -->
+    <div class="add-tab ft14 tc mt20" style="display:none;">
+        <span>更多筛选<i class="caret"></i></span>
+    </div>
+    <!-- 表格 -->
+    <div class="default-tab ft14 pt20">
+        <table class="table table-striped table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th class="tc">
+                        <!--<div class="icheckbox_square-blue">
+                            <input type="checkbox">
+                            <span class="iconfont icon-check ft12"></span>
+                        </div>-->
+                        序号
+                    </th>
+                    <th>编码</th>
+                    <th>图书类别</th>
+                    <th>图书名称</th>
+                    <th>作者</th>
+                    <th>可用状态</th>
+                    <th>借阅状态</th>
+
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-el="tmpListData">
+                    <td class="tc">
+                        <!--<div class="icheckbox_square-blue">
+                            <input type="checkbox">
+                            <span class="iconfont icon-check ft12"></span>
+                        </div>-->
+                        {{$index+1+page.pagecount*(page.pageindex-1)}}
+                    </td>
+                    <td>{{el.TSNum}}</td>
+                    <td>{{el.TSTypeName}}</td>
+                    <td class="lk" ms-click="ViewForm('JYGL_TSGL',el.ID,'',$event)">{{el.TSName}}</td>
+                    <td>{{el.auther}}</td>
+                    <td>{{el.Status=='0'?"可用":"不可用"}}</td>
+                    <td>{{el.jystatus=='0'?"可借阅":"借阅中"}}</td>
+                    <td>
+
+                        <a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="借阅记录" ms-click="ShowJYData(el)">
+                            <i class="iconfont icon-liebiao3 "></i>
+                        </a>
+                        <!--<a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="归还图书" ms-click="RebackTS(el)"  ms-if="el.jystatus=='1'">
+                            <i class="iconfont icon-baoming"></i>
+                        </a>-->
+                        <a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="编辑" ms-click="edit('JYGL_TSGL',el.ID,$event)" style="margin-left: 10px;">
+                            <i class="iconfont icon-bianji"></i>
+                        </a>
+                        <a class="cz-btn ft18 sc-color tip" data-toggle="tooltip" title="删除" ms-click="DELTS(el,$event)" style="margin-left: 10px;">
+                            <i class="iconfont icon-shanchu"></i>
+                        </a>
+                    </td>
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+            </tfoot>
+        </table>
+        <div class="ui-datatable-page ft14 pl20">
+
+            <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+            <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                <span>共{{model.page.total}}条记录</span>
+                <span ms-visible="model.page.total>model.pageNum[0].num">
+                    选择每页条数
+                    <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                        <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                    </select>
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="JYData" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 700px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{{selts.TSName}}--借阅记录</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <table class="table table-hover table-bordered" id="tab">
+                            <thead style="background:#f7f7f7;">
+                                <tr>
+                                    <th width="80px">借阅人</th>
+                                    <th width="110px">借阅开始时间</th>
+                                    <th width="110px">借阅截止时间</th>
+                                    <th width="110px">归还时间</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ms-repeat-item="JYJLData">
+                                    <td>{{item.JYRName}}</td>
+                                    <td>{{item.StartTime|date('yyyy-MM-dd')}}</td>
+                                    <td>{{item.EndTime|date('yyyy-MM-dd')}}</td>
+                                    <td>  <span ms-if="$index==0">{{selts.jystatus=='0'?item.BackDate:"暂未归还"}}</span><span ms-if="$index>0">{{item.BackDate}}</span></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr ms-if="JYJLData.size()==0"><td class="tc" colspan="4">暂无借阅记录</td></tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default  btn-lg " data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-info btn-lg " id="conaddForder" ms-click="SenDTSTX()" ms-if="selts.jystatus=='1'">发送归还提醒</button>
+                    <button type="button" class="btn btn-success  btn-lg " id="conaddForder" ms-click="RebackTS()" ms-if="selts.jystatus=='1'">归还图书</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="JYZD" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 500px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">借阅设置</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label"><span class="Required " style="color:red">*</span>借阅数量限制(本)</label>
+                            <input type="number" class="form-control szhl_require" style="width: 200px" placeholder="请输入借阅数量限制" ms-duplex="JYZiDian.Remark1" />
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label"><span class="Required " style="color:red">*</span>借阅时间限制(天)</label>
+                            <input type="number" class="form-control szhl_require" style="width: 200px" placeholder="请输入借阅时间限制" ms-duplex="JYZiDian.Remark2" />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-success" id="conaddForder" ms-click="SaveJYZiDian()">确&nbsp;&nbsp;认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var tempindex = avalon.define({
+        $id: "TSGLLIST",
+        curTSType: "",
+        curJYType: "",
+        JYZiDian: { Remark1: "", Remark2: "" },
+        SaveJYZiDian: function () {
+            if (!tempindex.JYZiDian.Remark) {
+                ComFunJS.winwarning("请输入借阅数量限制");
+                return;
+            }
+            if (!tempindex.JYZiDian.Remark1) {
+                ComFunJS.winwarning("借阅时间限制");
+                return;
+            }
+            $.post("/API/VIEWAPI.ashx?ACTION=XTGL_SAVETYPEMODEL", { P1: JSON.stringify(tempindex.JYZiDian.$model) }, function (jsonresult) {
+                if ($.trim(jsonresult.ErrorMsg) == "") {
+                    ComFunJS.winsuccess("操作成功");
+                    $('#JYZD').modal('hide');
+                }
+            });
+        },
+        edit: function (code, ID, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD.html?FormCode=" + code + "&ID=" + ID  + "&r=" + Math.random(), "修改", "1000");
+        },
+        tmpListData: [],
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        SelectTSType: function (type) {
+            tempindex.curTSType = type;
+            tempindex.GetLIST();
+        },
+        SelectJYType: function (type) {
+            tempindex.curJYType = type;
+            tempindex.GetLIST();
+        },
+        selts: {},
+        JYJLData: [],
+        ShowJYData: function (item) {
+            $.getJSON("/API/VIEWAPI.ashx?Action=JYGL_GETTSJYINFO", { P1: item.ID }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempindex.selts = item;
+                    tempindex.JYJLData = resultData.Result;
+                    $('#JYData').modal('show');
+
+                }
+            })
+        },
+
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        DELTS: function (item, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            ComFunJS.winconfirm("确认要删除吗", function () {
+                $.post("/API/VIEWAPI.ashx?Action=JYGL_DELTS", { P1: item.ID }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempindex.tmpListData.remove(item);
+                        ComFunJS.winsuccess("操作成功");
+                    }
+                })
+            }, function () { })
+        },
+        InitWigetData: function () {
+            model.search.seartype = "";
+            model.GetTypeData("24");
+            tempindex.GetLIST();
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 25, P2: "" }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempindex.JYZiDian = resultData.Result[0];
+                }
+            })
+        },
+        SenDTSTX: function () {
+            ComFunJS.winconfirm("确认要催还图书吗？", function () {
+                $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_SENDTXMSG', { "P1": tempindex.JYJLData[0].ID }, function (result) {
+                    if (result.ErrorMsg == "") {
+                        ComFunJS.winsuccess("催还消息已发送成功");
+                    }
+                })
+            }, function () { })
+        },
+        RebackTS: function () {
+            ComFunJS.winconfirm("确认要归还图书<b  style='color: blue;'>" + tempindex.selts.TSName + "</b>吗", function () {
+                $.post("/API/VIEWAPI.ashx?Action=JYGL_REBACKTS", { P1: tempindex.selts.ID, P2: tempindex.JYJLData[0].ID }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempindex.selts.jystatus = "0";
+                        ComFunJS.winsuccess("操作成功");
+                        tempindex.GetLIST();
+                    }
+                })
+            }, function () { })
+        },
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_GETTSLIST_PAGE', { p: 1, P1: model.search.searchcontent, P2: tempindex.curTSType, pagecount: model.page.pagecount, jystatus: tempindex.curJYType }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempindex.tmpListData = resultData.Result;
+                    if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                    model.page.total = resultData.Result1;
+                    laypage({
+                        cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                        pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //通过后台拿到的总页数
+                        curr: 1, //初始化当前页
+                        skin: 'molv',
+                        jump: function (e) { //触发分页后的回调
+                            if (e.curr != model.page.pageindex) {
+                                $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_GETTSLIST_PAGE', { p: e.curr, P1: model.search.seartype, P2: tempindex.curTSType, pagecount: model.page.pagecount, jystatus: tempindex.curJYType }, function (resultData) {
+                                    if (resultData.ErrorMsg == "") {
+                                        tempindex.tmpListData = resultData.Result;
+                                    }
+                                })
+                                model.page.pageindex = e.curr;
+                            }
+                        }
+                    });
+                }
+            })
+        }
+    })
+    //@ sourceURL=TSGLLIST.js;
+</script>

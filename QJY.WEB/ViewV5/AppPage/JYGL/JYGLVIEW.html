@@ -1,0 +1,44 @@
+﻿
+<div style="background-color:#F8F8F8" ms-controller="JYGLVIEW">
+
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "JYGLVIEW",
+            CancelWF: function (dataid) {
+                $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_MODIFYTSSTATUS', { P1: model.modelData.TSID, P2: "0" }, function (resultData) {
+
+                })
+                $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_DELJY', { P1: dataid }, function (resultData) {
+
+                })
+
+            },//重新更新图书状态
+            InitWigetData: function (strId) {
+                model.title = "借阅管理";
+                model.ShowColumns.pushArray(
+                [{ ColName: "JYRName", ColText: "借阅人", IsSel: true, "class": "width50" },
+                    { ColName: "StartTime", ColText: "开始时间", "class": "width50", IsSel: true, format: "dateformat" },
+                      { ColName: "EndTime", ColText: "结束时间", "class": "width50", IsSel: true, format: "dateformat" },
+                      { ColName: "TSName", ColText: "使用图书", "class": "width50", IsSel: true },
+                      { ColName: "Remark", ColText: "使用说明", IsSel: true }
+                ]);
+
+                if (strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_GETJYGLLIST', { P1: "all", ID: model.strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            model.modelData = resultData.Result[0];
+                            model.tpData = resultData.Result[0].FileList;
+                            setTimeout(" ComFunJS.initForm();", 500);
+                        }
+                    })
+                }
+
+            }
+        });
+        avalon.ready(function () {
+        })
+        //@ sourceURL=JYGL.js;
+    </script>
+</div>

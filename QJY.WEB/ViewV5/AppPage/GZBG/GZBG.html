@@ -1,0 +1,164 @@
+﻿<style>
+    i {
+        color: red;
+    }
+    .col-xs-4 {
+        padding-right: 0px;
+    }
+</style>
+<div class="form-horizontal" ms-controller="GZBG">
+
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>报告类型</label>
+        <div class="col-xs-4">
+            <select class="form-control" ms-duplex="modelData.LeiBie">
+                <option ms-repeat-item="ColumnData" ms-attr-value="item.ID" ms-attr-selected="item.ID==modelData.LeiBie?'selected':''">{{item.TypeName}}</option>
+            </select>
+        </div>
+        <span class="input-group-addon" style="width:72px;height:35px;" ms-if="isADD=='1'" data-toggle="modal" data-target="#UpdateZD">添加</span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>报告填写时间</label>
+        <div class="col-xs-4">
+            <input type="text" disabled="disabled" class="form-control szhl_form_date  szhl_require" id="inputEmail3" ms-duplex="modelData.RBDate">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>报告内容</label>
+        <div class="col-xs-9">
+            <textarea id="conContent" class="span2  szhl_UEEDIT  szhl_require focus" umheight="200" ms-duplex="modelData.RBContent"></textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label">完成情况</label>
+        <div class="col-xs-9">
+            <textarea class="span2  szhl_UEEDIT" id="gzbg" rows="5" ms-duplex="modelData.RBWCQK"></textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label">抄送人</label>
+        <div class="col-xs-9">
+            <input type="text" ms-duplex="modelData.ChaoSongUser" class="form-control szhl_getPeoples" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label">附件</label>
+        <div class="col-xs-9">
+            <input type="text"  class="span2  szhl_Upload form-control" ms-duplex="modelData.Files" />
+        </div>
+    </div>
+
+    <!--模态框 添加工作报告类型-->
+    <div class="modal fade" id="UpdateZD" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 500px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">分类管理</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label"><span class="Required " style="color:red">*</span>分类名称</label>
+                            <input type="text" class="form-control szhl_require" style="width: 200px" placeholder="请输入分类" ms-duplex="zditem.TypeName" />
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-4 control-label">分类描述</label>
+                            <textarea type="text" rows="3" class="form-control" style="width: 200px" placeholder="分类描述" ms-duplex="zditem.Remark1" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-success" id="conaddForder" ms-click="SaveZiDian()">确&nbsp;&nbsp;认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    var tempmodel = avalon.define({
+        $id: "GZBG",
+        name: "工作报告",
+        iswf: false,//是否属于流程表单
+        isADD: "",
+        ColumnData: [],
+        ZiDianData: { Class: "6", TypeName: "", Remark1: "" },
+        zditem: { TypeName: "", Remark1: "" },
+        modelData: { "RBDate": ComFunJS.getnowdate("yyyy-mm-dd"), "RBContent": "", "LeiBie": "", "RBWCQK": "", "Files": "", "ChaoSongUser": "" },
+        inittemp: function (strId) {
+            if (top.model.SelModel) {
+                top.model.SelModel.FunData.forEach(function (i) {
+                    if (i.PageCode == '/ViewV5/BASE/ZDLIST') {
+                        tempmodel.isADD = "1";
+                    }
+                })
+            }
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 6 }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempmodel.ColumnData = resultData.Result;
+                    if (tempmodel.ColumnData.size() > 0 && !tempmodel.modelData.LeiBie) {
+                        tempmodel.modelData.LeiBie = resultData.Result[0].ID;
+                    }
+                }
+            })
+
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=GZBG_GETGZBGMODEL', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempmodel.modelData = resultData.Result;
+                        if (tempmodel.modelData.RBDate && tempmodel.modelData.RBDate.length > 10) {
+                            tempmodel.modelData.RBDate = tempmodel.modelData.RBDate.substring(0, 10);
+                        }
+                        setTimeout("ComFunJS.initForm()", 500)
+                    }
+                })
+            } else {
+             
+                pmodel.isDraft = true;
+                ComFunJS.initForm();
+            }
+
+        },//初始化
+        SaveData: function (callback, btdom) {
+            if (!tempmodel.modelData.LeiBie) {
+                top.ComFunJS.winwarning("请选择工作报告类型");
+                $(btdom).attr("disabled", false).find(".fa").hide();//转圈样式去掉
+                return;
+            }
+            $.post("/API/VIEWAPI.ashx?ACTION=GZBG_ADDGZBG", { P1: JSON.stringify(tempmodel.modelData.$model) }, function (result) {
+                return callback.call(this, result);
+            });
+        }, SaveZiDian: function () {    //添加新的工作报告类型
+            tempmodel.ZiDianData.TypeName = tempmodel.zditem.TypeName;
+            tempmodel.ZiDianData.Remark1 = tempmodel.zditem.Remark1;
+            if (!tempmodel.ZiDianData.TypeName) {
+                ComFunJS.winwarning("请输入分类名称");
+                return;
+            }
+            $.post("/API/VIEWAPI.ashx?ACTION=XTGL_SAVETYPEMODEL", { P1: JSON.stringify(tempmodel.ZiDianData.$model) }, function (result) {
+                if ($.trim(result.ErrorMsg) == "") {
+                    tempmodel.zditem = { TypeName: "", Remark1: "" };
+
+                    //tempmodel.ZiDianData = { Class: tempindex.ClassID, TypeName: "", Remark1: "" };
+                    ComFunJS.winsuccess("操作成功");
+                    $('#UpdateZD').modal('hide');
+                    //刷新类型下拉框中的类型
+                    $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 6 }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            tempmodel.ColumnData = resultData.Result;
+                            if (tempmodel.ColumnData.size() > 0) {
+                                tempmodel.modelData.LeiBie = result.Result.ID;
+                            }
+                        }
+                    });
+                    //更新工作报告的类型
+                    top.model.GetTypeData("6");
+                }
+            });
+        }
+    });
+   
+</script>

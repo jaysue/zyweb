@@ -1,0 +1,144 @@
+﻿<style>
+    .form-horizontal .form-group {
+        margin-right: 50px;
+    }
+</style>
+<div class="form-horizontal" ms-controller="XMGL">
+    <div style="margin:0 80px;">
+        <div>
+            <ul class="clearfix" style="display: block;padding:0">
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label"><i>*</i>项目状态</label>
+                    <div class="add-ic">
+                        <select class="form-control" ms-duplex="modelData.Status">
+                            <option value="0" ms-attr-selected="modelData.Status=='0'?'selected':''">正在进行</option>
+                            <option value="1" ms-attr-selected="modelData.Status=='1'?'selected':''">已结束</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width  fl-right">
+                    <label class="add-item-label"><i>*</i>项目类型</label>
+                    <div class="add-ic">
+                        <select class="form-control" ms-duplex="modelData.YXJ">
+                            <option ms-repeat-item="ColumnData" ms-attr-value="item.ID">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label"><i>*</i>项目名称</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.XMMC" class="form-control" autofocus="autofocus" />
+                    </div>
+                </li>
+                <li class="add-item add-width  fl-right">
+                    <label class="add-item-label"><i>*</i>负责人</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control szhl_getPeoples szhl_require" signle="Y" ms-duplex="modelData.XMFZR" />
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label"><i>*</i>项目描述</label>
+                    <div class="add-ic">
+                        <textarea class="form-control szhl_require" rows="5" ms-duplex="modelData.XMMS"></textarea>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <div class="fg-item"><span>其他信息</span><i id="btnOtherInfo"></i></div>
+            <ul class="clearfix" style="padding:0" id="OtherInfo">
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">起止时间</label>
+                    <div style="display:block;">
+                        <div class="add-ic" style="width: 45%; float: left;">
+                            <input class="szhl_form_date form-control null" ms-duplex="modelData.StartDate" />
+                        </div>
+                        <div class="add-ic" style="float: left; line-height: 30px; width: 10%; text-align: center;">：</div>
+                        <div class="add-ic" style="width: 45%; float: right;">
+                            <input class="szhl_form_date form-control null" ms-duplex="modelData.EndDate" />
+                        </div>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label">项目进度(%)</label>
+                    <div class="add-ic">
+                        <select class="form-control " ms-duplex="modelData.XMJD">
+                            <option value="0">0%</option>
+                            <option value="10">10%</option>
+                            <option value="20">20%</option>
+                            <option value="30">30%</option>
+                            <option value="50">50%</option>
+                            <option value="75">75%</option>
+                            <option value="100">100%</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">团队成员</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control szhl_getPeoples szhl_require" ms-duplex="modelData.XMCYR">
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">附件</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.Files" class="span2  szhl_Upload form-control" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+<script>
+    var tempmodel = avalon.define({
+        $id: "XMGL",
+        name: "项目管理",
+        ColumnData: [],
+        modelData: { "Status": "0", "YXJ": "", "XMMC": "", "StartDate": "", "EndDate": "", "XMFZR": ComFunJS.getnowuser(), "XMCYR": "", "XMMS": "", "XMJD": "0", "Files": "" },
+        iswf: false,//是否属于流程表单
+        inittemp: function (strId) {
+
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 18 }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempmodel.ColumnData = resultData.Result;
+                    if (!tempmodel.modelData.YXJ) {
+                        tempmodel.modelData.YXJ = resultData.Result[0].ID
+                    };
+                }
+            })
+
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=XMGL_GETXMGLMODEL', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempmodel.modelData = resultData.Result[0];
+                        if (tempmodel.modelData.StartDate && tempmodel.modelData.StartDate.length > 10) {
+                            tempmodel.modelData.StartDate = tempmodel.modelData.StartDate.substring(0, 10);
+                        }
+                        if (tempmodel.modelData.EndDate && tempmodel.modelData.EndDate.length > 10) {
+                            tempmodel.modelData.EndDate = tempmodel.modelData.EndDate.substring(0, 10);
+                        }
+
+                        setTimeout(" ComFunJS.initForm()", 500)
+                    }
+                })
+            } else {
+                pmodel.isDraft = true;
+                ComFunJS.initForm()
+            }
+        },//初始化
+        SaveData: function (callback,btdom) {
+            if (tempmodel.modelData.XMJD < 0) {
+                $(btdom).attr("disabled", false).find(".fa").hide();//加上转圈样式
+                ComFunJS.winwarning("请输入大于0的数字");
+                return;
+            }
+            var data = tempmodel.modelData.$model;
+            var modelValue = JSON.stringify(data);
+            $.post("/API/VIEWAPI.ashx?ACTION=XMGL_ADDXMGL", { P1: modelValue }, function (result) {
+                return callback.call(this, result);
+            });
+        },
+    });
+</script>

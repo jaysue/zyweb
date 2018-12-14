@@ -1,0 +1,42 @@
+﻿
+<div style="background-color:#F8F8F8" ms-controller="CCXJVIEW">
+
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "CCXJVIEW",
+            CancelWF: function (dataid) {
+                $.getJSON('/API/VIEWAPI.ashx?Action=CCXJ_DELCCXJ', { P1: dataid }, function (resultData) {
+
+                })
+            },//重新更新图书状态
+            InitWigetData: function (strId) {
+                model.title = "出差休假";
+                model.ShowColumns.pushArray(
+                [{ ColName: "TypeName", ColText: "类型", IsSel: true},
+                      { ColName: "StarTime", ColText: "开始时间", IsSel: true, format: "dateformat" },
+                      { ColName: "EndTime", ColText: "结束时间", IsSel: true, format: "dateformat" },
+                      { ColName: "Daycount", ColText: "天数", IsSel: true},
+                      { ColName: "ZhuYaoShiYou", ColText: "事由", IsSel: false},
+                      { ColName: "CRUser", ColText: "申请人", IsSel: true, format: "username" },
+                      { ColName: "CRDate", ColText: "申请时间", IsSel: true, format: "dateformat" }
+                ]);
+
+                if (strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=CCXJ_GETCCXJMODEL', { P1: strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            resultData.Result.TypeName = resultData.Result1;
+                            if (resultData.Result3.length > 0) {
+                                resultData.Result.StateName = resultData.Result3[0].StateName;
+                            }
+                            model.modelData = resultData.Result;
+                            model.tpData = resultData.Result2;
+                            setTimeout(" ComFunJS.initForm()", 500)
+                        }
+                    })
+                }
+            }
+        });
+    </script>
+</div>

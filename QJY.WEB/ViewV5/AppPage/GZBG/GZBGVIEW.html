@@ -1,0 +1,40 @@
+﻿
+<div style="background-color:#F8F8F8" ms-controller="GZBGVIEW">
+
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "GZBGVIEW",
+            InitWigetData: function (strId) {
+                model.title = "报告详情";
+                model.ShowColumns.pushArray(
+                [{ "ColName": "TypeName", "ColText": "类型", "IsSel": true},
+                { "ColName": "RBDate", "ColText": "日期", "IsSel": true, "format": "dateformat" },
+                { "ColName": "BranchName", "ColText": "部门", "IsSel": true },
+                { "ColName": "ChaoSongUser", "ColText": "抄送人", "IsSel": true, "format": "username" },
+                { "ColName": "CRUser", "ColText": "创建人", "IsSel": true, "format": "username" },
+                { "ColName": "RBContent", "ColText": "报告内容", "IsSel": false, },
+                { "ColName": "RBWCQK", "ColText": "完成情况", "IsSel": true}
+                ]);
+
+                if (strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=GZBG_GETGZBGMODEL', { P1: strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            resultData.Result.TypeName = resultData.Result3
+                            model.modelData = resultData.Result;
+                            model.tpData = resultData.Result2;
+                            model.plData = resultData.Result1;
+                            model.ispl = 'Y';
+                            if (model.modelData.CRUser == model.nowuser) {
+                                model.isEdit = 'Y';
+                            }
+
+                            setTimeout(" ComFunJS.initForm()", 500)
+                        }
+                    })
+                }
+            }
+        });
+    </script>
+</div>

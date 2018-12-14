@@ -1,0 +1,159 @@
+﻿<div ms-controller="HYSLIST">
+    <!-- 添加按钮 -->
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="AddView('HYGL_HYS')"><i class="iconfont icon-jiahao ft12 mr5"></i>添加会议室</button>
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+     
+
+        <!-- 搜索 -->
+        <div class="oh">
+            <div class="input-group ml15" style="width:295px;">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" placeholder="搜索会议室">
+                <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+            </div>
+        </div>
+    </div>
+    <!-- 展开更多选项 -->
+    <div class="add-tab ft14 tc mt20" style="display:none;">
+        <span>更多筛选<i class="caret"></i></span>
+    </div>
+    <!-- 表格 -->
+    <div class="default-tab ft14 pt20">
+        <table class="table table-striped table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th class="tc">
+                    
+                        序号
+                    </th>
+                    <th ms-repeat-im="ShowColumns" ms-visible="im.IsSel">{{im.ColText}}</th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-el="tmpListData" ms-click="ViewForm('HYGL_HYS',el.ID,'',$event)">
+                    <td class="tc">
+
+                        {{$index+1+page.pagecount*(page.pageindex-1)}}
+                    </td>
+                    <td ms-repeat-im="ShowColumns" ms-visible="im.IsSel">{{ComFunJS.FnFormat(el[im.ColName],im)|html}}</td>
+                    <td>
+                        <a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="编辑" ms-click="EditViewNOWF('HYGL_HYS',el.ID,'',$event)">
+                            <i class="iconfont icon-bianji"></i>
+                        </a>
+                        <a class="cz-btn ft18 sc-color tip" data-toggle="tooltip" ms-if="el.IsDel==0" title="禁用" ms-click="DelHYS(el,1,$event)">
+                            <i class="iconfont icon-stop"></i>
+                        </a>
+                        <a class="cz-btn ft18 sc-color tip" data-toggle="tooltip" ms-if="el.IsDel==1" title="启用" ms-click="DelHYS(el,0,$event)">
+                            <i class="iconfont icon-qidong"></i>
+                        </a>
+
+                    </td>
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+            </tfoot>
+        </table>
+        <div class="ui-datatable-page ft14 pl20">
+
+            <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+            <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                <span>共{{model.page.total}}条记录</span>
+                <span ms-visible="model.page.total>model.pageNum[0].num">
+                    选择每页条数
+                    <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                        <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                    </select>
+                </span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var tempindex = avalon.define({
+        $id: "HYSLIST",
+        curXJType: "",
+        tmpListData:[],
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        SelectXJType: function (type) {
+            tempindex.curXJType = type;
+            tempindex.GetLIST();
+        },
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        InitWigetData: function () {
+            model.search.seartype = "";
+
+            //显示的列名
+            model.ShowColumns.clear();
+            model.ShowColumns.pushArray([
+                { "ColName": "Name", "ColText": "会议室名称", "IsSel": true, "format": "text" },
+                { "ColName": "Location", "ColText": "位置", "IsSel": true, "format": "text" },
+                { "ColName": "RNRS", "ColText": "可容纳人数", "IsSel": true, "format": "text" },
+                { "ColName": "IsDMT", "ColText": "是否有多媒体", "IsSel": true, "format": "text" },
+                { "ColName": "IsTYY", "ColText": "是否有投影仪", "IsSel": true, "format": "text" },
+                { "ColName": "Remark", "ColText": "备注", "IsSel": true, "format": "text" },
+                { "ColName": "IsDel", "ColText": "状态", "IsSel": true, "format": "zt" }
+            ]);
+            //类型数据
+            tempindex.GetLIST();
+        },
+
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_GETHYSLIST_PAGE', { p: 1, P1: model.search.searchcontent, P2: model.search.seartype, pagecount: model.page.pagecount, Content: model.search.searchcontent, lb: tempindex.curXJType }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempindex.tmpListData = resultData.Result;
+                    if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                    model.page.total = resultData.Result1;
+                    laypage({
+                        cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                        pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //通过后台拿到的总页数
+                        curr: 1, //初始化当前页
+                        skin: 'molv',
+                        jump: function (e) { //触发分页后的回调
+                            if (e.curr != model.page.pageindex) {
+                                $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_GETHYSLIST_PAGE', { p: e.curr, P1: model.search.searchcontent, P2: model.search.seartype, pagecount: model.page.pagecount, Content: model.search.searchcontent, lb: tempindex.curXJType }, function (resultData) {
+                                    if (resultData.ErrorMsg == "") {
+                                        tempindex.tmpListData = resultData.Result;
+                                    }
+                                })
+                                model.page.pageindex = e.curr;
+                            }
+                        }
+                    });
+                }
+            })
+        },
+        DelHYS: function (item, str, event) {
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            }
+            var msg = "禁用";
+            if (str == "0") { msg = "启用"; }
+            top.ComFunJS.winconfirm("确认要" + msg + "会议室吗", function () {
+                $.post("/API/VIEWAPI.ashx?ACTION=HYGL_DELHYS", { P1: item.ID, P2: str }, function (result) {
+                    if ($.trim(result.ErrorMsg) == "") {
+                        item.IsDel = parseInt(str);
+                        top.ComFunJS.winsuccess("操作成功");
+                    }
+                });
+            }, function () { })
+        }
+    })
+</script>

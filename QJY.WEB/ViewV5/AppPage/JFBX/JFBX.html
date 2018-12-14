@@ -1,0 +1,270 @@
+﻿<style>
+    #tab.table > thead > tr > th, #tab.table > tbody > tr > th, #tab.table > tfoot > tr > th, #tab.table > thead > tr > td, #tab.table > tbody > tr > td, #tab.table > tfoot > tr > td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .default-tab input, .default-tab select {
+        border: none;
+        box-shadow: none !important;
+    }
+
+    a .iconfont {
+        margin-right: 5px;
+        font-size: 12px;
+    }
+</style>
+<div class="form-horizontal" ms-controller="JFBX">
+    <div style="margin: 0 80px;">
+        <div>
+            <!--<div class="fg-item"><span>基本信息</span></div>-->
+            <ul class="clearfix" style="display: block;padding:0">
+                <li class="add-item add-widthall">
+                    <label>申请人</label>&nbsp;&nbsp;&nbsp;<label>{{modelData.ShenQingRen}}</label>
+                </li>
+                <li class="add-item add-width  fl-left">
+                    <label class="add-item-label"><i>*</i>报销日期</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control szhl_form_date szhl_require" ms-duplex="modelData.BXDate">
+                    </div>
+                </li>
+                <li class="add-item add-width  fl-right">
+                    <label class="add-item-label">关联项目</label>
+                    <div class="add-ic">
+                        <div class="input-group ">
+                            <input type="text" class="form-control szhl_select">
+
+                            <span class="input-group-addon" style="width:40px;height:34px;" ms-if="modelData.XMID" ms-click="ClearXM()"> <i class="iconfont icon-shanchu ft14 " style="color:white"></i></span>
+                        </div>
+                    </div>
+
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label"><i>*</i>标题</label>
+                    <div class="add-ic">
+                        <input type="text" autofocus="autofocus" class="form-control  szhl_require" ms-duplex="modelData.JFBXTitle">
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label"><i>*</i>消费记录</label>
+                    <div class="default-tab ft14 pt20">
+                        <table class="table table-hover table-bordered" id="tab">
+                            <thead style="background:#f7f7f7;">
+                                <tr>
+                                    <th width="100px">消费类型</th>
+                                    <th width="110px">金额(元)</th>
+                                    <th width="130px">时间</th>
+                                    <th width="100px">是否有票</th>
+                                    <th width="300px">事由</th>
+                                    <th width="50px" ms-if="pmodel.isedit=='Y'">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ms-repeat-item="JFBXJLLIST">
+                                    <td>{{item.TypeName}}</td>
+                                    <td>{{item.BXJE}}</td>
+                                    <td>{{item.BXDate|date('yyyy-MM-dd')}}</td>
+                                    <td>{{item.IsHasFP==1?"是":"否"}}</td>
+                                    <td style="word-break: break-all">{{item.BXContent}}</td>
+                                    <td ms-if="pmodel.isedit=='Y'"><a class=" btn btn-warning btn-sm" ms-click="RemoveJL(item)"><i class="iconfont icon-shanchu"></i>删除</a></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        合计：
+                                    </td>
+                                    <td>{{modelData.BXZJE}}(元)</td>
+                                    <td colspan="4"></td>
+
+                                </tr>
+                                <tr ms-if="pmodel.isedit=='Y'">
+                                    <td>
+                                        <select ms-duplex="JFBXJL.LeiBie" class="form-control" ms-change="ChangeFL(this)">
+                                            <option ms-repeat-item="ColumnData" ms-attr-value="item.ID">{{item.TypeName}}</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="form-control" ms-duplex="JFBXJL.BXJE" placeholder="请输入金额" /></td>
+                                    <td><input type="text" class="form-control szhl_form_date" ms-duplex="JFBXJL.BXDate" placeholder="请选择日期" /></td>
+                                    <td>
+                                        <label ms-click="SETIsHasFP()">
+                                            <div class="icheckbox_square-blue mr5" ms-class-1="checked:JFBXJL.IsHasFP==1">
+                                                <span class="iconfont icon-check ft12"></span>
+                                            </div>
+                                        </label>
+                                    </td>
+                                    <td><input type="text" class="form-control" ms-duplex="JFBXJL.BXContent" placeholder="请输入事由" /></td>
+                                    <td><a class="btn btn-info  btn-sm" ms-click="AddJFBXJL()"><i class="iconfont icon-jiahao"></i>添加</a></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </li>
+
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">描述</label>
+                    <div class="add-ic">
+                        <textarea ms-duplex="modelData.BXContent" rows="2" class="span2 form-control"></textarea>
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">附件</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.Files" class="span2  szhl_Upload form-control" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    var tempmodel = avalon.define({
+        $id: "JFBX",
+        ColumnData: [],
+        XMData: [],
+        name: "经费报销",
+        iswf: true,//是否属于流程表单
+        inittemp: function (strId) {
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 23 }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempmodel.ColumnData = resultData.Result;
+                    if (!tempmodel.JFBXJL.LeiBie) {
+                        tempmodel.JFBXJL.LeiBie = resultData.Result[0].ID;
+                        tempmodel.JFBXJL.TypeName = resultData.Result[0].TypeName;
+                    };
+                }
+            })
+            $.getJSON('/API/VIEWAPI.ashx?Action=XMGL_GETXMLIST', {}, function (resultData) {
+                if (resultData.ErrorMsg == "" && resultData.Result.length > 0) {
+                    tempmodel.XMData = resultData.Result;
+                    tempmodel.XM();
+                }
+            })
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=JFBX_GETJFBXMODEL', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempmodel.modelData = resultData.Result;
+                        if (tempmodel.modelData.BXDate && tempmodel.modelData.BXDate.length > 10) {
+                            tempmodel.modelData.BXDate = tempmodel.modelData.BXDate.substring(0, 10);
+                        }
+
+                        $(".szhl_select").val(resultData.Result3.XMMC);;
+                        tempmodel.JFBXJLLIST = resultData.Result1;
+                        setTimeout("ComFunJS.initForm()", 500)
+
+                    }
+                })
+            } else {
+
+                pmodel.isDraft = true;
+                ComFunJS.initForm();
+            }
+        },//初始化
+        modelData: { "ShenQingRen": ComFunJS.convertuser(ComFunJS.getnowuser()), "BranchName": "", "BXDate": "", "BXZJE": 0, "BXContent": "", "Files": "", "JFBXTitle": "", "XMID": "" },
+        JFBXJL: { "ShenQingRen": ComFunJS.convertuser(ComFunJS.getnowuser()), "LeiBie": "", "TypeName": "", "BXDate": "", "BXContent": "", "BXJE": "", "BXDNum": "", "IsHasFP": 0 },
+        JFBXJLLIST: [],
+        //存草稿使用
+        GetDraftData: function () {
+            return { "modelData": tempmodel.modelData.$model, "JFBXJLLIST": tempmodel.JFBXJLLIST.$model };
+        },
+        SetDraftData: function (vm) {
+            tempmodel.modelData = vm.modelData;
+            tempmodel.JFBXJLLIST = vm.JFBXJLLIST;
+        },
+        AddJFBXJL: function () {
+
+            if (!tempmodel.JFBXJL.BXJE) {
+                top.ComFunJS.winwarning("请填写报销金额");
+                return false;
+            }
+            if (tempmodel.JFBXJL.BXJE.length > 10) {
+                top.ComFunJS.winwarning("请输入长度10位及10位一下的报销金额");
+                return false;
+            }
+            var reg = /^\d+(?:.\d{1,2})?$/;
+            if (!reg.test(tempmodel.JFBXJL.BXJE)) {
+                top.ComFunJS.winwarning("报销记录金额只能是数字，且最多只能两位小数");
+                return false;
+            }
+            if (!tempmodel.JFBXJL.BXDate) {
+                top.ComFunJS.winwarning("请选择报销时间");
+                return false;
+            }
+
+            var jfbxModel = $.extend(false, {}, tempmodel.JFBXJL.$model);
+            tempmodel.JFBXJLLIST.push(jfbxModel);
+            tempmodel.modelData.BXZJE = (Number(tempmodel.modelData.BXZJE) + Number(tempmodel.JFBXJL.BXJE)).toFixed(2);
+            tempmodel.JFBXJL = { "ShenQingRen": ComFunJS.convertuser(ComFunJS.getnowuser()), "LeiBie": tempmodel.JFBXJL.LeiBie, "TypeName": tempmodel.JFBXJL.TypeName, "BXDate": "", "BXContent": "", "BXJE": "", "BXDNum": "", "IsHasFP": 0 };
+        },
+        RemoveJL: function (item) {
+
+            tempmodel.modelData.BXZJE = parseFloat(tempmodel.modelData.BXZJE) - parseFloat(item.BXJE);
+            tempmodel.JFBXJLLIST.remove(item);
+        },
+        ChangeFL: function (dom) {
+            var typeId = $(dom).find("option:selected").val();
+            tempmodel.ColumnData.forEach(function (item) {
+                if (typeId == item.ID) {
+                    tempmodel.JFBXJL.TypeName = item.TypeName;
+                }
+            })
+
+        }
+        ,
+        SaveData: function (callback, dom) {
+            if (tempmodel.modelData.JFBXTitle.length > 20) {
+                top.ComFunJS.winwarning("请输入长度20位及20位一下的报销标题");
+
+                $(dom).attr("disabled", false).find(".fa").hide();//加上转圈样式
+                return false;
+            }
+            if (tempmodel.JFBXJLLIST.size() == 0) {
+                top.ComFunJS.winwarning("请添加要报销的记录");
+
+                $(dom).attr("disabled", false).find(".fa").hide();//加上转圈样式
+                return false;
+            }
+            var reg = /^\d+(?:.\d{1,2})?$/;
+            if (!reg.test(tempmodel.modelData.BXZJE)) {
+                top.ComFunJS.winwarning("报销金额只能是数字，且最多只能两位小数");
+                $(dom).attr("disabled", false).find(".fa").hide();//加上转圈样式
+                return false;
+            }
+            $.post("/API/VIEWAPI.ashx?ACTION=JFBX_ADDJFBX", { P1: JSON.stringify(tempmodel.modelData.$model), P2: JSON.stringify(tempmodel.JFBXJLLIST.$model) }, function (result) {
+                return callback.call(this, result);
+            });
+        }, SETIsHasFP: function () {
+            tempmodel.JFBXJL.IsHasFP = tempmodel.JFBXJL.IsHasFP == 0 ? 1 : 0;
+        }, XM: function () {
+            tempmodel.XMData.forEach(function (item) {
+                if (item.ID == tempmodel.modelData.XMID) {
+                    $(".szhl_select").val(item.XMMC);
+                }
+            })
+            if ($(".szhl_select").length > 0) {
+                var tabsel = $(".szhl_select").YanSelect({
+                    valueindex: 0,//值对应列
+                    textindex: 1,
+                    dataobj: tempmodel.XMData,
+                    isCanAdd: false,
+                    columns: [{ "fieldname": "ID", "text": "序号" }, { "fieldname": "XMMC", "text": "项目名称" }],
+                    afterSelect: function (dom) {
+                        tempmodel.modelData.XMID = dom.attr('dataid')
+                    }
+                });
+            }
+        },
+         ClearXM: function () {
+            $(".szhl_select").val("");
+            tempmodel.modelData.XMID ="";
+        }
+    });
+
+    tempmodel.$watch("modelData.*", function (a, b) {
+        if (!tempmodel.modelData.ID) {
+            localStorage.setItem(pmodel.FormCode, JSON.stringify(tempmodel.modelData.$model));
+        }
+    })  //# sourceURL=JFBX.js;
+</script>

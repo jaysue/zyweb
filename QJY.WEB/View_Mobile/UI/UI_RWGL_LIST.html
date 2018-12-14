@@ -1,0 +1,477 @@
+﻿﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>任务管理</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1476090774_8365302.css">
+    <link href="/View_Mobile/CSS/szhlextend.css?ver=20160904" rel="stylesheet" />
+    <!--<link rel="stylesheet" href="/View_Mobile/CSS/animate.css">-->
+
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+    </style>
+</head>
+<body ms-controller="RWList">
+    <div class="page-group">
+        <div class="page page-current" id="pageindex1">
+            <div class="buttons-tab">
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(1)" class="tab-link button external" ms-class-1="active:type=='1'">负责</a>
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(2)" class="tab-link button external" ms-class-1="active:type=='2'">创建</a>
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(3)" class="tab-link button external" ms-class-1="active:type=='3'">参与</a>
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(4)" class="tab-link button external" ms-class-1="active:type=='4'">抄送</a>
+                <a href="#" ms-if="DataID!='-1'" class="tab-link button external active">任务管理</a>
+
+            </div>
+
+            <div class="content infinite-scroll infinite-scroll-bottom touchcontent" data-distance="50" style="margin-top:2rem" id="touchcontent">
+                <div class="list-container">
+
+                    <div class="card facebook-card animated fadeInUp" ms-repeat-el="ctData">
+                        <div class="ribbon-wrapper-green">
+                            <div ms-class-1="ribbon-green:(el.RWStatus==0&&el.jzstatus!=1)||el.RWStatus==1" ms-class-2="ribbon-red:el.RWStatus==0&&el.jzstatus==1">
+                                {{el.RWStatus==0?(el.jzstatus==1?'过期任务':'待办任务'):'已办任务'}}
+                            </div>
+                        </div>
+                        <!--<div class="card-header no-border" ms-on-click="showdetil(el)">
+                            <div class="facebook-avatar">
+                                <img ms-src="/ToolS/DownFile.aspx?type=TX&user={{el.CRUser}}" style="border-radius: 3px;width:32px;height:32px">
+                                <div class="cadename" ms-if="!el.isfold">{{ComFunJS.convusers(el.CRUser)}}</div>
+                            </div>
+                            <div class="facebook-date" ms-if="el.isfold">{{ComFunJS.convusers(el.CRUser)}}</div>-->
+                        <!--<div class="facebook-date">{{$.timeago(el.CRDate)}}</div>-->
+                        <!--<div class="facebook-date">{{el.CRDate|date("MM月dd日")}}</div>
+                            <div class="facebook-date" ms-if="!el.isfold" style="min-height: 1.5rem; overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{covtitle(el.RWTitle)}}</div>
+                        </div>-->
+                        <div class="card-header no-border" ms-on-click="showdetil(el)">
+                            <div class="facebook-avatar">
+                                <img ms-src="{{ComFunJS.getfile()+'&type=TX&user='+el.CRUser}}" width="40" class="border-r" onerror="javascript: this.src = '/ViewV5/images/head.jpg'">
+                            </div>
+                            <div class="facebook-date head-ft16"> {{ComFunJS.convuser(el.CRUser)}}<span class="ml10 c999 ft14" ms-if="!el.isfold">{{$.timeago(el.CRDate)}}</span></div>
+                            <div class="facebook-date head-ft16" ms-if="el.isfold"><span class="c999 ft14">{{el.CRDate|date("MM月dd日")}}</span></div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999 title-item">任务标题：</span>
+                                <span>{{covtitle(el.RWTitle)}}</span>
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="card-content" ms-visible="el.isfold">
+                            <div class="card-item">
+                                <span class="c999 title-item">任务类型：</span>
+                                <span>{{el.TypeName}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">截止时间：</span>
+                                <span>{{el.RWJZDate|date("yyyy-MM-dd")}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">负责人：</span>
+                                <span>{{ComFunJS.convusers(el.RWFZR)}}</span>
+                            </div>
+
+                            <div class="card-item" ms-if="el.RWCYR">
+                                <span class="c999 title-item">参与人：</span>
+                                <span>{{ComFunJS.convusers(el.RWCYR)}}</span>
+                            </div>
+
+                            <div class="card-item" ms-if="el.KHFXRS">
+                                <span class="c999 title-item">抄送人：</span>
+                                <span>{{ComFunJS.convusers(el.KHFXRS)}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">任务标题：</span>
+                                <span>{{el.RWTitle|html}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">任务内容：</span>
+                                <span>{{el.RWContent|html}}</span>
+                            </div>
+                            <!--<div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">任务类型：</span> {{el.TypeName}}</div>
+                            <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">截止时间：</span> {{el.RWJZDate|date("yyyy-MM-dd")}}</div>
+                            <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">负责人：</span> {{ComFunJS.convusers(el.RWFZR)}}</div>
+                            <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-if="el.RWCYR"><span style="color:gray">参与人：</span>{{ComFunJS.convusers(el.RWCYR)}}</div>
+                            <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-if="el.KHFXRS"><span style="color:gray">抄送人：</span>{{ComFunJS.convusers(el.KHFXRS)}}</div>
+                            <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">任务标题：</span><span style="overflow: hidden; word-wrap: break-word; word-break: break-all;  ">{{el.RWTitle|html}}</span></div>
+                            <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">任务内容：</span><span style="overflow: hidden; word-wrap: break-word; word-break: break-all;  ">{{el.RWContent|html}}</span></div>-->
+                            <div class="card-content-inner" style="padding-top: 0; padding-bottom: 0.1rem;" ms-if="el.Files">
+                                <ul class="filelist">
+                                    <li ms-repeat-file="el.FileList">
+                                        <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="{{ComFunJS.getfile(file.ID)}}" />
+                                        <img ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="/View_Mobile/Images/qywd/{{file.FileExtendName}}.png" />
+                                        <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div ms-visible="el.PLList.size()>0">
+                                <div class="lookright-box">
+                                    <div class="menu-general">
+                                        <ul>
+                                            <li class="active">
+                                                <a>跟进</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div id="map">
+                                    <!--跟进-->
+                                    <div style="display: block;">
+                                        <!--评论样式-->
+                                        <div class="crm-dt" ms-repeat-pl="el.PLList">
+                                            <span class="crm-yuan"></span>
+                                            <div class="crm-dt-cont">
+
+                                                <div class="m5">
+                                                    <p class="c999">{{pl.CRUserName}} &nbsp;<span class=" ft14" ms-click="scpl(el,pl)" ms-if="pl.CRUser==nowuser"><a>删除</a></span><!--<span class=" ft14 pull-right">{{$.timeago(pl.CRDate)}}</span>--><span class=" ft14 pull-right">{{pl.CRDate|date("MM月dd日 HH:mm")}}</span></p>
+                                                    <h3 class="crm-xg ft14 mt5" style="word-break:break-all;word-wrap:break-word;">
+                                                        {{ComFunJS.bqhContent(pl.MSGContent)|html}}
+                                                    </h3>
+                                                    <ul class="filelist">
+                                                        <!--repeat428537517786-->
+                                                        <li ms-repeat-file="pl.FileList">
+                                                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="{{ComFunJS.getfile(file.ID)}}" />
+                                                            <img ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="/View_Mobile/Images/qywd/{{file.FileExtendName}}.png" />
+                                                            <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                                        </li>
+                                                    </ul>
+                                                    <p></p><div class="item-after pfdv">{{pf(pl.Points)|html}}</div><p></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="buttons-tab list-op">
+                                <a class="tab-link button external" ms-click="pl(el)">
+                                    <i class="iconfont icon-xiaoxi"></i>跟进
+                                </a>
+                                <!--<a class="tab-link button external" ms-if="el.CRUser==nowuser||el.RWFZR==nowuser" ms-click="moreaction(el,this)">
+                                    <i class="iconfont icon-bianji2"></i>更多操作
+                                </a>-->
+                                <a class="tab-link button external" ms-click="completeDB(el)" ms-if="(nowuser == el.CRUser || nowuser == el.RWFZR) && el.RWStatus == 0">
+                                    <i class="iconfont icon-jieshu"></i>结束
+                                </a>
+                                <a class="tab-link button external" ms-click="SendTXMsg(el)" ms-if="(nowuser == el.CRUser || nowuser == el.RWFZR) && el.RWStatus == 0">
+                                    <i class="iconfont icon-cuiban"></i>催办
+                                </a>
+                                <a class="tab-link button external" ms-click="vieww(el)" ms-if="el.CRUser == nowuser">
+                                    <i class="iconfont icon-bianji2"></i>编辑
+                                </a>
+                                <a class="tab-link button external" ms-click="DELRWGL(el)" ms-if="el.CRUser == nowuser">
+                                    <i class="iconfont icon-remove"></i>删除
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card facebook-card animated" ms-if="loadtip">
+                        <div class="card-header no-border">
+                            {{loadtip}}
+                        </div>
+                    </div>
+                </div>
+                <div class="infinite-scroll-preloader">
+                    <div class="preloader"></div>
+                </div>
+            </div>
+
+            <!--<span class="animated fadeIn" ms-if="DataID=='-1'" ms-click="addRWGL()" id="plus_btn" style="z-index:99998;opacity:.9"><img src="../images/plus_icon.png"></span>
+            <span class="animated fadeIn" ms-if="DataID=='-1'" ms-click="changefold()" id="plus_list" style="z-index:99998;opacity:.9"><img ms-attr-src="'../images/'+(isfold?'rwglss':'rwglzk')+'.png'"></span>-->
+            <div class="right-panel">
+                <ul>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="show()"><img src="../images/plus-serch.png"></a>
+                    </li>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="changefold()" ms-if="DataID=='-1'"><img ms-attr-src="'../images/'+(isfold?'plus-zhedie':'plus-zhankai')+'.png'" src="../images/plus-zhedie.png"></a>
+                    </li>
+                    <li ms-if="DataID!=='-1'">
+                        <a class="mod-li-icon" ms-click="viewall()"><img src="../images/plus-zhankai.png"></a>
+                    </li>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="addRWGL()"><img src="/View_Mobile/images/plus-add.png"></a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+        <div class="page" id="pageindex2">
+        </div>
+        <div class="search-top" ms-if="isShow">
+
+            <div class="searchbar searchbar-active">
+                <a class="searchbar-cancel" ms-click="GetList()">搜索</a>
+                <a class="searchbar-cancel search-close" ms-click="show()"><i class="iconfont icon-cuo"></i></a>
+                <div class="search-input">
+                    <label class="icon icon-search" for="search"></label>
+                    <input type="search" id="search" placeholder="搜索任务内容" ms-duplex="search">
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script src="/View_Mobile/JS/touch/toucher.js"></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/raty/jquery.raty.js?v=1.3"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20180425"></script>
+    <script>
+
+        var model = avalon.define({
+            $id: "RWList",
+            ctData: [],//数据源
+            loading: false,
+            loadtip: "",//切换页时显示信息
+            nowuser: ComFunJS.getnowuser(),//当前用户
+            isfold: localStorage.getItem("RWListisfold") == "Y" ? true : false,//是否折叠显示
+            changefold: function () {
+                model.isfold = !model.isfold;
+                model.ctData.forEach(function (item) {
+                    item.isfold = model.isfold;
+                })
+                localStorage.setItem("RWListisfold", model.isfold ? "Y" : "N");
+            },//改变折叠状态
+            search: "",
+            isShow: false,
+            show: function () {
+                if (model.search) {
+                    model.search = "";
+                    model.GetList();
+                }
+                if (model.isShow)
+                    model.isShow = false;
+                else {
+                    model.isShow = true;
+                    $("#search").focus();
+                }
+            },
+            GetList: function () {
+                model.ctData.clear();
+                model.loadtip = "";
+                model.page = 1;
+                model.loadMore();
+            },
+            covtitle: function (title) {
+                return ComFunJS.convstr($("<div>" + title + "</div>").text(), 40);
+            },//转化 TITLE信息
+            showdetil: function (item) {
+                item.isfold = !item.isfold
+            },//展开显示信息
+            page: 1,
+            pagecount: 8,
+            DataID: ComFunJS.getQueryString("ID", "-1"),//数据ID
+            type: 0,//
+
+            vieww: function (el) {
+                //路由加载
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=RWGL&id=" + el.ID + "&r=" + Math.random();
+            },
+            addRWGL: function (el) {
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=RWGL&r=" + Math.random();
+            },
+            loadMore: function () {
+                if (model.loading) return;
+                model.loading = true;
+                $.getJSON("/API/VIEWAPI.ashx?Action=RWGL_GETRWGLLIST&r=" + Math.random(), { P1: "", "p": model.page, P2: model.type, ID: model.DataID, Content: model.search }, function (r) {
+                    model.loading = false;
+                    if (r.ErrorMsg == "") {
+                        for (var i = 0; i < r.Result.length; i++) {
+                            r.Result[i].isfold = model.isfold;
+                            if (model.DataID != "-1") {//如果有数据ID，则展开显示
+                                r.Result[i].isfold = true;
+                            }
+                        }
+
+                        model.ctData.pushArray(r.Result);
+                        //判断是否加载完毕
+                        if (r.Result.length < model.pagecount) {
+                            // 加载完毕，则注销无限加载事件，以防不必要的加载
+                            $.detachInfiniteScroll($('.infinite-scroll'));
+                            // 删除加载提示符
+                            $('.infinite-scroll-preloader').hide();
+                            if (model.ctData.size() == 0) {
+                                model.loadtip = '没有找到数据哦'
+                            }
+                            return;
+                        }
+                        $.refreshScroller();
+                        model.page += 1;
+                        if (model.ctData.size() == 0) {
+                            model.loadtip = '没有找到数据哦'
+                        }
+                    }
+
+                });
+
+            },
+            viewfile: function (file) {
+                if (ComFunJS.isPic(file.FileExtendName)) {
+                    ComFunJS.viewbigimg(this);
+                    return;
+                }
+                if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                    window.location = file.YLUrl;
+                    return;
+                }
+            },//文件查看方法
+            pl: function (el) {
+                ComFunJS.showCommentNew(function (result) {
+                    $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_ADDCOMENT&r=' + Math.random(), { "P1": result.comment, "Points": result.point, "MsgType": "RWGL", "MsgLYID": el.ID }, function (resultData) {
+
+                        if (resultData.ErrorMsg == "") {
+                            el.PLList.push(resultData.Result);
+                            ComFunJS.winsuccess("跟进成功");
+                        }
+                    })
+
+                }, true, { "type": "跟进" });
+            },
+            moreaction: function (el, dom, index) {
+                var actions = [{ text: '请选择', label: true }];
+                if ((model.nowuser == el.CRUser || model.nowuser == el.RWFZR) && el.RWStatus == 0) {
+                    actions.push({
+                        text: '结束',
+                        onClick: function () {
+                            model.completeDB(el)
+                        }
+                    })
+                }
+                if (el.CRUser == model.nowuser) {
+                    actions.push({
+                        text: '编辑',
+                        onClick: function () {
+                            model.vieww(el);
+                        }
+                    })
+                    actions.push({
+                        text: '删除',
+                        color: 'danger',
+                        onClick: function () {
+                            model.DELRWGL(el)
+                        }
+                    })
+
+                }
+                var qx = [{ text: '取消', bg: 'danger' }];
+                var groups = [actions, qx];
+                $.actions(groups);
+
+                $(".modal-overlay").one('click', function () {
+                    $(this).remove();
+                    $(".actions-modal").remove();
+
+                })
+            },//更多操作的方法
+            pf: function (str) {
+                if (str) {
+                    var html = '<div></div>';
+                    var html1 = $(html).raty({
+                        readOnly: true,
+                        score: str * 1 / 20
+                    }).html();
+                    return html1;
+                }
+                else {
+                    return '';
+                }
+            },
+            getdata: function (type) {
+                $.attachInfiniteScroll($('.infinite-scroll'))
+                model.loadtip = "";
+                $('.infinite-scroll-preloader').show();
+                model.type = type;
+                model.ctData.clear();
+                model.page = 1;
+                model.loadMore();
+            },
+            DELRWGL: function (item) {
+                $.confirm('确认要删除吗？', function () {
+
+                    $.getJSON("/API/VIEWAPI.ashx?Action=RWGL_DELRWGLMODEL&r=" + Math.random(), { P1: item.ID }, function (r) {
+                        if (r.ErrorMsg == "") {
+                            model.ctData.remove(item);
+                            top.ComFunJS.winsuccess("删除成功！！");
+                            if (model.ctData.size() == 0) {
+                                model.loadtip = '没有找到数据哦'
+                            }
+                        }
+                    });
+                });
+            },
+            viewall: function () {
+                window.location = "/View_Mobile/UI/UI_RWGL_LIST.html?r=" + Math.random();
+            },
+            completeDB: function (el) {//修改待办状态
+                $.getJSON('/API/VIEWAPI.ashx?Action=RWGL_COMPLETERWGL', { "P1": el.ID, "P2": 1 }, function (result) {
+                    if (result.ErrorMsg == "") {
+                        el.RWStatus = 1;
+                        model.ctData.remove(el);
+                        ComFunJS.winsuccess("操作成功");
+                    }
+                })
+            },
+            SendTXMsg: function (el) {
+                $.confirm('确认要催办任务吗？', function () {
+                    $.getJSON('/API/VIEWAPI.ashx?Action=RWGL_SENDTXMSG', { "P1": el.ID }, function (result) {
+                        if (result.ErrorMsg == "") {  
+                            ComFunJS.winsuccess("催办消息已发送成功");
+                        }
+                    })
+                })
+            },
+            wxchat: function (el) {
+                ComFunJS.openEntChat(el.CRUser + "," + el.RWFZR + "," + el.RWCYR, "任务群组");
+            },
+            golist: function () {
+                window.location = "/View_Mobile/UI/UI_RWGL_LIST.html?r=" + Math.random();
+            }, scpl: function (item,el) {//删除跟进
+                $.confirm("确认要删除吗", function () {
+                    $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_DELCOMENT', { "P1": el.ID }, function (result) {
+                        if (result.ErrorMsg == "") {
+                            ComFunJS.winsuccess("删除成功");
+                            item.PLList.remove(el);
+                        }
+                    })
+                }, function () { })
+            },
+        })
+        avalon.ready(function () {
+            // 注册'infinite'事件处理函数
+            $(document).on('infinite', '.infinite-scroll-bottom', function () {
+                model.loadMore();
+            });
+
+            $.init();
+            if (model.DataID == "-1") {//如果参数中没有数据ID，则默认抓取当前用户数据
+                model.type = 1;
+                util.toucher(document.getElementById('touchcontent'))
+                    .on('swipeLeft', '.list-container', function () {
+                        model.type = model.type == 4 ? 1 : model.type * 1 + 1;
+                        model.getdata(model.type)
+                        return false;
+                    })
+                    .on('swipeRight', '.list-container', function () {
+                        model.type = model.type == 1 ? 4 : model.type * 1 - 1;
+                        model.getdata(model.type)
+                        return false;
+                    })//左右滑动事件
+            }
+            model.getdata(model.type);
+         
+        })
+    </script>
+</body>
+
+</html>

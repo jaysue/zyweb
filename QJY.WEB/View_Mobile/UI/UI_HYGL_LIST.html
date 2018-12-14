@@ -1,0 +1,647 @@
+﻿﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>会议管理</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link href="/View_Mobile/CSS/szhlextend.css?ver=20160904" rel="stylesheet" />
+    <!--<link rel="stylesheet" href="/View_Mobile/CSS/animate.css">-->
+
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        #plus_list {
+            height: 2.65rem;
+            width: 2.65rem;
+            position: fixed;
+            right: 0.82rem;
+            bottom: 6rem;
+        }
+
+            #plus_list img {
+                width: 100%;
+                height: auto;
+            }
+        .badge {
+            /*position: absolute;
+            top: .1rem;
+            z-index: 100;
+            height: .8rem;
+            min-width: .8rem;
+            padding: 0 .2rem;
+            font-size: .6rem;
+            line-height: .8rem;
+            color: white;
+            vertical-align: top;
+            background: red;
+            border-radius: .5rem;
+            margin-left: .1rem;*/
+            position: absolute;
+            top: .3rem;
+            z-index: 100;
+            height: .4rem;
+            min-width: .4rem;
+            padding: 0;
+            font-size: .4rem;
+            line-height: .4rem;
+            color: white;
+            vertical-align: top;
+            background: red;
+            border-radius: .5rem;
+            margin-left: .1rem;
+        }
+    </style>
+</head>
+<body ms-controller="HYList">
+    <div class="page-group">
+        <div class="page page-current" id="pageindex1">
+            <div class="buttons-tab">
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(1)" class="tab-link button external" ms-class-1="active:type=='1'">创建</a>
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(2)" class="tab-link button external" ms-class-1="active:type=='2'">参与</a>
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(3)" class="tab-link button external" ms-class-1="active:type=='3'">
+                    待审<span class="badge" ms-if="shNum&&shNum!='0'"></span>
+                </a>
+                <a href="#" ms-if="DataID=='-1'" ms-on-click="getdata(4)" class="tab-link button external" ms-class-1="active:type=='4'">已审</a>
+                <a href="#" ms-if="DataID!='-1'" class="tab-link button external active">会议管理</a>
+
+            </div>
+
+            <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50" style="margin-top:2rem" id="touchcontent">
+                <div class="list-container">
+
+                    <div class="card facebook-card animated fadeInUp" ms-repeat-el="ctData">
+                        <div class="ribbon-wrapper-green" ><div class="ribbon-green">{{(el.StateName=='已审批'||el.StateName=='-1')?el.HLStatus:el.StateName}}</div></div>
+                        <!--<div class="card-header no-border" ms-on-click="showdetil(el)">
+                            <div class="facebook-avatar"><img ms-src="/ViewV5/Base/DownFile.aspx?type=TX&user={{el.CRUser}}" style="border-radius: 3px;width:34px;height:34px"></div>
+                            <div class="facebook-name">{{ComFunJS.convusers(el.CRUser)}}</div>
+                            <div class="facebook-date" ms-if="el.isfold">{{$.timeago(el.CRDate)}}</div>
+                            <div class="facebook-date" ms-if="!el.isfold">{{covtitle(el.Title)}}</div>
+
+                        </div>-->
+                        <!--<div class="card-header no-border" ms-on-click="showdetil(el)">
+                            <div class="facebook-avatar"><img ms-src="/ViewV5/Base/DownFile.aspx?type=TX&user={{el.CRUser}}" style="border-radius: 3px;width:32px;height:32px"><div class="cadename" ms-if="!el.isfold">{{ComFunJS.convuser(el.CRUser)}}</div></div>
+                            <div class="facebook-date" ms-if="el.isfold">{{ComFunJS.convuser(el.CRUser)}}</div>
+                            <div class="facebook-date">{{$.timeago(el.CRDate)}}</div>
+                            <div class="facebook-date">{{el.CRDate|date("MM月dd日")}}</div>
+                            <div class="facebook-date" ms-if="!el.isfold" style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{covtitle(el.Name)}}</div>
+                            <div class="facebook-date" ms-if="!el.isfold" style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{covtitle(el.Title)}}</div>
+                        </div>-->
+                        <div class="card-header no-border" ms-on-click="showdetil(el)">
+                            <div class="facebook-avatar">
+                                <img ms-src="{{ComFunJS.getfile()+'&type=TX&user='+el.CRUser}}" width="40" class="border-r" onerror="javascript: this.src = '/ViewV5/images/head.jpg'">
+                            </div>
+                            <div class="facebook-date head-ft16">{{ComFunJS.convuser(el.CRUser)}}<span class="ml10 c999 ft14" ms-if="!el.isfold">{{$.timeago(el.CRDate)}}</span></div>
+                            <div class="facebook-date head-ft16" ms-if="el.isfold"><span class="c999 ft14">{{el.CRDate|date("MM月dd日")}}</span></div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999">会议室：</span>
+                                <span>{{covtitle(el.Name)}}</span>
+                            </div>
+                            <div class="facebook-date" ms-if="!el.isfold">
+                                <span class="c999">会议主题：</span>
+                                <span>{{covtitle(el.Title)}}</span>
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="card-content  " ms-visible="el.isfold">
+                         
+
+
+                            <div class="card-item">
+                                <span class="c999 title-item">会议主题：</span>
+                                <span>{{el.Title}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">起止时间：</span>
+                                <span>{{el.StartTime|date("yyyy-MM-dd HH:mm")}}~{{el.EndTime|date("yyyy-MM-dd HH:mm")}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.CYUser">
+                                <span class="c999 title-item">参与人：</span>
+                                <span>{{ComFunJS.convusers(el.CYUser)}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.JLUser">
+                                <span class="c999 title-item">纪要人：</span>
+                                <span>{{ComFunJS.convusers(el.JLUser)}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.ZCUser">
+                                <span class="c999 title-item">主持人：</span>
+                                <span>{{ComFunJS.convusers(el.ZCUser)}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.SXUser">
+                                <span class="c999 title-item">摄像人：</span>
+                                <span>{{ComFunJS.convusers(el.SXUser)}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">会议室：</span>
+                                <span>{{el.Name}}</span>
+                            </div>
+                            <div class="card-item">
+                                <span class="c999 title-item">会议内容：</span>
+                                <span>{{el.Details|html}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.HYJL">
+                                <span class="c999 title-item">会议纪要：</span>
+                                <span>{{ComFunJS.bqhContent(el.HYJL)|html}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.HYFW">
+                                <span class="c999 title-item">会议服务：</span>
+                                <span>{{el.HYFW|html}}</span>
+                            </div>
+                            <div class="card-item" ms-if="el.StateName!='-1'">
+                                <span class="c999 title-item">审核状态：</span>
+                                <span>{{el.StateName|html}}</span>
+                            </div>
+                            <ul class="filelist" style="margin-left:.5rem;">
+                                <li ms-repeat-file="el.FileList">
+                                    <img ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="{{ComFunJS.getfile(file.ID)}}" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'">
+                                    <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                </li>
+                            </ul>          
+
+                            
+
+                     
+                            <div ms-visible="(el.StateName=='已审批'||el.StateName=='-1')&&el.PLList.size()>0">
+                                <div class="lookright-box">
+                                    <div class="menu-general">
+                                        <ul>
+                                            <!--<li ms-on-click="getpldata(el,1)" ms-class-1="active:el.pltype=='1'" ms-if="el.PLList.size()!=0">
+                                                <a>状态({{el.PLList.size()}})</a>
+                                            </li>-->
+                                            <li ms-on-click="getpldata(el,2)" ms-class-1="active:el.pltype=='2'" style="list-style:none" >
+                                                <a>参加({{getplcount(el,'2')}})</a>
+                                            </li>
+                                            <li ms-on-click="getpldata(el,3)" ms-class-1="active:el.pltype=='3'" style="list-style:none"  >
+                                                <a>签到({{getplcount(el,'3')}})</a>
+                                            </li>
+                                            <li ms-on-click="getpldata(el,4)" ms-class-1="active:el.pltype=='4'" style="list-style:none" >
+                                                <a>请假({{getplcount(el,'4')}})</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div id="map">
+                                    <!--跟进-->
+                                    <div style="display: block;">
+                                        <!--评论样式-->
+                                        <div class="crm-dt" ms-repeat-pl="el.PLList" ms-visible="pl.MsgISShow==el.pltype">
+                                            <span class="crm-yuan"></span>
+                                            <div class="crm-dt-cont">
+                                                <div class="m5">
+                                                    <p class="c999">{{pl.CRUserName}} <span class=" ft14 pull-right">{{pl.CRDate|date("MM月dd日")}}</span></p>
+                                                    <h3 class="crm-xg ft14 mt5" style="word-break:break-all;word-wrap:break-word;">
+                                                        <span ms-if="pl.MsgISShow">【{{pl.MSGContent}}】</span>
+                                                        <span ms-if="pl.MsgISShow=='4'">{{ComFunJS.bqhContent(pl.Remark)|html}}</span>
+                                                    </h3>
+                                                    <ul class="filelist">
+                                                        <!--repeat428537517786-->
+                                                        <li ms-repeat-file="pl.FileList">
+                                                            <img ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="{{ComFunJS.getfile(file.ID)}}" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                                                            <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="buttons-tab list-op" ms-if="isxs(el)">
+                                <a class="tab-link button external" ms-click="vieww(el)" ms-if="type!='3' && el.CRUser==nowuser">
+                                    <i class="iconfont icon-view"></i>查看
+                                </a>
+                                <a class="tab-link button external" ms-click="vieww(el)" ms-if="(type=='3' || DataID!=-1) &&el.StateName=='正在审批'">
+                                    <i class="iconfont icon-shenhe"></i>审核
+                                </a>
+                                <a class="tab-link button external" ms-if="isxsCJQD(el)" style="" ms-click="hyqr(el)">
+                                    <i class="iconfont icon-wocanyu"></i>参加
+                                </a>
+                                <a class="tab-link button external" ms-if="isxsCJQD(el)" style="" ms-click="hyqj(el)">
+                                    <i class="iconfont icon-qingjia"></i>请假
+                                </a>
+                                <a class="tab-link button external" ms-if="(el.StateName=='已审批'||el.StateName=='-1') && (el.RYStatus && (el.RYStatus.indexOf('2') != -1 || el.RYStatus.indexOf('4') != -1) && el.RYStatus.indexOf('3') ==-1)" ms-click="hyqd(el)">
+                                    <i class="iconfont icon-bianji"></i>签到
+                                </a>
+                                <a class="tab-link button external" ms-if="(el.StateName=='已审批'||el.StateName=='-1') && isxsHYJL(el)" ms-click="hyjy(el)">
+                                    <i class="iconfont icon-jiyao"></i>纪要
+                                </a>
+                            </div>
+
+                        </div>
+                     
+                    </div>
+                    <div class="card facebook-card animated" ms-if="loadtip">
+                        <div class="card-header no-border">
+                            {{loadtip}}
+                        </div>
+                    </div>
+                </div>
+                <div class="infinite-scroll-preloader">
+                    <div class="preloader"></div>
+                </div>
+            </div>
+
+            <!--<span class="animated fadeIn" ms-if="DataID=='-1'" ms-click="addHYGL()" id="plus_btn" style="z-index:99998;opacity:.9"><img src="../images/plus_icon.png"></span>
+            <span class="animated fadeIn" ms-if="DataID=='-1'" ms-click="changefold()" id="plus_list" style="z-index:99998;opacity:.9"><img ms-attr-src="'../images/'+(isfold?'rwglss':'rwglzk')+'.png'"></span>-->
+            <div class="right-panel">
+                <ul>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="show()"><img src="../images/plus-serch.png"></a>
+                    </li>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon" ms-click="changefold()" ms-if="DataID=='-1'"><img ms-attr-src="'../images/'+(isfold?'plus-zhedie':'plus-zhankai')+'.png'" src="../images/plus-zhedie.png"></a>
+                    </li>
+                    <li ms-if="DataID!=='-1'">
+                        <a class="mod-li-icon" ms-click="viewall()"><img src="../images/plus-zhankai.png"></a>
+                    </li>
+                    <li ms-if="DataID=='-1'">
+                        <a class="mod-li-icon"  ms-click="addHYGL()"><img src="/View_Mobile/images/plus-add.png"></a>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+        <div class="page" id="pageindex2">
+        </div>
+        <div class="search-top" ms-if="isShow">
+
+            <div class="searchbar searchbar-active">
+                <a class="searchbar-cancel" ms-click="GetList()">搜索</a>
+                <a class="searchbar-cancel search-close" ms-click="show()"><i class="iconfont icon-cuo"></i></a>
+                <div class="search-input">
+                    <label class="icon icon-search" for="search"></label>
+                    <input type="search" id="search" placeholder="搜索会议标题" ms-duplex="search">
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script src="/View_Mobile/JS/touch/toucher.js"></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/raty/jquery.raty.js?v=1.3"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script>
+      
+        var model = avalon.define({
+            $id: "HYList",
+            ctData: [],//数据源
+            search: "",
+            isShow: false,
+            loading: false,
+            loadtip: "",//切换页时显示信息
+            nowuser: ComFunJS.getnowuser(),//当前用户
+            isfold: localStorage.getItem("hyglisfold") == "Y" ? true : false,//是否折叠显示
+            changefold: function () {
+                model.isfold = !model.isfold;
+                model.ctData.forEach(function (item) {
+                    item.isfold = model.isfold;
+                })
+                localStorage.setItem("hyglisfold", model.isfold ? "Y" : "N");
+            },//改变折叠状态
+            show: function () {
+                if (model.search) {
+                    model.search = "";
+                    model.GetList();
+                }
+                if (model.isShow)
+                    model.isShow = false;
+                else {
+                    model.isShow = true;
+                    $("#search").focus();
+                }
+            },
+            GetList: function () {
+                model.ctData.clear();
+                model.loadtip = "";
+                model.page = 1;
+                model.loadMore();
+            },
+            shNum:0,
+            page: 1,
+            pagecount: 8,
+            DataID: ComFunJS.getQueryString("ID", "-1"),//数据ID
+            type: 0,//
+            covtitle: function (title) {
+                return ComFunJS.convstr($("<div>" + title + "</div>").text(), 20);
+            },//转化 TITLE信息
+            showdetil: function (item) {
+                item.isfold = !item.isfold
+            },//展开显示信息
+            vieww: function (el) {
+                //路由加载
+                //window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=HYGL&id=" + el.ID + "&r=" + Math.random();
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=HYGL&id=" + el.ID + "&PIID=" + el.intProcessStanceid + "&r=" + Math.random();
+            },
+            addHYGL: function (el) {
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=HYGL&r=" + Math.random();
+            },
+             viewall: function () {
+               window.location = "/View_Mobile/UI/UI_HYGL_LIST.html?r=" + Math.random();
+            },
+            loadMore: function () {
+                if (model.loading) return;
+                model.loading = true;
+                $.getJSON("/API/VIEWAPI.ashx?Action=HYGL_GETHYGLLIST&r=" + Math.random(), { "p": model.page, P1: model.type, ID: model.DataID, Content: model.search }, function (r) {
+                    model.loading = false;
+                    if (r.ErrorMsg == "") {
+                        if (model.page == 1 && r.Result.length == 0) {
+                            model.loadtip = '没有找到数据哦'
+                        }
+                        for (var i = 0; i < r.Result.length; i++) {
+                            r.Result[i].isfold = model.isfold;
+                            if (model.DataID != "-1") {//如果有数据ID，则展开显示
+                                r.Result[i].isfold = true;
+                            }
+                            r.Result[i].pltype = "2";
+                        }
+
+                        model.ctData.pushArray(r.Result);
+                        //判断是否加载完毕
+                        if (r.Result.length < model.pagecount) {
+                            // 加载完毕，则注销无限加载事件，以防不必要的加载
+                            $.detachInfiniteScroll($('.infinite-scroll'));
+                            // 删除加载提示符
+                            $('.infinite-scroll-preloader').hide();
+                            return;
+                        }
+                        $.refreshScroller();
+                        model.page += 1;
+                    }
+
+                });
+
+            },
+            moreaction: function (el, dom, index) {
+                var actions = [{ text: '请选择', label: true }];
+                
+                if (el.RYStatus && (el.RYStatus.indexOf('2') != -1 || el.RYStatus.indexOf('4') != -1) && el.RYStatus.indexOf('3') ==-1) {
+                    actions.push({
+                        text: '签到',
+                        onClick: function () {
+                            model.hyqd(el)
+                        }
+                    })
+                }
+                if (!el.RYStatus || (el.RYStatus && el.RYStatus.indexOf('2') == -1 && el.RYStatus.indexOf('4') == -1)) {
+                    actions.push({
+                        text: '确认参加',
+                        onClick: function () {
+                            model.hyqr(el);
+                        }
+                    })
+                    actions.push({
+                        text: '请假',
+                        color: 'danger',
+                        onClick: function () {
+                            model.hyqj(el)
+                        }
+                    })
+                }
+                var JLUserList = [];
+                if (el.JLUser) {
+                    JLUserList = el.JLUser.split(',');
+                }
+                if (JLUserList.indexOf(model.nowuser) != -1 || el.FQUser.split(',').indexOf(model.nowuser) != -1) {
+                    actions.push({
+                        text: '会议纪要',
+                        onClick: function () {
+                            model.hyjy(el)
+                        }
+                    })
+                }
+                var qx = [{ text: '取消', bg: 'danger' }];
+                var groups = [actions, qx];
+                $.actions(groups);
+
+                $(".modal-overlay").one('click', function () {
+                    $(this).remove();
+                    $(".actions-modal").remove();
+
+                })
+            },//更多操作的方法
+            isxs: function (el) {
+                var JLUserList = [];
+                if (el.JLUser) {
+                    JLUserList = el.JLUser.split(',');
+                }
+                if (el.CRUser == model.nowuser||(el.StateName != '已退回' && (el.RYStatus.indexOf('3') == -1 || JLUserList.indexOf(model.nowuser) != -1 || el.FQUser.split(',').indexOf(model.nowuser) != -1))) {
+                    return "Y";
+                }
+                else {
+                    return "";
+                }
+            },
+            isxsHYJL: function (el) {
+                var JLUserList = [];
+                if (el.JLUser) {
+                    JLUserList = el.JLUser.split(',');
+                }
+                if (JLUserList.indexOf(model.nowuser) != -1 || el.FQUser.split(',').indexOf(model.nowuser) != -1) {
+                    return "Y";
+                }
+                else {
+                    return "";
+                }
+            },
+            isxsCJQD: function (el) {
+                var FQUserList = [];
+                var CYUserList = [];
+                var JLUserList = [];
+                var ZCUserList = [];
+                var SXUserList = [];
+                if (el.FQUser) {
+                    FQUserList = el.FQUser.split(',');
+                }
+                if (el.CYUser) {
+                    CYUserList = el.CYUser.split(',');
+                }
+                if (el.JLUser) {
+                    JLUserList = el.JLUser.split(',');
+                }
+                if (el.ZCUser) {
+                    ZCUserList = el.ZCUser.split(',');
+                }
+                if (el.SXUser) {
+                    SXUserList = el.SXUser.split(',');
+                }
+
+                if (FQUserList.indexOf(model.nowuser) != -1 || CYUserList.indexOf(model.nowuser) != -1 || JLUserList.indexOf(model.nowuser) != -1 || ZCUserList.indexOf(model.nowuser) != -1 || SXUserList.indexOf(model.nowuser) != -1) {
+
+                    if ((el.StateName == '已审批' || el.StateName == '-1') && (!el.RYStatus || (el.RYStatus && el.RYStatus.indexOf('2') == -1 && el.RYStatus.indexOf('4') == -1))) {
+                        return "Y";
+                    }
+                }
+                else {
+                    return "";
+                }
+            },
+            viewfile: function (file) {
+                if (ComFunJS.isPic(file.FileExtendName)) {
+                    ComFunJS.viewbigimg(this)
+                    return;
+                }
+                if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                    window.location = file.YLUrl;
+                    return;
+                }
+            },//文件查看方法
+            hyqr: function (el) {//确认参加
+                $.getJSON("/API/VIEWAPI.ashx?Action=HYGL_UPDATEHYQK&r=" + Math.random(), { "P1": el.ID, "P2": "2" }, function (data) {
+
+                    if (data.ErrorMsg == "") {
+                        el.PLList.push(data.Result);
+                        top.ComFunJS.winsuccess("确认成功！！");
+                        if (el.RYStatus) {
+                            el.RYStatus = el.RYStatus + ',2';
+                        }
+                        else {
+                            el.RYStatus = '2';
+                        }
+                    }
+
+                })
+            },
+            hyqd: function (el) {//签到
+
+                $.getJSON("/API/VIEWAPI.ashx?Action=HYGL_UPDATEHYQK&r=" + Math.random(), { "P1": el.ID, "P2": "3" }, function (data) {
+
+                    if (data.ErrorMsg == "") {
+                        el.PLList.push(data.Result);
+                        top.ComFunJS.winsuccess("签到成功！！");
+
+                        if (el.RYStatus) {
+                            el.RYStatus = el.RYStatus + ',3';
+                        }
+                        else {
+                            el.RYStatus = '3';
+                        }
+                    }
+
+                })
+            },
+            hyqj: function (el) {//请假
+                ComFunJS.showCommentNew(function (result) {
+                    $.getJSON("/API/VIEWAPI.ashx?Action=HYGL_UPDATEHYQK&QJSY=" + result.comment + "&r=" + Math.random(), { "P1": el.ID, "P2": "4" }, function (data) {
+                        if (data.ErrorMsg == "") {
+                            el.PLList.push(data.Result);
+                            top.ComFunJS.winsuccess("请假成功！！");
+
+                            if (el.RYStatus) {
+                                el.RYStatus = el.RYStatus + ',4';
+                            }
+                            else {
+                                el.RYStatus = '4';
+                            }
+                        }
+                    })
+
+                }, false, { type: "请假事由" });
+            },
+            hyjy: function (el) {//记录
+                ComFunJS.showCommentNew(function (result) {
+
+                    $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_UPDATEHYJL&r=' + Math.random(), { "P1": el.ID, "P2": result.comment }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            el.HYJL = result.comment;
+
+                            top.ComFunJS.winsuccess("记录成功！！");
+                        }
+                    })
+
+                }, false, { type: "会议纪要", content: el.HYJL });
+            },
+            pl: function (el) {
+                ComFunJS.showCommentNew(function (result) {
+                    $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_ADDCOMENT&r=' + Math.random(), { "P1": result.comment, "MsgType": "HYGL", "MsgLYID": el.ID }, function (resultData) {
+
+                        if (resultData.ErrorMsg == "") {
+                            //tempmodel.plCount = tempmodel.plCount + 1;
+                            //tempmodel.plData.push(resultData.Result);
+                            el.PLList.push(resultData.Result);
+                            top.ComFunJS.winsuccess("评论成功！！");
+                        }
+                    })
+
+                });
+            },
+            getdata: function (type) {
+                $.attachInfiniteScroll($('.infinite-scroll'))
+                model.loadtip = "";
+                $('.infinite-scroll-preloader').show();
+                model.type = type;
+                model.ctData.clear();
+                //model.loadtip = "正在加载数据... ...";
+                //setTimeout("model.loadtip = '没有找到数据哦'", 1500)
+                model.page = 1;
+                model.loadMore();
+                model.getSHNum();
+            },
+            getSHNum: function () {//抓取审核数量
+                $.getJSON("/API/VIEWAPI.ashx?Action=LCSP_GETMODELDSHQTY&r=" + Math.random(), { P1: "HYGL" }, function (r) {
+                    if (r.ErrorMsg == "" ) {
+                        if (r.Result.length > 0) {
+                            model.shNum = r.Result[0].QTY;
+                        }
+                        else {
+                            model.shNum = 0;
+                        }
+                    }
+                })
+            },
+            getpldata: function (el,type) {
+                el.pltype = type;
+            },
+            getplcount: function (el, type) {
+                var num=0;
+                $(el.PLList).each(function (index, ele) {
+                    if (ele.MsgISShow == type)
+                    { num = num + 1;}
+                })
+                return num;
+            },
+            wxchat: function (el) {
+                ComFunJS.openEntChat(el.FQUser + "," + el.CYUser + "," + el.JLUser + "," + el.ZCUser + "," + el.SXUser, "会议群组");
+            }
+        })
+        avalon.ready(function () {
+            // 注册'infinite'事件处理函数
+            $(document).on('infinite', '.infinite-scroll-bottom', function () {
+                model.loadMore();
+            });
+
+            $.init();
+            if (model.DataID == "-1") {//如果参数中没有数据ID，则默认抓取当前用户数据
+                model.type = 1;
+                util.toucher(document.getElementById('touchcontent'))
+                    .on('swipeLeft', '.list-container', function () {
+                        model.type = model.type == 4 ? 1 : model.type * 1 + 1;
+                        model.getdata(model.type)
+                        return false;
+                    })
+                    .on('swipeRight', '.list-container', function () {
+                        model.type = model.type == 1 ? 4 : model.type * 1 - 1;
+                        model.getdata(model.type)
+                        return false;
+                    })//左右滑动事件
+            }
+            model.getdata(model.type);
+
+
+        })
+    </script>
+</body>
+
+</html>

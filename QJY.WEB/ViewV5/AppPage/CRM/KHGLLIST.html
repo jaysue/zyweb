@@ -1,0 +1,226 @@
+﻿<div ms-controller="KHGLLIST">
+    <!-- 添加按钮 -->
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="AddView('CRM_KHGL')"><i class="iconfont icon-jiahao ft12 mr5"></i>添加客户</button>
+        <button type="button" class="btn btn-info btn-lg" ms-click="drKH()"><i class="iconfont icon-dr  ft12 mr5"></i>导入</button>
+        <a class="btn btn-info btn-lg" ms-click="dcKH()"><i class="iconfont icon-dc  ft12 mr5"></i>导出</a>
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">类型：</h5>
+            <ul class="tab-type ft14">
+                <!--<li><span class="active" ms-click="SelectType('0')">全部</span></li>-->
+                <li ms-click="SelectType('1')"><span class="active">我创建的</span></li>
+                <li ms-click="SelectType('2')"><span>我负责的</span></li>
+                <li ms-click="SelectType('3')"><span>下属客户</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">跟进状态：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectKHType1('1','')"><span class="active">全部</span></li>
+                <li ms-repeat-el="TypeData1" ms-click="SelectKHType1('1',el.ID)"><span>{{el.TypeName}}</span></li>
+            </ul>
+        </div>
+         <div class="oh">
+            <h5 class="pull-left tr">客户类型：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectKHType('')"><span class="active">全部</span></li>
+                <li ms-repeat-el="TypeData" ms-click="SelectKHType(el.ID)"><span>{{el.TypeName}}</span></li>
+            </ul>
+        </div>
+    
+        <!-- 搜索 -->
+        <div class="oh mr20 mt20">
+            <div class="input-group ml15" style="width:295px;float:left">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" placeholder="搜索客户名称">
+                <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+            </div>
+            <button type="button" class="btn btn-info pull-right mt5" data-toggle="modal" data-target="#myselfModal">自定义显示</button>
+        </div>
+    </div>
+    <!-- 展开更多选项 -->
+    <div class="add-tab ft14 tc mt20" style="display:none;">
+        <span>更多筛选<i class="caret"></i></span>
+    </div>
+    <!-- 表格 -->
+    <div class="default-tab ft14 pt20 table-responsive hover-btn">
+        <table class="table table-striped  table-hover">
+            <thead>
+                <tr>
+                    <th class="tc">
+                        序号
+                    </th>
+                    <th ms-repeat-im="ShowColumns" ms-visible="im.IsSel" style="min-width: 120px; white-space: nowrap">{{im.ColText}}</th>
+                    <th style="width:80px;">
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-el="tmpListData" ms-click="View(el.ID)">
+                    <td class="tc">
+                        {{$index+1+page.pagecount*(page.pageindex-1)}}
+                    </td>
+                    <td ms-repeat-im="ShowColumns" ms-class-1="lk:im.type=='link'" ms-click="View(el.ID,this)" style="min-width: 120px; white-space: nowrap" ms-visible="im.IsSel">{{ComFunJS.FnFormat(el[im.ColName],im)|html}}</td>
+
+                    <td style="min-width:100px;">
+                        <span class=" btn-click">
+                            <a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="编辑" ms-if="el.CRUser==userName" ms-click="EditForm('CRM_KHGL',el.ID,'',$event)">
+                                <i class="iconfont icon-bianji"></i>
+                            </a>
+                            <a class="cz-btn ft18 sc-color tip" data-toggle="tooltip" title="删除" ms-if="el.CRUser==userName" ms-click="DELLXR(el,$event)">
+                                <i class="iconfont icon-shanchu"></i>
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+            </tfoot>
+        </table>
+
+    </div>
+    <div class="ui-datatable-page ft14 pl20">
+
+        <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+        <div class="pull-right" ms-visible="tmpListData.size()!=0">
+            <span>共{{model.page.total}}条记录</span>
+            <span ms-visible="model.page.total>model.pageNum[0].num">
+                选择每页条数
+                <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                    <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                </select>
+            </span>
+        </div>
+
+    </div>
+
+   
+</div>
+
+<script>
+
+    var tempindex = avalon.define({
+        $id: "KHGLLIST",
+        curKHType: "",
+        curKHType1: "",
+        curKHType2: "",
+        curKHType3: "",
+        curKHType4: "",
+        TypeData1: [],
+        TypeData2: [],
+        TypeData3: [],
+        TypeData4: [],
+        tmpListData:[],
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        SelectKHType: function (type) {
+            tempindex.curKHType = type;
+            tempindex.GetLIST();
+        },
+        SelectKHType1: function (str, type) {
+            if (str == '1') { tempindex.curKHType1 = type; }
+        
+            tempindex.GetLIST();
+        },
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        View: function (id,event) {
+            if ($(event).hasClass("lk")) {
+                ComFunJS.winviewform("/ViewV5/AppPage/CRM/KHGLView.html?ID=" + id + "&r=" + Math.random(), "详细信息");
+            }
+        },
+        DELLXR: function (item, event) {
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            }
+            top.ComFunJS.winconfirm("确认要删除客户吗，删除后客户下的联系人、合同、跟进记录都将删除", function () {
+                $.post('/API/VIEWAPI.ashx?Action=CRM_DELKHGL', { "P1": item.ID }, function (result) {
+                        top.ComFunJS.winsuccess("删除成功");
+                        tempindex.tmpListData.remove(item);
+                   
+                })
+            }, function () { })
+        },
+        InitWigetData: function () {
+
+            //显示的列名
+
+            model.ShowColumns.clear();
+            model.ShowColumns.pushArray([
+                { "ColName": "KHName", "ColText": "客户名称", "IsSel": true, "format": "text", "type": "link" },
+                { "ColName": "TypeName", "ColText": "客户类型", "IsSel": true, "format": "text" },
+                { "ColName": "TelePhone", "ColText": "电话", "IsSel": true, "format": "text" },
+                 { "ColName": "FZUser", "ColText": "负责人", "IsSel": true, "format": "username" },
+                { "ColName": "GJZT", "ColText": "跟进状态", "IsSel": true, "format": "text" },
+                 { "ColName": "Remark", "ColText": "备注", "IsSel": false, "format": "text" },
+                { "ColName": "Address", "ColText": "地址", "IsSel": false, "format": "text" },
+                 { "ColName": "Email", "ColText": "邮箱", "IsSel": false, "format": "text" },
+                { "ColName": "PostCode", "ColText": "邮编", "IsSel": false, "format": "text" },
+                  { "ColName": "FixNo", "ColText": "传真", "IsSel": false, "format": "text" },
+                   { "ColName": "WebSite", "ColText": "网址", "IsSel": false, "format": "text" },
+                { "ColName": "KHLY", "ColText": "客户来源", "IsSel": false, "format": "text" },
+                { "ColName": "SSHY", "ColText": "所属行业", "IsSel": false, "format": "text" },
+                { "ColName": "RYGM", "ColText": "人员规模", "IsSel": false, "format": "text" }
+            ]);
+            //类型数据
+
+            model.GetTypeData("10,11", function (result) {
+                $(result).each(function (idx, ele) {
+                    if (ele.Class == '10') { model.TypeData = ele.Item; }
+                    if (ele.Class == '11') { tempindex.TypeData1 = ele.Item; }
+                  
+                })
+            });
+            tempindex.GetLIST();
+        },
+
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETKHGLLIST', { p: 1, P1: model.search.seartype, Content: model.search.searchcontent, lb: tempindex.curKHType, P2: tempindex.curKHType1 + "_" + tempindex.curKHType2 + "_" + tempindex.curKHType3 + "_" + tempindex.curKHType4, pagecount: model.page.pagecount }, function (resultData) {
+                    tempindex.tmpListData = resultData.Result;
+                    if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                    model.page.total = resultData.Result1;
+                    laypage({
+                        cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                        pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //通过后台拿到的总页数
+                        curr: 1, //初始化当前页
+                        skin: 'molv',
+                        jump: function (e) { //触发分页后的回调
+                            if (e.curr != model.page.pageindex) {
+                                $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETKHGLLIST', { p: e.curr, P1: model.search.seartype, Content: model.search.searchcontent, lb: tempindex.curKHType, P2: tempindex.curKHType1 + "_" + tempindex.curKHType2 + "_" + tempindex.curKHType3 + "_" + tempindex.curKHType4, pagecount: model.page.pagecount }, function (resultData) {
+                                        tempindex.tmpListData = resultData.Result;
+                                })
+                                model.page.pageindex = e.curr;
+                            }
+                        }
+                    });
+            })
+        },
+        drKH: function () {
+            top.ComFunJS.winviewform("/ViewV5/Base/APP_IMPORT.html?code=KHGL&r=" + Math.random(), "导入客户", 1000, "", function () {
+                if (tempindex) {
+                    tempindex.GetLIST();
+                }
+            })
+
+         
+        },
+        dcKH: function () {
+            if (tempindex.tmpListData.size() > 0) {
+                $(this).attr("href", '/API/VIEWAPI.ashx?Action=CRM_EXPORTKH&P1=' + model.search.seartype + '&Content=' + model.search.searchcontent + '&lb=' + tempindex.curKHType + '&P2=' + tempindex.curKHType1 + "_" + tempindex.curKHType2 + "_" + tempindex.curKHType3 + "_" + tempindex.curKHType4);
+            }
+            else {
+                top.ComFunJS.winwarning("无数据");
+            }
+        }
+    })
+</script>

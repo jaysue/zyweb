@@ -1,0 +1,241 @@
+﻿<div class="form-horizontal" ms-controller="HTGL">
+    <div style="margin: 0 80px;">
+        <div>
+            <!--<div class="fg-item"><span>基本信息</span></div>-->
+            <ul class="clearfix" style="display: block; padding: 0">
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label"><i>*</i>合同标题</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control  szhl_require" ms-duplex="modelData.Title">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label"><i>*</i>负责人</label>
+                    <div class="add-ic" style="height: 34px;">
+                        <input type="text" class="form-control szhl_require szhl_getPeoples hidden" signle="Y" ms-duplex="modelData.FZR">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left ">
+                    <label class="add-item-label">签约日期</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control szhl_form_date " ms-class-1="null:!modelData.QYDate" ms-duplex="modelData.QYDate">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label">对应客户</label>
+                    <div class="add-ic">
+
+                        <div class="input-group " style="width: 100%">
+                            <input type="text" class="form-control szhl_select ">
+                            <span class="input-group-addon" ms-if="modelData.KHID" ms-click="ClearKH()"><i class="iconfont icon-shanchu ft14 " style="color: white"></i></span>
+                        </div>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">合同状态</label>
+                    <div class="add-ic">
+                        <select class="form-control" ms-duplex="modelData.HTStatus">
+                            <option ms-repeat-item="HTStateData" ms-attr-value="item.ID" ms-attr-selected="item.ID==modelData.HTStatus?'selected':''">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right ">
+                    <label class="add-item-label">合同类型</label>
+                    <div class="add-ic">
+                        <select class="form-control" ms-duplex="modelData.HTType">
+                            <option ms-repeat-item="ColumnData" ms-attr-value="item.ID" ms-attr-selected="item.ID==modelData.HTType?'selected':''">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label"><i>*</i>合同总金额(元)</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control szhl_require szhl_Int" ms-duplex="modelData.Price">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label"><i>*</i>起止时间</label>
+                    <div style="display: block;">
+                        <div class="add-ic fl-left" style="width: 45%;">
+                            <input type="text" class="form-control szhl_form_date szhl_require" ms-class-1="null:modelData.ID" ms-duplex="modelData.HTStartTime">
+                        </div>
+                        <div class="add-ic" style="float: left; line-height: 30px; width: 10%; text-align: center;">：</div>
+                        <div class="add-ic fl-right" style="width: 45%;">
+                            <input type="text" class="form-control szhl_form_date szhl_require" ms-class-1="null:modelData.ID" ms-duplex="modelData.HTEndTime">
+                        </div>
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">备注</label>
+                    <div class="add-ic">
+                        <textarea class="span2  szhl_UEEDIT" id="bz" rows="3" ms-duplex="modelData.Remark"></textarea>
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">附件</label>
+                    <div class="add-ic">
+                        <input type="text" value="" class="span2  szhl_Upload form-control" ms-duplex="modelData.Files" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="extdiv"></div>
+        <div>
+            <div class="fg-item"><span>详细信息</span><i id="btnOtherInfo"></i></div>
+            <ul class="clearfix" style="padding: 0" id="OtherInfo">
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">关联产品</label>
+                    <div class="add-ic">
+                        <select class="form-control" ms-duplex="modelData.PID">
+                            <option value="" ms-attr-selected="modelData.PID < 1?'selected':''">请选择</option>
+                            <option ms-repeat-item="cplistData" ms-attr-value="item.ID" ms-attr-selected="item.ID==modelData.PID?'selected':''">{{item.Name}}</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right ">
+                    <label class="add-item-label">付款方式</label>
+                    <div class="add-ic">
+                        <select class="form-control" ms-duplex="modelData.FKFS">
+                            <option value="">请选择</option>
+                            <option ms-repeat-item="fkfsData" ms-attr-value="item.ID" ms-attr-selected="item.ID==modelData.FKFS?'selected':''">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">有效期</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control szhl_form_date null" ms-duplex="modelData.ExpiryDate">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right ">
+                    <label class="add-item-label">付款说明</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control " ms-duplex="modelData.FKSM" placeholder="比如：全款等">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">客户方签约人</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control " ms-duplex="modelData.KHQYR">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right ">
+                    <label class="add-item-label">我方签约人</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control " ms-duplex="modelData.WFQYR">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">合同编号</label>
+                    <div class="add-ic">
+                        <input type="text" value="" class=" form-control" ms-duplex="modelData.HTCode" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+
+    var tempmodel = avalon.define({
+        $id: "HTGL",
+        iswf: false,
+        name: "合同管理",
+        ColumnData: [],
+        cplistData: [],
+        fkfsData: [],
+        khData: [],
+        khid: ComFunJS.getQueryString("khid"),
+        HTStateData: [{ "ID": "0", "TypeName": "未开始" }, { "ID": "1", "TypeName": "执行中" },
+            { "ID": "2", "TypeName": "成功结束" }, { "ID": "3", "TypeName": "意外终止" }, ],
+        modelData: {
+            "Title": "", "Files": "", "HTStartTime": "", "Price": "", "KHID": "", "Remark": "", "QYDate": "", "FKSM": "", "FZR": ComFunJS.getnowuser(),
+            "WFQYR": "", "KHQYR": "", "FKFS": "", "HTType": "", "PID": "", "HTCode": "", "HTStatus": 0, "HTEndTime": "", "ExpiryDate": "",
+        },
+        inittemp: function (strId) {
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 16 }, function (resultData) {
+                tempmodel.ColumnData = resultData.Result;
+                if (tempmodel.ColumnData.size() > 0 && !tempmodel.modelData.HTType) {
+                    tempmodel.modelData.HTType = resultData.Result[0].ID;
+                }
+            })
+
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 17 }, function (resultData) {
+                tempmodel.fkfsData = resultData.Result;
+
+            })
+            $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETCPALL', function (resultData) {
+                tempmodel.cplistData = resultData.Result;
+            })
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETHTMODEL', { P1: strId }, function (resultData) {
+                    tempmodel.modelData = resultData.Result;
+                    if (tempmodel.modelData.HTStartTime && tempmodel.modelData.HTStartTime.length > 10) {
+                        tempmodel.modelData.HTStartTime = tempmodel.modelData.HTStartTime.substring(0, 10);
+                    }
+                    if (tempmodel.modelData.HTEndTime && tempmodel.modelData.HTEndTime.length > 10) {
+                        tempmodel.modelData.HTEndTime = tempmodel.modelData.HTEndTime.substring(0, 10);
+                    }
+                    if (tempmodel.modelData.QYDate && tempmodel.modelData.QYDate.length > 10) {
+                        tempmodel.modelData.QYDate = tempmodel.modelData.QYDate.substring(0, 10);
+                    }
+                    setTimeout("ComFunJS.initForm()", 500)
+
+                    $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETALLKH', {}, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            tempmodel.khData = resultData.Result;
+                            tempmodel.kh();
+                        }
+                    })
+                })
+            } else {
+                $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETALLKH', {}, function (resultData) {
+                    tempmodel.khData = resultData.Result;
+                    if (tempmodel.khid) {
+                        tempmodel.modelData.KHID = tempmodel.khid;
+                    }
+                    tempmodel.kh();
+                })
+
+                pmodel.isDraft = true;
+                ComFunJS.initForm();
+            }
+        },//初始化
+        SaveData: function (callback, btdom) {
+            //realvalue
+            $.post("/API/VIEWAPI.ashx?ACTION=CRM_ADDHT", { P1: JSON.stringify(tempmodel.modelData.$model) }, function (result) {
+                return callback.call(this, result);
+            });
+        },
+        kh: function () {
+            tempmodel.khData.forEach(function (item) {
+                if (item.ID == tempmodel.modelData.KHID) {
+                    $(".szhl_select").val(item.KHName);
+                }
+            })
+            if ($(".szhl_select").length > 0) {
+                var tabsel = $(".szhl_select").YanSelect({
+                    valueindex: 0,//值对应列
+                    textindex: 1,
+                    dataobj: tempmodel.khData,
+                    columns: [{ "fieldname": "ID", "text": "序号" }, { "fieldname": "KHName", "text": "客户名称" }],
+                    afterSelect: function (dom) {
+                        tempmodel.modelData.KHID = dom.attr('dataid')
+                    },
+                    eventadd: function (val) {
+                        if (val) {
+                            $.getJSON('/API/VIEWAPI.ashx?Action=CRM_ADDKHBYNAME', { P1: val }, function (resultData) {
+                                tabsel.extaddrow(resultData.Result)
+                            })
+                        }
+                    }
+                });
+            }
+        },
+        ClearKH: function () {
+            $(".szhl_select").val("");
+            tempmodel.modelData.KHID = "";
+        }
+    });
+</script>

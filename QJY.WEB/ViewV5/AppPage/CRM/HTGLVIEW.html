@@ -1,0 +1,232 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/ViewV5/CSS/icfont_qj/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <style>
+    </style>
+</head>
+
+<body style="background-color: #F8F8F8; height: 100%;" ms-controller="HTGLVIEW">
+    <div class="padding20">
+        <div class="card card3 mb20">
+            <div class="detail-nav">
+                <div class="tab-kh nav-bt">
+                    <span class="cur"><i class="iconfont icon-bookmark"></i>合同信息</span>
+                    <div class="pr20" style="float: right;">
+                        <button class="btn btn-info" ms-click="editHT()">编辑</button>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-con">
+                <div class="detail-item" ms-repeat-el="ShowColumns" ms-class-1="{{el.class}}" ms-visible="modelData[el.ColName]">
+                    <span class="item-tit">{{el.ColText}}</span>
+                    <div class="item-con">{{ComFunJS.FnFormat(modelData[el.ColName],el)|html}}</div>
+                </div>
+                <div class="detail-item" ms-repeat-ext="modelData.SubExt">
+                    <span class="item-tit">{{ext.TableFiledName}}</span>
+                    <div class="item-con">{{ext.ExtendDataValue}} </div>
+                </div>
+                <div class="detail-item" ms-if="tpData&&tpData.size()!=0">
+                    <span class="item-tit">附件</span>
+                    <div class="fj clearfix mt10">
+                        <div class="pull-left" ms-repeat-file="tpData">
+                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="img-rounded:ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="{{ComFunJS.getfile(file.ID)}}&width=45&height=45" ms-attr-imgyt="{{ComFunJS.getfile(file.ID)}}" style="cursor:zoom-in;border-radius:2px" />
+                            <img ms-click="viewfile(file)" style="height:45px;width:45px" ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                            <div class="fj-cont c999 ft12">
+                                <p class="word-break">{{file.Name}}.{{file.FileExtendName}}<span>({{Math.round(file.FileSize/1024)}}kb)</span></p>
+                                <p class="mt5">
+                                    <a ms-attr-href="{{file.YLUrl}}" ms-if="file.YLUrl" target="_blank">预览</a>
+                                    <a ms-attr-href="{{ComFunJS.getfile(file.ID)}}">下载</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clearfix nopadding pl20 pt20">
+                <button class="btn btn-info " ms-click="addGJ()"><i class="iconfont icon-jiahao ft12 mr5"></i>添加跟进记录</button>
+            </div>
+            <div class="padding20">
+                <div class="lookright-box">
+                    <div class="menu-general ft14">
+                        <ul>
+                            <li class="active">
+                                <a>跟进记录</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="crm-dt clearfix nopadding pt20">
+                </div>
+                <div id="map">
+                    <div>
+                        <div class="crm-dt" ms-repeat-item="modelData.GJJL">
+                            <span class="crm-yuan"></span>
+                            <div class="crm-dt-cont">
+                                <i class="bg"></i>
+                                <span class="wt"></span>
+                                <div style="margin:10px 30px;" class="c666">
+                                    <p class="c999">{{ComFunJS.convertuser(item.CRUser)}}>{{htgjsta(item.Status)}}<span class="pull-right">{{item.CRDate|date("yyyy年MM月dd日 HH:mm")}}</span></p>
+                                    <h3 class="crm-xg ft14 mt5">{{item.Details|html}}</h3>
+                                    <!--<p class="c999">{{item.GJZT}}</p>-->
+                                    <div class="fj clearfix mt10" ms-if="item.FileList&&item.FileList.size()!=0">
+                                        <div class="pull-left" ms-repeat-file="item.FileList">
+                                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="img-rounded:ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="{{ComFunJS.getfile(file.ID)}}&width=45&height=45" ms-attr-imgyt="{{ComFunJS.getfile(file.ID)}}"  style="cursor:zoom-in;border-radius:2px" />
+
+                                            <img ms-click="viewfile(file)" style="height:45px;width:45px" ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                                            <div class="fj-cont c999 ft12">
+                                                <p class="word-break">{{file.Name}}.{{file.FileExtendName}}<span>({{Math.round(file.FileSize/1024)}}kb)</span></p>
+                                                <p class="mt5">
+                                                    <a ms-attr-href="{{file.YLUrl}}" ms-if="file.YLUrl" target="_blank">预览</a>
+                                                    <a ms-attr-href="{{ComFunJS.getfile(file.ID)}}">下载</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/JS/layer/extend/layer.ext.js"></script>
+    <script src="/ViewV5/JS/laypage/laypage.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script type="text/javascript">
+        $(".padding20 .lookright-box .menu-general ul li").each(function (i) {
+            $(this).click(function () {
+                $(this).addClass("active").siblings().removeClass("active");
+                $("#map>div:eq(" + i + ")").show().siblings().hide();
+            });
+        });
+
+        var model = avalon.define({
+            $id: "HTGLVIEW",
+            modelData: {},
+            ShowColumns: [],
+            tpData: [],
+            strId: ComFunJS.getQueryString("ID"),
+            editHT: function () {
+                window.location.href = "/ViewV5/AppPage/APP_ADD_WF.html?FormCode=CRM_HTGL&id=" + model.strId;
+            },
+            addGJ: function () {
+                ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=CRM_HTGJ&htid=" + model.modelData.ID + "&r=" + Math.random(), "跟进记录", "700", "600");
+            },
+            GetModelData: function () {
+                if (model.strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETHTLIST', { P1: "all", ID: model.strId }, function (resultData) {
+                            model.modelData = resultData.Result[0];
+                            model.tpData = resultData.Result[0].FileList;
+                            setTimeout(" ComFunJS.initForm()", 500);
+                    })
+                }
+            },
+            htgjsta: function (s) {
+                var sname = "";
+                switch (s) {
+                    case 0:
+                        sname = "未开始";
+                        break;
+                    case 1:
+                        sname = "执行中";
+                        break;
+                    case 2:
+                        sname = "成功结束";
+                        break;
+                    case 3:
+                        sname = "意外终止";
+                        break;
+                }
+                return sname;
+            },
+            FnFormat: function (str, fmt) { //格式化
+                if (str && fmt.format) {
+                    switch (fmt.format) {
+                        case "statename": //审核流程，-1时不需要流程
+                            {
+                                if (str == "-1") return "";
+                            }
+                            break;
+                        case "dateformat": //日期格式，默认yyyy-mm-dd
+                            {
+                                return ComFunJS.getnowdate("yyyy-mm-dd", str);
+                            }
+                            break;
+                        case "username": //用户id转成为用户名
+                            {
+                                return ComFunJS.convertuser(str);
+                            }
+                            break;
+                        case "qrcode": //二维码图片展示
+                            {
+                                return "<img src='" + str + "' style='width:60px;height:60px;' />"
+                            }
+                            break;
+                        case "bqh":
+                            {
+                                return ComFunJS.bqhContent(str);
+                            }
+                            break;
+                        case "text":
+                            {
+                                var len = fmt.len || 20;
+                                return ComFunJS.convstr(str + "", len);
+                            }
+                            break;
+                        default: {
+                            return "";
+                        }
+                    }
+                }
+                return str;
+            }
+        });
+        avalon.ready(function () {
+            model.ShowColumns.clear();
+            model.ShowColumns.pushArray([
+                { ColName: "TypeName", ColText: "合同类型", IsSel: true, "class": "width50" },
+                { ColName: "FZR", ColText: "负责人", IsSel: true, "format": "username", "class": "width50" },
+                { ColName: "Title", ColText: "合同标题", IsSel: true, "class": "width50" },
+                { ColName: "KHName", ColText: "对应客户", IsSel: true, "class": "width50" },
+                { ColName: "Price", ColText: "合同总金额(元)", IsSel: true, "class": "width50" },
+                { ColName: "HTStartTime", ColText: "合同开始时间", IsSel: true, format: "dateformat", "class": "width50" },
+                { ColName: "HTEndTime", ColText: "合同结束时间", IsSel: true, format: "dateformat", "class": "width50" },
+                { ColName: "HTStatus", ColText: "合同状态", IsSel: true, "class": "width50" },
+                { ColName: "CPName", ColText: "关联产品", IsSel: false, "class": "width50" },
+                { ColName: "HTCode", ColText: "合同编号", IsSel: false, "class": "width50" },
+                { ColName: "FSName", ColText: "付款方式", IsSel: true, "class": "width50" },
+                { ColName: "KHQYR", ColText: "客户方签约人", IsSel: true, "class": "width50" },
+                { ColName: "WFQYR", ColText: "我方签约人", IsSel: true, "class": "width50" },
+                { ColName: "QYDate", ColText: "签约时间", IsSel: true, format: "dateformat", "class": "width50" },
+                { ColName: "ExpiryDate", ColText: "有效期", IsSel: true, "class": "width50" },
+                { ColName: "FKSM", ColText: "付款说明", IsSel: true, "class": "width50" },
+                { ColName: "Remark", ColText: "备注", IsSel: false }
+            ]);
+
+            model.GetModelData();
+        })
+    </script>
+</body>
+
+</html>

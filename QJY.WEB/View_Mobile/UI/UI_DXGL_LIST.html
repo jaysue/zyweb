@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>短信列表</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="/View_Mobile/Frozenui1.3/css/frozen.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+
+    <style type="text/css">
+
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+        .ui-dialog-bd {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body ms-controller="XXList">
+    <div class="page page-current" id="pageindex1">
+        <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50" style="margin-bottom:48px;">
+            <div class="list-container">
+                <div class="card" ms-repeat-el="ctData" >
+
+                    <div class="list-block" style="margin:0;">
+                        <ul>
+                            <li class="item-content item-link" ms-on-click="vieww(el)" style="border-bottom: solid 1px #e7e7e7;">
+                                <div class="item-inner">
+                                    <div class="item-title">{{el.dxnums}}</div>
+                                </div>
+                            </li>
+                            <li class="item-content" style="border-bottom: solid 1px #e7e7e7;">
+                                <div class="item-inner">
+                                    <div class="item-title">{{el.SendTime|date("yyyy-MM-dd HH:mm:ss")}}</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card-content">
+                        <div class="card-content-inner">{{el.dxContent}}</div>
+                    </div>
+                </div>
+
+            </div>
+            
+
+            <div class="infinite-scroll-preloader">
+                <div class="preloader"></div>
+            </div>
+        </div>
+        <nav class="bar bar-tab">
+            <div class="content-block" style="margin:0px;">
+                <div class="row">
+                    <div class="col-100"><a href="javascript:void(0);" style="top:0px;" ms-click="adddx()" class="button button-big button-fill button-success external">新增短信</a></div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script src="/View_Mobile/Frozenui1.3/js/frozen.js"></script>
+    <script>
+
+        window.localStorage.removeItem("page");
+        window.localStorage.setItem("page", 1);
+
+        window.localStorage.removeItem("isjz");
+        window.localStorage.setItem("isjz", 0);
+
+        var fheight = 0;
+
+        var model = avalon.define({
+            $id: "XXList",
+            ctData: [],
+            vieww: function (el) {
+                if (el.dxnums.length > 0) {
+                    var html = '<div class=" ui-label-list" style="overflow-y: auto;margin-top:10px;max-height:' + (fheight - 150) + 'px">';
+                    $(el.dxnums.split(',')).each(function (index, ele) {
+                        html = html + '<label class="ui-label" style="position: relative; width: auto;  padding: 0 5px;margin: 0 5px 5px 0;">' + ele + '</label>';
+                    })
+
+                    html = html + '</div>';
+
+                    $.dialog({
+                        title: '接收号码',
+                        content: html,
+                        button: ["确认"]
+                    });
+                    $(".ui-dialog-ft").find("button").click(function () {
+                        $(".ui-dialog").remove();
+                    });
+                }
+            },
+            adddx: function () {
+                window.location = "UI_DXGL_INPUT.html?r=" + Math.random();
+            }
+        })
+
+        function loadMore() {
+            var isjz = window.localStorage.getItem("isjz");
+            if (isjz == 0) {
+                window.localStorage.setItem("isjz", 1);
+                var page = window.localStorage.getItem("page");
+
+                if (page != "0") {
+                    $.getJSON("/API/VIEWAPI.ashx?Action=DXGL_GETDXGLLIST&r=" + Math.random(), { "p": page }, function (r) {
+
+                        if (r.ErrorMsg == "") {
+                            if (r.Result.length > 0) {
+                                model.ctData.pushArray(r.Result);
+                                if (r.Result.length < 8) {
+                                    window.localStorage.setItem("page", 0);
+
+                                    // 加载完毕，则注销无限加载事件，以防不必要的加载
+                                    $.detachInfiniteScroll($('.infinite-scroll'));
+                                    // 删除加载提示符
+                                    $('.infinite-scroll-preloader').remove();
+                                }
+                                else {
+                                    var page = window.localStorage.getItem("page");
+                                    window.localStorage.setItem("page", parseInt(page) + 1);
+                                }
+                            } else {
+                                var page = window.localStorage.getItem("page");
+                                if (page == "1") {
+                                    // 加载完毕，则注销无限加载事件，以防不必要的加载
+                                    $.detachInfiniteScroll($('.infinite-scroll'));
+                                    // 删除加载提示符
+                                    $('.infinite-scroll-preloader').remove();
+                                }
+                                else {
+                                    window.localStorage.setItem("page", 0);
+
+                                    // 加载完毕，则注销无限加载事件，以防不必要的加载
+                                    $.detachInfiniteScroll($('.infinite-scroll'));
+                                    // 删除加载提示符
+                                    $('.infinite-scroll-preloader').remove();
+                                }
+                            }
+                            $.refreshScroller();
+                        } else {
+
+                        }
+                        window.localStorage.setItem("isjz", 0);
+                    })
+                }
+            }
+        }
+
+        avalon.ready(function () {
+            fheight = document.documentElement.clientHeight;
+            // 注册'infinite'事件处理函数
+            $(document).on('infinite', '.infinite-scroll-bottom', function () {
+                loadMore();
+            });
+
+            $.init();
+            loadMore();
+
+        })
+
+    </script>
+
+</body>
+
+
+
+</html>

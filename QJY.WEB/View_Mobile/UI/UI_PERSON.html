@@ -1,0 +1,288 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>选择人</title>
+    <link href="/View_Mobile/Frozenui1.3/css/frozen.css" rel="stylesheet" />
+    <script src="/View_Mobile/JS/zepto.min.js"></script>
+    <script src="/View_Mobile/Frozenui1.3/js/frozen.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+
+    <script>
+        //document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+        //    //隐藏右上角按钮
+        //    WeixinJSBridge.call('hideOptionMenu');
+        //});
+
+        var strUsers = ComFunJS.getQueryString("Users");
+        var strType = ComFunJS.getQueryString("Type");
+        var model = avalon.define({
+            $id: "wxuser",
+            ctData: [],
+            cxtj:"",
+            repshow: function () {
+                if ($(this).parent().parent().hasClass("active")) {
+                    $(this).parent().parent().removeClass("active");
+                }
+                else {
+                    $(this).parent().parent().siblings().removeClass("active");
+                    $(this).parent().parent().addClass("active");
+                    chkxzry();
+                }
+            },
+            checkall: function (obj) {
+                var chk = $(this).parent().parent().parent().parent();
+
+                $.each(chk.find("input[type=checkbox]"), function () {
+                    this.checked = obj.checked;
+                })
+            }
+
+        })
+        avalon.ready(function () {
+            var lg = $.loading({
+                content: '加载中...',
+            })
+            $.getJSON("/API/VIEWAPI.ashx?action=XTGL_GETWXUSER&r=" + Math.random(),{}, function (r) {
+                lg.hide();
+                model.ctData = r.Result;
+
+                chkxzry();
+            });
+            $('.ui-searchbar').tap(function () {
+                $('.ui-searchbar-wrap').addClass('focus');
+                $('.ui-searchbar-input input').focus();
+            });
+            $('.ui-searchbar-cancel').tap(function () {
+                $('.ui-searchbar-wrap').removeClass('focus');
+                model.cxtj = "";
+            });
+            $(".ui-icon-close").tap(function () {
+                model.cxtj = "";
+            })
+        })
+        function chkxzry() {
+            if (strUsers != null && strUsers != "") {
+                var uses = new Array();
+                uses = strUsers.split(",");
+                for (i = 0; i < uses.length ; i++) {
+                    $("input.xzry").each(function () {
+                        var username = $(this).parent().parent().prev().find(".un").text();
+                        if (uses[i] == username) {
+                            this.checked = true;
+                        }
+                    })
+                }
+            }
+
+            if (strType == "1") {
+                $(".checkall").hide();
+                $("input.xzry").each(function () {
+                    var obj = $(this);
+                    $(this).click(function () {
+                        if (this.checked) {
+                            $("input.xzry:checked").each(function () {
+                                this.checked = false;
+                            })
+                            this.checked = true;
+                        }
+                    })
+
+                })
+            }
+        }
+        function goback() {
+            parent.goback();
+        }
+        function goconfirm() {
+
+
+            if ($("input.xzry:checked").length > 0) {
+                var vuser = "";
+                var vusername = "";
+                var vuserphone = "";
+                $("input.xzry:checked").each(function (index, item) {
+
+                    var user = $(this).parent().parent().prev().find("h4").find("span").eq(0).text();
+                    if (user) {
+                        if (vuser == "") {
+                            vuser = user;
+                        }
+                        else {
+                            vuser += "," + user;
+                        }
+                    }
+
+                    var username = $(this).parent().parent().prev().find(".un").text();
+                    if (username) {
+                        if (vusername == "") {
+                            vusername = username;
+                        }
+                        else {
+                            vusername += "," + username;
+                        }
+                    }
+                    var userphone = $(this).parent().parent().prev().find(".mb").text();
+                    if (userphone) {
+                        if (vuserphone == "") {
+                            vuserphone = userphone;
+                        }
+                        else {
+                            vuserphone += "," + userphone;
+                        }
+                    }
+
+                })
+
+                var js = '{"vuser":"' + vuser + '","vusername":"' + vusername + '","vuserphone":"' + vuserphone + '"}';
+
+                parent.goconfirm(JSON.parse(js));
+
+            } else {
+                parent.goconfirm(null);
+            }
+
+        }
+    </script>
+    <style>
+        .ui-selector-item.active > ul {
+            display: block !important;
+        }
+
+        .ui-selector-item.active > div > div.ui-selector-content {
+            display: block !important;
+        }
+
+        .ui-selector-item > ul {
+            display: none !important;
+        }
+
+        .ui-selector-item > div > div.ui-selector-content {
+            display: none !important;
+        }
+
+        .ui-selector-item.active > div > h3:before {
+            -webkit-transform: rotate(90deg) !important;
+        }
+
+        .ui-selector-item > div > h3:before {
+            -webkit-transform: rotate(0deg) !important;
+        }
+    </style>
+</head>
+<body ms-controller="wxuser">
+    <header class="ui-header ui-header-stable">
+        <h1>选择人员</h1>
+    </header>
+
+    <div class="ui-footer ui-footer-stable ui-btn-group ui-border-t">
+        <button class="ui-btn-lg" onclick="goback()">
+            取消
+        </button>
+        <button class="ui-btn-lg ui-btn-primary" onclick="goconfirm()">
+            确定
+        </button>
+    </div>
+    
+    <section class="ui-container">
+        <div class="ui-searchbar-wrap ui-border-b">
+            <div class="ui-searchbar ui-border-radius">
+                <!--<i class="ui-icon-search"></i>
+                <div class="ui-searchbar-text">姓名或手机号</div>
+                <div class="ui-searchbar-input"><input ms-duplex="cxtj" type="text" placeholder="姓名或手机号" autocapitalize="off">{{cxtj}}</div>
+                <i class="ui-icon-close"></i>-->
+                <input ms-duplex="cxtj" type="text" placeholder="姓名或手机号" >
+            </div>
+            <button class="ui-searchbar-cancel">取消</button>
+        </div>
+        <div class="ui-selector">
+            <div class="ui-selector-content">
+
+                <ul>
+                    <li ms-repeat-el="ctData" ms-attr-class="cxtj?'ui-selector-item active':'ui-selector-item' ">
+                        <div class="ui-border-b" style="display: -webkit-box;" ms-if="!cxtj">
+                            <h3 ms-click="repshow()"></h3>
+                            <p style="line-height:44px" ms-click="repshow()">
+                                {{el.DeptName}}
+                                <span class="ui-txt-info" style="padding-right: 20px; float: right;">{{el.DeptUserNum}}</span>
+                            </p>
+                            <div class="ui-form-item-checkbox checkall" style="padding-right:10px">
+                                <label class="ui-checkbox">
+                                    <input type="checkbox" class="ui-user-chk" ms-click="checkall(this)">
+                                </label>
+                            </div>
+                        </div>
+                        <ul class="ui-list ui-border-b">
+                            <li class="ui-border-b" ms-repeat-im="el.DeptUser" ms-visible="(cxtj&&(im.UserRealName.indexOf(cxtj)!=-1||im.mobphone.indexOf(cxtj)!=-1))||!cxtj">
+                                <div class="ui-avatar-s" style=" background-image: none;">
+                                    <!--<span ms-css-background-image="url(/Upload/TX/{{im.UserName}}.jpg)"></span>-->
+                                    <img ms-attr-src="/Upload/TX/{{el.CRUser}}.jpg" style='width: 40px;height:40px;' onerror="javascript: this.src = '/Upload/TX/def.jpg'">
+                                </div>
+                                <div class="ui-list-info">
+                                    <h4><span>{{im.UserRealName}}</span><span ms-if="im.mobphone">({{im.mobphone}}) </span> </h4>
+                                    <span style="display:none;" class="un">{{im.UserName}}</span>
+                                    <span style="display:none;" class="mb">{{im.mobphone}}</span>
+                                </div>
+                                <div class="ui-form-item-checkbox " style="padding-right:10px">
+                                    <label class="ui-checkbox">
+                                        <input type="checkbox" class="ui-user-chk xzry">
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                        <div style="padding-left:10px;" ms-include="'tmpl'" ms-visible="el.SubDept.length">
+
+                        </div>
+
+
+                    </li>
+
+
+                </ul>
+            </div>
+        </div>
+    </section>
+    <script type="avalon" id="tmpl">
+        <div class="ui-selector-content">
+            <ul>
+                <li ms-repeat-el="el.SubDept" ms-attr-class="cxtj?'ui-selector-item active':'ui-selector-item' ">
+                    <div class="ui-border-b" style="display: -webkit-box;" ms-if="!cxtj">
+                        <h3 ms-click="repshow()"></h3>
+                        <p style="line-height:44px" ms-click="repshow()">
+                            {{el.DeptName}}
+                            <span class="ui-txt-info" style="padding-right: 20px; float: right;">{{el.DeptUserNum}}</span>
+                        </p>
+                        <div class="ui-form-item-checkbox checkall" style="padding-right:10px">
+                            <label class="ui-checkbox">
+                                <input type="checkbox" class="ui-user-chk" ms-click="checkall(this)">
+                            </label>
+                        </div>
+                    </div>
+
+                    <ul class="ui-list ui-border-b">
+                        <li class="ui-border-b" ms-repeat-im="el.DeptUser" ms-visible="(cxtj&&(im.UserRealName.indexOf(cxtj)!=-1||im.mobphone.indexOf(cxtj)!=-1))||!cxtj">
+                            <div class="ui-avatar-s" style=" background-image: none;">
+                                <!--<span ms-css-background-image="url(/Upload/TX/{{im.UserName}}.jpg)"></span>-->
+                                <img ms-attr-src="/Upload/TX/{{el.CRUser}}.jpg" style='width: 40px;height:40px;' onerror="javascript: this.src = '/Upload/TX/def.jpg'">
+                            </div>
+                            <div class="ui-list-info"><h4><span>{{im.UserRealName}}</span> ({{im.mobphone}})</h4><span style="display:none;" class="un">{{im.UserName}}</span><span style="display:none;" class="mb">{{im.mobphone}}</span></div>
+                            <div class="ui-form-item-checkbox " style="padding-right:10px">
+                                <label class="ui-checkbox">
+                                    <input type="checkbox" class="ui-user-chk xzry">
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                    <div style="padding-left:10px;" ms-include="'tmpl'" ms-visible="el.SubDept.length">
+
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </script>
+
+
+</body>
+</html>

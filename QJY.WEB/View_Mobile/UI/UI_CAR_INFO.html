@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>车辆信息</title>
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <style type="text/css">
+        .list-block .item-content {
+            padding-left: 0.3em;
+        }
+
+        .list-block .item-title.label {
+            width: 30%;
+        }
+
+        .card-header p {
+            margin: 0;
+            font-size: 13px;
+        }
+        .item-title {
+            -webkit-box-flex: 1;
+        }
+    </style>
+</head>
+<body ms-controller="hysinfo">
+    <div class="page">
+        <header class="bar bar-nav">
+            <a class="button button-link button-nav pull-left back">
+                <span class="icon icon-left"></span>
+                返回
+            </a>
+            <h1 class='title'>{{modelData.CarNum}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block" style="margin:0px;">
+                <ul>
+                    <!-- Text inputs -->
+                    <li>
+                        <div class="item-content">
+                            <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+                            <div class="item-inner">
+                                <div class="item-title label">车牌号</div>
+                                <div class="item-after">
+                                    {{modelData.CarNum}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+                            <div class="item-inner">
+                                <div class="item-title label">类型</div>
+                                <div class="item-after">
+                                    {{cartypename.TypeName}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+                            <div class="item-inner">
+                                <div class="item-title label">品牌</div>
+                                <div class="item-after">
+                                    {{modelData.CarBrand}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+                            <div class="item-inner">
+                                <div class="item-title label">购买日期</div>
+                                <div class="item-after">
+                                    {{modelData.BuyDate}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+                            <div class="item-inner">
+                                <div class="item-title label">购买价格</div>
+                                <div class="item-after">
+                                    {{modelData.Price}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="align-top">
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">发动机号码</div>
+                                <div class="item-after">
+                                    {{modelData.FDJNum}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="align-top">
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">座位</div>
+                                <div class="item-after">
+                                    {{modelData.SeatNum}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="align-top">
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">状态</div>
+                                <div class="item-after">
+                                    <!--{{modelData.Status='1'?'未归还':'已归还'}}-->
+                                    {{clzt(modelData.Status)}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="align-top">
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">使用情况</div>
+                                <div class="item-after">
+                                    共 {{ydcount}} 条
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="list-block media-list" style="margin-top:0;margin-bottom:48px">
+                <ul>
+                    <li>
+                        <div class="item-content" ms-repeat-el="ctData">
+                            <div class="item-media"><img ms-src="/ViewV5/Base/DownFile.aspx?type=TX&user={{el.CRUser}}" style='width: 2.2rem;height:2.2rem;' ></div>
+                            <div class="item-inner">
+                                <div class="item-title-row">
+                                    <div class="item-title" style="font-size: 12px">始：{{el.StartAddress}}<br />终：{{el.EndAddress}}</div>
+                                    <div class="item-after">{{ComFunJS.convuser(el.CRUser)}}</div>
+                                </div>
+                                <div class="item-subtitle" style="color: #5f646e; font-size: 12px">{{el.StartTime|date("yyyy-MM-dd HH:mm")}}~{{el.EndTime|date("yyyy-MM-dd HH:mm")}}</div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+
+        </div>
+        <nav class="bar bar-tab">
+            <div class="content-block" style="margin:0px;">
+                <div class="row">
+                    <div class="col-50"><a href="javascript:void(0);" style="top:0px;" onclick="window.history.back()" class="button button-big button-fill button-danger external">取消</a></div>
+                    <div class="col-50"><a href="javascript:void(0);" style="top:0px;" class="button button-big button-fill button-success external" ms-click="addhy()">申请用车</a></div>
+                </div>
+            </div>
+        </nav>
+
+    </div>
+
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>-->
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script>
+
+        var strId = ComFunJS.getQueryString("ID");
+        var model = avalon.define({
+            $id: "hysinfo",
+            modelData: {},
+            ctData: [],
+            ydcount: 0,
+            cartypename:"",
+            addhy: function () {
+                if (strId) {
+                    //window.location = "UI_YCGL_INPUT.html?rid=" + strId + "&r=" + Math.random();
+                    window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=YCGL&rid=" + strId + "&r=" + Math.random();
+                }
+            },
+            clzt: function (str) {
+                switch (str) {
+                    case "0": str = '可用'; break;
+                    case "1": str = '报废'; break;
+                    case "2": str = '维修'; break;
+                }
+                return str;
+            }
+        });
+        avalon.ready(function () {
+            if (strId != null) {
+                $.getJSON('/API/VIEWAPI.ashx?Action=YCGL_GETCLINFO&r=' + Math.random(), { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        model.modelData = resultData.Result;
+                        model.ctData = resultData.Result2;
+                        model.ydcount = resultData.Result2.length;
+                        model.cartypename = resultData.Result3;
+                    }
+                })
+
+            }
+        })
+    </script>
+</body>
+</html>

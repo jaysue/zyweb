@@ -1,0 +1,148 @@
+﻿<div ms-controller="GZBGBRANCH">
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <!-- 搜索 -->
+            <div class="oh oh pl20 pr20">
+              
+                <input type="search" class="form-control szhl_form_date_year  pull-left" ms-duplex="curYear" placeholder="请选择年份" style="width:100px">
+                  
+                <select class="form-control  pull-left " ms-duplex="curMonth" style="width:100px;margin-left:10px;" ms-change="GetLIST()">
+                    <option value="0">全部月份</option>
+                    <option value="01">1月</option>
+                    <option value="02">2月</option>
+                    <option value="03">3月</option>
+                    <option value="04">4月</option>
+                    <option value="05">5月</option>
+                    <option value="06">6月</option>
+                    <option value="07">7月</option>
+                    <option value="08">8月</option>
+                    <option value="09">9月</option>
+                    <option value="10">10月</option>
+                    <option value="11">11月</option>
+                    <option value="12">12月</option>
+                </select>
+                 
+                <div class="input-group ml15 pull-left" style="width:295px;">
+                    <input type="search" class="form-control" ms-duplex="searchcontent" placeholder="请输入您要查找的姓名和部门">
+                    <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+                </div>
+              
+            </div>
+        </div>
+        <!-- 展开更多选项 -->
+        <div class="add-tab ft14 tc mt20" style="display:none;">
+            <span>更多筛选<i class="caret"></i></span>
+        </div>
+        <!-- 表格 -->
+        <div class="default-tab ft14 pt20">
+            <table class="table table-striped table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th class="tc">
+                        </th>
+                        <th>姓名</th>
+                        <th>部门</th>
+                        <th>月份</th>
+                        <th>类别</th>
+                        <th>报告数量</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ms-repeat-el="ListData">
+                        <td class=" tc"></td>
+                        <td>{{ComFunJS.convertuser(el.CRUser)}}</td>
+                        <td>{{el.BranchName}}</td>
+                        <td>{{el.ccMonth}}</td>
+                        <td>{{el.TypeName}}</td>
+                        <td>{{el.daycount}}</td>
+                        <td>
+                            <a ms-click="ViewForm(el.CRUser,el.ccMonth)" class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="" data-original-title="查看">
+                                <i class="iconfont icon-look"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+                </tfoot>
+            </table>
+            <div class="ui-datatable-page ft14 pl20">
+
+                <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+                <div class="pull-right" ms-visible="ListData.size()!=0">
+                    <span>共{{model.page.total}}条记录</span>
+                    <span ms-visible="model.page.total>model.pageNum[0].num">
+                        选择每页条数
+                        <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                            <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                        </select>
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+
+        var tempindex = avalon.define({
+            $id: "GZBGBRANCH",
+            curYear: "",
+            curMonth: "0",
+            searchcontent: "",
+            selNum: function (item) {    //选择显示的条数
+                model.page.pagecount = item;
+                tempindex.GetLIST();
+            },
+            InitWigetData: function () {
+                ComFunJS.initForm();
+                var now = new Date();
+                var month = now.getMonth() + 1;
+                var clock = "";
+                if (month < 10)
+                    clock += "0";
+                clock += month;
+                tempindex.curMonth = clock;
+
+                tempindex.GetLIST();
+            },
+            GetLIST: function () {
+                model.page.pageindex = 1;
+                model.ListData.clear();
+                $.getJSON('/API/VIEWAPI.ashx?Action=GZBG_GETGZBGTJ', { p: 1, P1: tempindex.curYear, P2: tempindex.curMonth, search: tempindex.searchcontent, pagecount: model.page.pagecount }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        model.ListData = resultData.Result;
+                        if (model.ListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                        model.page.total = resultData.Result1;
+                        laypage({
+                            cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                            pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //
+                            curr: 1, //初始化当前页
+                            skin: 'molv',
+                            jump: function (e) { //触发分页后的回调
+                                if (e.curr != model.page.pageindex) {
+                                    $.getJSON('/API/VIEWAPI.ashx?Action=GZBG_GETGZBGTJ', { p: e.curr, P1: tempindex.curYear, P2: tempindex.curMonth, search: tempindex.searchcontent, pagecount: model.page.pagecount }, function (resultData) {
+                                        if (resultData.ErrorMsg == "") {
+                                            model.ListData = resultData.Result;
+                                        }
+                                    })
+                                    model.page.pageindex = e.curr;
+                                }
+                            }
+                        });
+                    }
+                })
+            },
+            ViewForm: function (username, month) {
+                ComFunJS.winviewform("/ViewV5/AppPage/GZBG/GZBGUserLIST.html?username=" + username + "&month=" + month, "工作报告详细", "1000");
+            }
+        })
+        tempindex.$watch("curYear", function (a, b) {
+            tempindex.GetLIST();
+        })
+        tempindex.$watch("curMonth", function (a, b) {
+            tempindex.GetLIST();
+        })
+        //# sourceURL=CCXJBRANCH.js;
+    </script>

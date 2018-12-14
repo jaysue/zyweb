@@ -1,0 +1,199 @@
+﻿<div ms-controller="TSGLLIST">
+    <!-- 添加按钮 -->
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="addJY()"><i class="iconfont icon-jiahao ft12 mr5"></i>添加借阅</button>
+        <!--<button type="button" class="btn btn-info btn-lg" ms-click="addJY"><i class="iconfont icon-jiahao ft12 mr5"></i></button>-->
+
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">图书类型：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectTSType('')"><span class="active">全部</span></li>
+                <li ms-repeat-el="TypeData" ms-click="SelectTSType(el.ID)"><span>{{el.TypeName}}</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">借阅状态：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectJYType('0')"><span class="active">可借阅</span></li>
+                <li ms-click="SelectJYType('1')"><span>借阅中</span></li>
+
+            </ul>
+        </div>
+        <!-- 搜索 -->
+        <div class="oh">
+            <div class="input-group ml15" style="width:295px;">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" placeholder="搜索图书名称">
+                <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+            </div>
+        </div>
+    </div>
+    <!-- 展开更多选项 -->
+    <div class="add-tab ft14 tc mt20" style="display:none;">
+        <span>更多筛选<i class="caret"></i></span>
+    </div>
+    <!-- 表格 -->
+    <div class="default-tab ft14 pt20">
+        <table class="table table-striped table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th style="text-align:center;width:100px" ms-if="curJYType=='0'">
+                        <div class="icheckbox_square-blue">
+                            <span class="iconfont icon-check ft12"></span>
+                        </div>
+                    </th>
+                    <th ms-class-1="tc:curJYType=='1'">  序号</th>
+                    <th>编码</th>
+                    <th>图书类别</th>
+                    <th>图书名称</th>
+                    <th>作者</th>
+                    <th>借阅状态</th>
+                    <th>待归还时间</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-el="tmpListData">
+                    <td style="text-align:center;width:100px" ms-if="curJYType=='0'">
+                        <div class="icheckbox_square-blue ts" ms-attr-tsid="el.ID">
+                            <span class="iconfont icon-check ft12"></span>
+                        </div>
+
+                    </td>
+                    <td ms-class-1="tc:curJYType=='1'">{{$index+1+page.pagecount*(page.pageindex-1)}}</td>
+                    <td>{{el.TSNum}}</td>
+                    <td>{{el.TSTypeName}}</td>
+                    <td class="lk" ms-click="ViewForm('JYGL_TSGL',el.ID,'',$event)">{{el.TSName}}</td>
+                    <td>{{el.auther}}</td>
+                    <td>{{el.jystatus=='0'?"可借阅":"借阅中"}}</td>
+                    <td>{{el.dghsj=='0'?"----":el.dghsj}}</td>
+
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+            </tfoot>
+        </table>
+        <div class="ui-datatable-page ft14 pl20">
+
+            <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+            <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                <span>共{{model.page.total}}条记录</span>
+                <span ms-visible="model.page.total>model.pageNum[0].num">
+                    选择每页条数
+                    <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                        <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                    </select>
+                </span>
+            </div>
+
+        </div>
+    </div>
+    <div class="default-tab ft14 pt20"  style="display:none">
+        <div id="jqxgrid" style="border-left: 0;border-right: 0;">
+        </div>
+
+    </div>
+</div>
+<link rel="stylesheet" href="/ViewV5/JS/YanGrid/jqwidgets/styles/jqx.base.css" />
+<link rel="stylesheet" href="/ViewV5/JS/YanGrid/jqwidgets/styles/jqx.office.css" />
+<script>
+
+    var tempindex = avalon.define({
+        $id: "TSGLLIST",
+        curTSType: "",
+        curJYType: "0",
+        tmpListData: [],
+        addJY: function () {
+            var tsids = "";
+            $(".ts").each(function () {
+                if ($(this).hasClass("checked")) {
+                    tsids = tsids + $(this).attr("tsid") + ",";
+                }
+            })
+            if (!tsids) {
+                top.ComFunJS.winwarning("请先选择图书再申请!");
+                return;
+            }
+            ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=JYGL&tsids=" + tsids, "借阅申请", "1000");
+        },
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        SelectTSType: function (type) {
+            tempindex.curTSType = type;
+            tempindex.GetLIST();
+        },
+        SelectJYType: function (type) {
+            tempindex.curJYType = type;
+            tempindex.GetLIST();
+        },
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        gridoption: {
+            columns: [
+                    {
+                        text: '#', sortable: false, filterable: false, editable: false,
+                        groupable: false, draggable: false, resizable: false,
+                        datafield: '', columntype: 'number', width: 50,
+                        cellsrenderer: function (row, column, value) {
+                            return "<div style='margin:4px; margin-top: 15px;'>" + (value + 1) + "</div>";
+                        }
+                    },
+                  { text: '编码', dataField: 'TSNum' },
+                  { text: '图书类别', dataField: 'TSTypeName' },
+                  { text: '图书名称', dataField: 'TSName',  width: '20%' },
+                  { text: '作者', dataField: 'auther' },
+                  { text: '借阅状态', dataField: 'jystatus', editable: false },
+                  { text: '出版社', dataField: 'cbs', editable: false }
+            ]
+        },
+
+        InitWigetData: function () {
+            model.search.seartype = "";
+            model.GetTypeData("24");
+            tempindex.GetLIST();
+            //$.getJSON('/API/VIEWAPI.ashx?Action=JYGL_GETTSLIST_PAGE', { p: 1, P1: model.search.seartype, P2: tempindex.curTSType, pagecount: 500, kystatus: "0", jystatus: tempindex.curJYType }, function (resultData) {
+            //    if (resultData.ErrorMsg == "") {
+            //        ComFunJS.inithighgrid(tempindex.gridoption.$model, resultData.Result)
+            //        tempindex.tmpListData = resultData.Result;
+            //    }
+            //})
+        },
+
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_GETTSLIST_PAGE', { p: 1, P1: model.search.searchcontent, P2: tempindex.curTSType, pagecount: model.page.pagecount, kystatus: "0", jystatus: tempindex.curJYType }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempindex.tmpListData = resultData.Result;
+                    if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                    model.page.total = resultData.Result1;
+                    laypage({
+                        cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                        pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //通过后台拿到的总页数
+                        curr: 1, //初始化当前页
+                        skin: 'molv',
+                        jump: function (e) { //触发分页后的回调
+                            if (e.curr != model.page.pageindex) {
+                                $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_GETTSLIST_PAGE', { p: e.curr, P1: model.search.seartype, P2: tempindex.curTSType, pagecount: model.page.pagecount, kystatus: "0", jystatus: tempindex.curJYType }, function (resultData) {
+                                    if (resultData.ErrorMsg == "") {
+                                        tempindex.tmpListData = resultData.Result;
+                                    }
+                                })
+                                model.page.pageindex = e.curr;
+                            }
+                        }
+                    });
+                }
+            })
+        }
+    })
+    //@ sourceURL=TSGLLIST.js;
+</script>

@@ -1,0 +1,32 @@
+﻿
+<div style="background-color:#F8F8F8" ms-controller="CCXJVIEW">
+
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "CCXJVIEW",
+            PCode: "CRM",
+            InitWigetData: function (strId) {
+                model.title = "跟进";
+                model.ShowColumns.pushArray(
+                [{ ColName: "KHName", ColText: "客户", IsSel: true },
+                          { ColName: "GJZT", ColText: "状态", IsSel: true },
+                          //{ ColName: "Type", ColText: "方式", IsSel: true},
+                          { ColName: "Details", ColText: "描述", IsSel: true},
+                          { ColName: "CRDate", ColText: "时间", IsSel: true }
+                ]);
+
+                if (model.strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETGJJLLIST', { P1: "all", ID: model.strId }, function (resultData) {
+                            model.modelData = resultData.Result[0];
+                            model.tpData = resultData.Result[0].FileList;
+                            setTimeout(" ComFunJS.initForm()", 500);
+                    })
+                }
+            }
+        });
+        avalon.ready(function () {
+        })
+    </script>
+</div>

@@ -1,0 +1,451 @@
+﻿<html class="pixel-ratio-1">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>添加客户</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <!-- Google Web Fonts -->
+
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1468569750_3627396.css">
+    <link rel="stylesheet" type="text/css" href="/View_Mobile/CSS/add.css">
+
+
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1468636506_6208553.css">
+    <link rel="stylesheet" type="text/css" href="/View_Mobile/CSS/add.css">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1468636506_6208553.css">
+    <link rel="stylesheet" type="text/css" href="/View_Mobile/CSS/add.css">
+    <link href="/View_Mobile/UI/CRM/css/reset.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/View_Mobile/UI/CRM/css/default.css">
+    <style type="text/css">
+        .search-all {
+            position: relative;
+            right: 0;
+            left: 0;
+            z-index: 10;
+            height: 2.2rem;
+            padding-right: .5rem;
+            padding-left: .5rem;
+            background-color: #efeff4;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .no-margin {
+            margin: 0;
+        }
+
+        .border3 {
+            border-radius: 3px;
+        }
+
+        .c999 {
+            color: #999;
+        }
+
+        .txl-icon {
+            color: #72b29f;
+            font-size: 1em;
+        }
+
+        .operation-tx {
+            display: inline-block;
+            position: absolute;
+            right: .85rem;
+            font-size: 1em;
+            top: 50%;
+            margin-top: -0.6em;
+        }
+
+            .operation-tx a {
+                padding: .5em;
+            }
+
+        .bgfff {
+            background: #fff;
+        }
+
+        .zj-list {
+            float: left;
+            width: 20%;
+            text-align: center;
+        }
+
+        .kz {
+            overflow: hidden;
+            background: #fff;
+            padding-bottom: 1em;
+        }
+
+        .zj-list span {
+            display: block;
+            font-size: .7em;
+            margin-top: .3em;
+            color: #999;
+        }
+
+        .sanjiao {
+            width: 0;
+            height: 0;
+            border-top: .4em solid transparent;
+            border-left: .4em solid #D9D9D9;
+            border-bottom: .4em solid transparent;
+            display: inline-block;
+            margin-right: 5px;
+            padding-left: 6px;
+        }
+        .sanjiao.active{transform: rotate(90deg);}
+
+        .list-block .item-after {
+            font-size: .7em;
+        }
+
+        .left10 {
+            padding-left: 10px;
+            background:#fff;
+        }
+        .item-title{font-size:.8em;}
+        .list-block .item-subtitle{font-size:.7em;}
+        .list-block .item-divider, .list-block .list-group-title{color:#999}
+
+
+        .user-name {
+            color: #fff;
+            font-size: 1.5em;
+            line-height: 1.3rem;
+            padding-bottom: 0rem;
+        }
+
+        .user-name2 {
+            font-size: 1em;
+        }
+
+        .item-title {
+            font-size: .7em;
+        }
+
+        .ftbig {
+            font-size: 1em;
+            color: #6caf9b;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-group">
+
+
+        <div class="content native-scroll">
+            <!-- 搜索 -->
+            <div class="search-all">
+                <div class="searchbar">
+                    <div class="search-input">
+                        <label class="icon icon-search" for="search"></label>
+                        <input type="search" id='search' placeholder='搜索姓名/拼音/电话' style="border-color: #fff;width:90%;" />
+                        <span href="###" style="position:absolute;top:0;right:0;color:#ccc;"><i class="iconfont icon-gavin-copy" style="font-size:20px;"></i></span>
+                    </div>
+                </div>
+            </div>
+            <!-- 最近联系人 -->
+            <div class="">
+                <div class="weui_cells_title bgfff">最近联系人</div>
+                <div class="kz">
+                    <div class="zj-list">
+                        <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                        <span>张张</span>
+                    </div>
+                    <div class="zj-list">
+                        <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                        <span>张张</span>
+                    </div>
+                    <div class="zj-list">
+                        <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                        <span>张张</span>
+                    </div>
+                    <div class="zj-list">
+                        <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                        <span>张张</span>
+                    </div>
+                    <div class="zj-list">
+                        <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                        <span>张张</span>
+                    </div>
+
+                </div>
+            </div>
+            <!-- 列表 -->
+             <div class="list-block media-list no-margin">
+               <ul>
+                 <li class="list-group-title">A</li>
+                 <li>
+                   <div class="item-content">
+                     <div class="item-media"><img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3"></div>
+                     <div class="item-inner">
+                       <div class="item-title-row">
+                         <div class="item-title">龙春阳</div>
+                       </div>
+                       <div class="item-subtitle c999">CEO</div>
+                       <div class="operation-tx">
+                         <a href="###"><i class="iconfont icon-iphone txl-icon"></i></a>
+                         <a href="###"><i class="iconfont icon-messag txl-icon"></i></a>
+                         <a href="###"><i class="iconfont icon-xin txl-icon"></i></a>
+                       </div>
+                     </div>
+                   </div>
+                 </li>
+                 <li>
+                   <div class="item-content">
+                     <div class="item-media"><img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44"></div>
+                     <div class="item-inner">
+                       <div class="item-title-row">
+                         <div class="item-title">标题</div>
+                       </div>
+                       <div class="item-subtitle  c999">子标题</div>
+                       <div class="operation-tx">
+                         <a href="###"><i class="iconfont icon-iphone txl-icon"></i></a>
+                         <a href="###"><i class="iconfont icon-messag txl-icon"></i></a>
+                         <a href="###"><i class="iconfont icon-xin txl-icon"></i></a>
+                       </div>
+                     </div>
+                   </div>
+                 </li>
+               </ul>
+             </div>
+            <!-- 列表2 -->
+            <div class="list-block media-list no-margin">
+              <ul>
+                <li class="list-group-title">B</li>
+
+                <li>
+                  <div class="item-content">
+                    <div class="item-media">
+                        <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44">
+                    </div>
+                    <div class="item-inner">
+                      <div class="item-title-row">
+                        <div class="item-title">刘玉宏</div>
+                      </div>
+                      <div class="item-subtitle c999">负责人</div>
+                      <div class="operation-tx">
+                        <a href="###"><i class="iconfont icon-iphone txl-icon"></i></a>
+                        <a href="###"><i class="iconfont icon-messag txl-icon"></i></a>
+                        <a href="###"><i class="iconfont icon-xin txl-icon"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="group-list">
+                <div class="weui_cells_title"></div>
+                <div>
+                    <div class="list-block no-margin">
+                        <ul>
+                            <li class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title"><span class="sanjiao"></span>郑州办事处</div>
+                                    <div class="item-after">(35)</div>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="list-block no-margin left10">
+                            <ul>
+                                <li class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title"><span class="sanjiao"></span>郑州办事处</div>
+                                        <div class="item-after">(35)</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="list-block no-margin left10">
+                                <ul>
+                                    <li class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title"><span class="sanjiao"></span>郑州办事处</div>
+                                            <div class="item-after">(35)</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div class="list-block no-margin left10">
+                                    <ul>
+                                        <li class="item-content">
+                                            <div class="item-inner">
+                                                <div class="item-title"><span class="sanjiao"></span>郑州办事处</div>
+                                                <div class="item-after">(35)</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <div class="list-block no-margin left10">
+                                        <ul>
+                                            <li class="item-content">
+                                                <div class="item-inner">
+                                                    <div class="item-title"><span class="sanjiao"></span>郑州办事处</div>
+                                                    <div class="item-after">(35)</div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <div class="list-block media-list no-margin">
+                                            <ul>
+                                                <li>
+                                                    <div class="item-content">
+                                                        <div class="item-media">
+                                                            <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                                                        </div>
+                                                        <div class="item-inner">
+                                                            <div class="item-title-row">
+                                                                <div class="item-title">刘玉宏</div>
+                                                            </div>
+                                                            <div class="item-subtitle c999">负责人</div>
+                                                            <div class="operation-tx">
+                                                                <a href="###"><i class="iconfont icon-iphone txl-icon"></i></a>
+                                                                <a href="###"><i class="iconfont icon-messag txl-icon"></i></a>
+                                                                <a href="###"><i class="iconfont icon-xin txl-icon"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="item-content">
+                                                        <div class="item-media">
+                                                            <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                                                        </div>
+                                                        <div class="item-inner">
+                                                            <div class="item-title-row">
+                                                                <div class="item-title">刘玉宏</div>
+                                                            </div>
+                                                            <div class="item-subtitle c999">负责人</div>
+                                                            <div class="operation-tx">
+                                                                <a href="###"><i class="iconfont icon-iphone txl-icon"></i></a>
+                                                                <a href="###"><i class="iconfont icon-messag txl-icon"></i></a>
+                                                                <a href="###"><i class="iconfont icon-xin txl-icon"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="item-content">
+                                                        <div class="item-media">
+                                                            <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                                                        </div>
+                                                        <div class="item-inner">
+                                                            <div class="item-title-row">
+                                                                <div class="item-title">刘玉宏</div>
+                                                            </div>
+                                                            <div class="item-subtitle c999">负责人</div>
+                                                            <div class="operation-tx">
+                                                                <a href="###"><i class="iconfont icon-iphone txl-icon"></i></a>
+                                                                <a href="###"><i class="iconfont icon-messag txl-icon"></i></a>
+                                                                <a href="###"><i class="iconfont icon-xin txl-icon"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="list-block no-margin">
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title"><span class="sanjiao"></span>郑州办事处</div>
+                                <div class="item-after">(35)</div>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <div class="list-block media-list no-margin">
+                        <ul>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media">
+                                        <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title-row">
+                                            <div class="item-title">刘玉宏</div>
+                                        </div>
+                                        <div class="item-subtitle c999">负责人</div>
+                                        <div class="operation-tx">
+                                            <a href="###"><i class="iconfont icon-iphone txl-icon"></i></a>
+                                            <a href="###"><i class="iconfont icon-messag txl-icon"></i></a>
+                                            <a href="###"><i class="iconfont icon-xin txl-icon"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media">
+                                        <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title-row">
+                                            <div class="item-title">刘玉宏</div>
+                                        </div>
+                                        <div class="item-subtitle c999">负责人</div>
+                                        <div class="operation-tx">
+                                            <a href="###"><i class="iconfont icon-iphone txl-icon"></i></a>
+                                            <a href="###"><i class="iconfont icon-messag txl-icon"></i></a>
+                                            <a href="###"><i class="iconfont icon-xin txl-icon"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-media">
+                                        <img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" width="44" class="border3">
+                                    </div>
+                                    <div class="item-inner">
+                                        <div class="item-title-row">
+                                            <div class="item-title">刘玉宏</div>
+                                        </div>
+                                        <div class="item-subtitle c999">负责人</div>
+                                        <div class="operation-tx">
+                                            <a href="###"><i class="iconfont icon-iphone txl-icon"></i></a>
+                                            <a href="###"><i class="iconfont icon-messag txl-icon"></i></a>
+                                            <a href="###"><i class="iconfont icon-xin txl-icon"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <ul class="left10">
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title"><span class="sanjiao"></span>郑州办事处</div>
+                                <div class="item-after">(35)</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>-->
+            </div>
+            
+
+
+        </div>
+    </div>
+
+    <div class="page-group">
+        
+
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+</body>
+</html>

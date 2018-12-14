@@ -1,0 +1,94 @@
+﻿<div class="form-horizontal" ms-controller="CCXJ">
+    <div class="form-group">
+        <label class="col-xs-2 control-label">表单申请人</label>
+        <div class="col-xs-4">
+            <p class="form-control-static" ms-text="modelData.ShenQingRen"></p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>申请类型</label>
+        <div class="col-xs-6">
+            <select name="conType" id="conType" ms-duplex="modelData.LeiBie" class="form-control">
+                <option ms-repeat-item="ColumnData" ms-attr-value="item.ID" ms-attr-selected="item.ID==modelData.LeiBie?'selected':''">{{item.TypeName}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>起止时间</label>
+        <div class="col-xs-3">
+            <input id="conNR" ms-duplex="modelData.StarTime" class="szhl_form_date form-control szhl_require" />
+        </div>
+        <div class="col-xs-3">
+            <input type="text" ms-duplex="modelData.EndTime" class="szhl_form_date form-control szhl_require" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>请假天数</label>
+        <div class="col-xs-6">
+            <input type="number" ms-duplex="modelData.Daycount" class="form-control szhl_require szhl_Int" min="1" maxlength="5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label"><i>*</i>事由</label>
+        <div class="col-xs-9">
+            <textarea type="text" autofocus="autofocus" ms-duplex="modelData.ZhuYaoShiYou" rows="2" class="span2   form-control szhl_require"></textarea>
+        </div>
+    </div>
+    <div class="form-group hidden">
+        <label class="col-xs-2 control-label">抄送人</label>
+        <div class="col-xs-9">
+            <input type="text" ms-duplex="modelData.ChaoSongRen" class="form-control szhl_getPeoples" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2 control-label">附件</label>
+        <div class="col-xs-9">
+            <input type="text" ms-duplex="modelData.Files" class="span2  szhl_Upload form-control" />
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var tempmodel = avalon.define({
+        $id: "CCXJ",
+        ColumnData: [],
+        name: "出差休假",
+        iswf: true,//是否属于流程表单
+        inittemp: function (strId) {
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 1 }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempmodel.ColumnData = resultData.Result;
+                    if (!tempmodel.modelData.LeiBie) {
+                        tempmodel.modelData.LeiBie = resultData.Result[0].ID
+                    };
+                }
+            })
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=CCXJ_GETCCXJMODEL', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempmodel.modelData = resultData.Result;
+                        if (tempmodel.modelData.StarTime && tempmodel.modelData.StarTime.length > 10) {
+                            tempmodel.modelData.StarTime = tempmodel.modelData.StarTime.substring(0, 10);
+                        }
+                        if (tempmodel.modelData.EndTime && tempmodel.modelData.EndTime.length > 10) {
+                            tempmodel.modelData.EndTime = tempmodel.modelData.EndTime.substring(0, 10);
+                        }
+                        setTimeout("ComFunJS.initForm()", 500)
+
+                    }
+                })
+            } else {
+                pmodel.isDraft = true;
+                ComFunJS.initForm();
+            }
+        },//初始化
+        modelData: { "ShenQingRen": ComFunJS.convertuser(ComFunJS.getnowuser()), "StarTime": "", "EndTime": "", "Daycount": "1", "LeiBie": "", "SPUser": "", "ChaoSongRen": "", "ZhuYaoShiYou": "", "Files": "" },
+        SaveData: function (callback) {
+            $.post("/API/VIEWAPI.ashx?ACTION=CCXJ_ADDCCXJ", { P1: JSON.stringify(tempmodel.modelData.$model) }, function (result) {
+                return callback.call(this, result);
+            });
+        }
+    });
+</script>

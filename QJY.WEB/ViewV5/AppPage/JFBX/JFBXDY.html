@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <title>费用报销</title>
+    <style type="text/css">
+        td {
+            width: 12.5%;
+            padding: 10px 0;
+        }
+
+        h2 {
+            font-size: 24px;
+            padding: 20px 0;
+        }
+
+        p {
+            padding-bottom: 15px;
+        }
+
+            p span {
+                padding: 0 10px;
+            }
+    </style>
+</head>
+<body>
+    <input type="button" value="下载" onclick="HTMLTOWORD()" />
+    <div class="fybx tc">
+        <h2>费用报销单</h2>
+        <p>
+            <span>年</span>
+            <span>年</span>
+            <span>年</span>
+        </p>
+        <table width="60%" border="1" style="margin:0 auto;">
+            <tr>
+                <td colspan="2">申请人：</td>
+                <td colspan="6"></td>
+            </tr>
+            <tr>
+                <td colspan="2">部门：</td>
+                <td colspan="6"></td>
+
+            </tr>
+            <tr>
+                <td colspan="2">事由：</td>
+                <td colspan="6"></td>
+
+            </tr>
+            <tr>
+                <td colspan="8" class="tc">费用清单</td>
+            </tr>
+            <tr>
+                <td colspan="2">序号</td>
+                <td colspan="2">费用项目</td>
+                <td colspan="2">金额</td>
+                <td colspan="2">单据张数</td>
+            </tr>
+            <tr>
+                <td colspan="2">1</td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td colspan="2">2</td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td colspan="2">3</td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td colspan="2">合&nbsp;&nbsp;计</td>
+                <td colspan="6"></td>
+            </tr>
+
+        </table>
+    </div>
+    <script src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script>
+    function HTMLTOWORD() { 
+        $.post("/ViewV5/AppPage/JFBX/HtmlToWord.ashx", { strHtml: $(".fybx").html() }, function (result) {
+         
+        })
+    }
+    </script>
+</body>
+</html>

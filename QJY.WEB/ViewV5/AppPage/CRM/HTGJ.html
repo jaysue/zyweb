@@ -1,0 +1,75 @@
+﻿<div class="form-horizontal" ms-controller="GJJL">
+    <div style="margin: 0 80px;">
+        <div>
+            <ul class="clearfix" style="display: block;padding:0">
+
+                <li class="add-item add-width2">
+                    <label class="add-item-label"><i>*</i>状态</label>
+                    <div class="add-ic">
+                        <select ms-duplex="htmodel.HTStatus" class="form-control">
+                            <option ms-repeat-item="ColumnData1" ms-attr-value="item.ID" ms-attr-selected="item.ID==htmodel.Status?'selected':''">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+             
+                <li class="add-item add-width2">
+                    <label class="add-item-label"><i>*</i>描述</label>
+                    <div class="add-ic">
+                        <textarea type="text" autofocus="autofocus" ms-duplex="modelData.Details" rows="3" class="span2 form-control szhl_require"></textarea>
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">附件</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.Files" class="span2  szhl_Upload form-control" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    var tempmodel = avalon.define({
+        $id: "GJJL",
+        ColumnData: [],
+        ColumnData1: [],
+        name: "跟进记录",
+        iswf: false,//是否属于流程表单
+        khid: "",
+        htmodel: {},
+        htid: ComFunJS.getQueryString("htid"),
+        inittemp: function (strId) {
+            tempmodel.ColumnData1 = [{ "ID": "0", "TypeName": "未开始" }, { "ID": "1", "TypeName": "执行中" }, { "ID": "2", "TypeName": "成功结束" }, { "ID": "3", "TypeName": "意外终止" }];
+
+            $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETHTMODEL', { P1: tempmodel.htid }, function (resultData) {
+                    tempmodel.htmodel = resultData.Result;
+                    if (!tempmodel.htmodel.HTStatus) {
+                        tempmodel.htmodel.HTStatus = 0;
+                    }
+                    setTimeout(" ComFunJS.initForm()", 500);
+            })
+
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETGJJLMODEL', { P1: strId }, function (resultData) {
+                        tempmodel.modelData = resultData.Result;
+                        setTimeout("ComFunJS.initForm()", 500)
+                })
+            } else {
+              
+                ComFunJS.initForm();
+            }
+        },//初始化
+        modelData: { "KHID": "", "Status": "", "Date": "", "Details": "", "Type": "", "IsTX": "N", "TXDate": "", "Remark": "", "CYUser": "", "Files": "" },
+        SaveData: function (callback) {
+            tempmodel.modelData.KHID = tempmodel.htmodel.ID;
+            tempmodel.modelData.Status = tempmodel.htmodel.HTStatus;
+
+            $.post("/API/VIEWAPI.ashx?ACTION=CRM_ADDGJJL", { P1: JSON.stringify(tempmodel.modelData.$model), gjtype: "HTGL" }, function (result) {
+                return callback.call(this, result);
+            });
+        }
+    });
+
+</script>

@@ -1,0 +1,37 @@
+﻿
+<div style="background-color:#F8F8F8" ms-controller="LCSPVIEW">
+
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "LCSPVIEW",
+            viewData: [],
+            CancelWF: function (strId) {
+                $.getJSON('/API/VIEWAPI.ashx?Action=LCSP_DELLCSPBYID', { P1: strId }, function (resultData) {
+                })
+            },
+            InitWigetData: function (strId) {
+                model.title = "自定义流程";
+                model.ShowColumns.pushArray(
+                [{ ColName: "ProcessName", ColText: "流程名称", IsSel: true},
+                { ColName: "ShenQingRen", ColText: "申请人", IsSel: true },
+                { ColName: "CRDate", ColText: "申请时间", IsSel: true }
+                ]);
+
+                if (model.strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=LCSP_GETLCSPLIST', { P1:"0",ID: model.strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                         
+                            model.modelData = resultData.Result[0];
+                            model.tpData = resultData.Result[0].FileList;
+
+                        }
+                    })
+                }
+            
+            }
+        });
+        //# sourceURL=LCSP.js;
+    </script>
+</div>

@@ -1,0 +1,196 @@
+﻿<div ms-controller="WQQDLIST">
+
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">事项类型：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectType('1')"><span class="active">我创建的</span></li>
+                <li ms-click="SelectType('2')"><span>汇报我的</span></li>
+                <li ms-click="SelectType('3')"><span>下属签到</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">创建时间：</h5>
+            <ul class="tab-type ft14">
+                <li><span class="active" ms-click="SelectTime('')">全部</span></li>
+                <li ms-click="SelectTime('1')"><span>近一周</span></li>
+                <li ms-click="SelectTime('2')"><span>近一月</span></li>
+                <li>
+                    <span ms-click="SelectTime('3','1')">自定义</span>
+                    <div class="pull-right ml10 zdy-text c999" ms-visible="curXJTime=='3'">
+                        <input type="text" class="szhl_form_date szhl_require null" ms-duplex="starTime">-
+                        <input type="text" class="szhl_form_date szhl_require null" ms-duplex="endTime">
+                        <input type="button" ms-click="SelectTime('3')" value="确定" style="width: 50px; background-color: #12B8F6; color: #ffffff" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- 搜索 -->
+        <div class="oh">
+            <div class="input-group ml15" style="width: 300px; float: left;">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" placeholder="搜索部门,签到人,签到备注" style="height: 30px">
+                <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+            </div>
+        </div>
+    </div>
+    <!-- 展开更多选项 -->
+    <div class="add-tab ft14 tc mt20" style="display: none;">
+        <span>更多筛选<i class="caret"></i></span>
+    </div>
+    <!-- 表格 -->
+    <div class="default-tab ft14 pt20">
+        <table class="table table-striped table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th class="tc width-70">
+                        序号
+                    </th>
+                    <th>签到人</th>
+                    <th>部门</th>
+                    <th>签到时间</th>
+                    <th>签到地址</th>
+                    <th>签到备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-el="tmpListData" ms-on-mouseover="mouseover" ms-on-mouseout="mouseout">
+                    <td class="tc">
+                        {{$index+1+page.pagecount*(page.pageindex-1)}}
+                    </td>
+                    <td class="lk" ms-click="ViewFormNew('WQQD_WQQD',el.ID,'',$event)">{{ComFunJS.FnFormat(el.CRUser,{"format": "username"})}}</td>
+                    <td>{{el.BranchName}}</td>
+                    <td>{{el.CRDate|date('yyyy-MM-dd HH:mm')}}</td>
+                    <td>{{el.Position}}</td>
+                    <td>{{ComFunJS.FnFormat(el.QDContent,{"format": "text", "len": 40})|html}}<span ms-if="el.Files"><i class="iconfont icon-fj ft14 ml5"></i></span></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr ms-if="isnull">
+                    <td class="tc"></td>
+                    <td>暂无数据</td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="ui-datatable-page ft14 pl20">
+
+            <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+            <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                <span>共{{model.page.total}}条记录</span>
+                <span ms-visible="model.page.total>model.pageNum[0].num">
+                    选择每页条数
+                    <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                        <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                    </select>
+                </span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var tempindex = avalon.define({
+        $id: "WQQDLIST",
+        curXJType: "",
+        curXJTime: "",
+        starTime: "",
+        endTime: "",
+        tmpListData:[],
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        SaveUserGroup: function () {
+            if (!model.search.searchcontent) {
+                return;
+            }
+            $.post("/API/VIEWAPI.ashx", { Action: "XTGL_ADDUSERGROUP", P1: model.search.searchcontent, "DataType": "GZBGQUERY" }, function (result) {
+                if ($.trim(result.ErrorMsg) == "") {
+                    model.UserCustomData.push(result.Result);
+                }
+            })
+        },
+        SelectTime: function (type, item) {
+            tempindex.curXJTime = type;
+            if (!item) {
+                if (type == '3') {
+                    var a = (Date.parse(tempindex.starTime) - Date.parse(tempindex.endTime)) / 3600 / 1000;
+                    if (a > 0) {
+                        ComFunJS.winwarning("开始时间不能大于结束时间");
+                    } else {
+                        tempindex.GetLIST();
+                    }
+                } else {
+                    tempindex.starTime = "";
+                    tempindex.endTime = "";
+                    tempindex.GetLIST();
+                }
+            }
+        },
+        InitWigetData: function () {
+            //类型数据
+            tempindex.GetLIST();
+            ComFunJS.initForm();
+        },
+
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=WQQD_GETWQQDLIST',
+                {
+                    p: 1,
+                    P1: model.search.seartype,
+                    Content: model.search.searchcontent,
+                    pagecount: model.page.pagecount,
+                    time: tempindex.curXJTime,
+                    starTime: tempindex.starTime,
+                    endTime: tempindex.endTime
+                }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempindex.tmpListData = resultData.Result;
+                        if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                        model.page.total = resultData.Result1;
+                        laypage({
+                            cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                            pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //
+                            curr: 1, //初始化当前页
+                            skin: 'molv',
+                            jump: function (e) { //触发分页后的回调
+                                if (e.curr != model.page.pageindex) {
+                                    $.getJSON('/API/VIEWAPI.ashx?Action=WQQD_GETWQQDLIST',
+                                        {
+                                            p: e.curr,
+                                            P1: model.search.seartype,
+                                            Content: model.search.searchcontent,
+                                            pagecount: model.page.pagecount,
+                                            time: tempindex.curXJTime,
+                                            starTime: tempindex.starTime,
+                                            endTime: tempindex.endTime
+                                        }, function (resultData) {
+                                            if (resultData.ErrorMsg == "") {
+                                                tempindex.tmpListData = resultData.Result;
+                                            }
+                                        })
+                                    model.page.pageindex = e.curr;
+                                }
+                            }
+                        });
+                    }
+                })
+        },
+        dcgzbg: function () {
+            if (model.page.total > 0) {
+                $(this).attr("href", "/API/VIEWAPI.ashx?Action=&type=" + model.search.seartype + "&P2=" + model.search.searchcontent + "&pagecount=" + model.page.total + "&P1=" + tempindex.curXJType + "&time=" + tempindex.curXJTime + "&starTime=" + tempindex.starTime + "&endTime=" + tempindex.endTime);
+            }
+            else {
+                top.ComFunJS.winwarning("无数据");
+            }
+        },
+    })
+</script>

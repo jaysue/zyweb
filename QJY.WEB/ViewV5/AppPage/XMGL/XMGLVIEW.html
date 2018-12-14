@@ -1,0 +1,232 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>项目详情</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/ViewV5/CSS/icfont_qj/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <style>
+    </style>
+</head>
+
+<body style="background-color: #F8F8F8; height: 100%;" ms-controller="XMGLVIEW">
+    <div class="padding20">
+        <div class="card card3 mb20">
+            <div class="detail-nav">
+                <div class="tab-kh nav-bt">
+                    <span class="cur"><i class="iconfont icon-bookmark"></i>项目信息</span>
+                    <div class="pr20" style="float: right;">
+                        <button class="btn btn-info" ms-if="isEdit" ms-click="Edit()">编辑</button>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-con">
+                <div class="detail-item" ms-repeat-el="ShowColumns" ms-visible="modelData[el.ColName]" ms-class-1="{{el.class}}">
+                    <span class="item-tit">{{el.ColText}}</span>
+                    <div class="item-con">{{ComFunJS.FnFormat(modelData[el.ColName],el)|html}}</div>
+                </div>
+                <div class="detail-item" ms-repeat-ext="modelData.SubExt">
+                    <span class="item-tit">{{ext.TableFiledName}}</span>
+                    <div class="item-con">{{ext.ExtendDataValue}} </div>
+                </div>
+                <div class="detail-item" ms-if="tpData&&tpData.size()!=0">
+                    <span class="item-tit">附件</span>
+                    <div class="fj clearfix mt10">
+                        <div class="pull-left" ms-repeat-file="tpData">
+                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="img-rounded:ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="{{ComFunJS.getfile(file.ID)}}&width=45&height=45" ms-attr-imgyt="{{ComFunJS.getfile(file.ID)}}" style="cursor:zoom-in;border-radius:2px" />
+
+                            <img ms-click="viewfile(file)" style="height:45px;width:45px" ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                            <div class="fj-cont c999 ft12">
+                                <p class="word-break">{{file.Name}}.{{file.FileExtendName}}<span>({{Math.round(file.FileSize/1024)}}kb)</span></p>
+                                <p class="mt5">
+                                    <a ms-attr-href="{{file.YLUrl}}" ms-if="file.YLUrl" target="_blank">预览</a>
+                                    <a ms-attr-href="{{ComFunJS.getfile(file.ID)}}">下载</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="padding20">
+                <div class="lookright-box">
+                    <div class="menu-general ft14">
+                        <ul>
+                            <li class="active">
+                                <a>跟进记录</a>
+                            </li>
+                            <li>
+                                <a>附件({{filesnum}})</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="map">
+                    <div>
+                        <div class="crm-dt clearfix nopadding pt20">
+                            <button class="btn btn-info pull-right" ms-click="addGJ()"><i class="iconfont icon-jiahao ft12 mr5"></i>添加跟进记录</button>
+                        </div>
+                        <div class="crm-dt" ms-repeat-item="gjData">
+                            <span class="crm-yuan"></span>
+                            <div class="crm-dt-cont">
+                                <i class="bg"></i>
+                                <span class="wt"></span>
+                                <div style="margin:10px 30px;" class="c666">
+                                    <p class="c999">{{ComFunJS.convertuser(item.CRUser)}} <span class="pull-right">{{item.CRDate|date("yyyy年MM月dd日 HH:mm")}}</span></p>
+                                    <h3 class="crm-xg ft14 mt5">{{ComFunJS.bqhContent(item.MSGContent)|html}}</h3>
+                                    <div class="fj clearfix mt10" ms-if="item.FileList&&item.FileList.size()!=0">
+                                        <div class="pull-left" ms-repeat-file="item.FileList">
+                                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="img-rounded:ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="{{ComFunJS.getfile(file.ID)}}&width=45&height=45" ms-attr-imgyt="{{ComFunJS.getfile(file.ID)}}" style="cursor:zoom-in;border-radius:2px" />
+
+                                            <img ms-click="viewfile(file)" style="height:45px;width:45px" ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                                            <div class="fj-cont c999 ft12">
+                                                <p class="word-break">{{file.Name}}.{{file.FileExtendName}}<span>({{Math.round(file.FileSize/1024)}}kb)</span></p>
+                                                <p class="mt5">
+                                                    <a ms-attr-href="{{file.YLUrl}}" ms-if="file.YLUrl" target="_blank">预览</a>
+                                                    <a ms-attr-href="{{ComFunJS.getfile(file.ID)}}">下载</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: none;">
+                        <div class="crm-dt" ms-repeat-item="gjfjData">
+                            <span class="crm-yuan"></span>
+                            <div class="crm-dt-cont">
+                                <i class="bg"></i>
+                                <span class="wt"></span>
+                                <div style="margin:10px 30px;" class="c666">
+                                    <p class="c999">{{ComFunJS.convertuser(item.CRUser)}} <span class="pull-right">{{item.CRDate|date("yyyy年MM月dd日 HH:mm")}}</span></p>
+                                    <h3 class="crm-xg ft14 mt5">{{ComFunJS.bqhContent(item.MSGContent)|html}}</h3>
+                                    <div class="fj clearfix mt10" ms-if="item.FileList.size()!=0">
+                                        <div class="pull-left" ms-repeat-file="item.FileList">
+                                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="img-rounded:ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="{{ComFunJS.getfile(file.ID)}}&width=45&height=45" ms-attr-imgyt="{{ComFunJS.getfile(file.ID)}}" style="cursor:zoom-in;border-radius:2px" />
+
+                                            <img ms-click="viewfile(file)" style="height:45px;width:45px" ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                                            <div class="fj-cont c999 ft12">
+                                                <p class="word-break">{{file.Name}}.{{file.FileExtendName}}<span>({{Math.round(file.FileSize/1024)}}kb)</span></p>
+                                                <p class="mt5">
+                                                    <a ms-attr-href="{{file.YLUrl}}" ms-if="file.YLUrl" target="_blank">预览</a>
+                                                    <a ms-attr-href="{{ComFunJS.getfile(file.ID)}}">下载<>下载</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script type="text/javascript">
+        $(".padding20 .lookright-box .menu-general ul li").each(function (i) {
+            $(this).click(function () {
+                $(this).addClass("active").siblings().removeClass("active");
+                $("#map>div:eq(" + i + ")").show().siblings().hide();
+            });
+        });
+
+        var model = avalon.define({
+            $id: "XMGLVIEW",
+            modelData: {},
+            ShowColumns: [],
+            tpData: [],
+            gjData: [],
+            gjfjData: [],
+            filesnum: 0,
+            strId: ComFunJS.getQueryString("ID"),
+            addGJ: function () {
+                ComFunJS.winbtnwin("/ViewV5/Base/APP_COMMENT.html?ID=" + model.modelData.ID + "&Type=XMGL&contentdec=跟进&UserName=" + model.modelData.CRUser + "&r=" + Math.random(), "跟进", 600, 400, {}, function (layero, index) {
+                    var frameid = $("iframe", $(layero)).attr('id');
+                    var plnr = ComFunJS.isIE() ? window.frames[frameid].getpl() : window.frames[frameid].contentWindow.getpl();
+
+                    if (plnr.ID) {
+                        model.gjData.push(plnr);
+                        if (plnr.MSGisHasFiles != '' && plnr.MSGisHasFiles != 0) {
+                            model.gjfjData.push(plnr);
+                            model.filesnum += plnr.MSGisHasFiles.split(',').length;
+                        }
+                        top.ComFunJS.winsuccess("保存成功");
+                        layer.close(index);
+                    }
+
+                })
+            },
+            Edit: function (ID) {
+                location.href = "/ViewV5/AppPage/APP_ADD_WF.html?FormCode=XMGL&id=" + model.strId;
+            },
+            isEdit: false,
+            nowuser: ComFunJS.getnowuser(),
+            GetModelData: function () {
+                if (model.strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=XMGL_GETXMGLMODEL', { P1: model.strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            if (resultData.Result.length > 0) {
+                                model.modelData = resultData.Result[0];
+                                model.gjData = resultData.Result1;
+                                model.tpData = resultData.Result2;
+                                if (resultData.Result3) {
+                                    model.gjfjData = resultData.Result3;
+                                    model.gjfjData.forEach(function (item) {
+                                        model.filesnum += item.MSGisHasFiles.split(',').length;
+                                    })
+                                }
+                                if (model.modelData.CRUser == model.nowuser) {
+                                    model.isEdit = true;
+                                }
+                            }
+                            setTimeout(" ComFunJS.initForm()", 500)
+                        }
+                    })
+                }
+            },
+            viewfile: function (file) {
+                if (ComFunJS.isPic(file.FileExtendName)) {
+                    ComFunJS.viewbigimg(this)
+                    return;
+                }
+                if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                    window.open(file.YLUrl);
+                    return;
+                }
+            }
+        });
+        avalon.ready(function () {
+            model.ShowColumns.clear();
+            model.ShowColumns.pushArray([
+                { ColName: "XMFZR", ColText: "负责人", IsSel: true, format: "username", "class": "width50" },
+                      { ColName: "XMMC", ColText: "项目名称", IsSel: true, "class": "width50" },
+                      { ColName: "Status", ColText: "项目状态", IsSel: true, format: "xmzt", "class": "width50" },
+                      { ColName: "TypeName", ColText: "项目类型", IsSel: true, "class": "width50" },
+                      { ColName: "StartDate", ColText: "开始时间", IsSel: true, format: "dateformat", "class": "width50" },
+                      { ColName: "EndDate", ColText: "结束时间", IsSel: true, format: "dateformat", "class": "width50" },
+                      { ColName: "XMJD", ColText: "项目进度", IsSel: true, format: "xmjd", "class": "width50" },
+                      { ColName: "XMCYR", ColText: "团队成员", IsSel: true, format: "username" },
+                      { ColName: "XMMS", ColText: "项目描述", IsSel: true }
+            ]);
+
+            model.GetModelData();
+        })
+    </script>
+</body>
+
+</html>

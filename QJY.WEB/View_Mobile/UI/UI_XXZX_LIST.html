@@ -1,0 +1,314 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>消息中心</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        .card-header {
+            font-size: 13px;
+        }
+
+        .card-content {
+            font-size: 13px;
+        }
+
+        .card-footer {
+            font-size: 13px;
+        }
+
+        .layermbtn span:first-child {
+            background-color: rgba(255, 255, 255, 0) !important;
+        }
+
+        .item-title {
+            -webkit-box-flex: 1;
+        }
+    </style>
+</head>
+<body ms-controller="XXList">
+    <div class="page page-current" id="pageindex1">
+        <header class="bar bar-nav">
+            <a class="icon icon-left pull-left back"></a>
+            <a class="icon icon-menu pull-right open-panel" data-panel='#panel-right'></a>
+            <h1 class="title">全部消息</h1>
+        </header>
+        <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50" ms-css-margin-bottom="ids?'48px':'0px'">
+            <div class="list-container">
+                <div class="card" ms-repeat-el="ctData">
+
+                    <div class="list-block">
+                        <!--<ul class="ui-list ui-list-text">
+                            <li class="ui-border-t ui-form-item-checkbox">
+                                <label class="ui-checkbox" ms-if="el.isRead==0" ms-click="selxx()">
+                                    <input type="checkbox" ms-attr-itemid="el.ID">
+                                </label>
+                                <div class="ui-list-info" ms-on-click="vieww(el)">
+                                    <h4 class="ui-nowrap">【{{el.MsgType}}】 {{el.CRDate|date("yyyy-MM-dd HH:mm:ss")}}</h4>
+                                </div>
+                                <div class="ui-badge" ms-if="el.isRead==0" ms-on-click="vieww(el)">未读</div>
+                            </li>
+                            <li class="ui-border-t" ms-on-click="vieww(el)">
+                                <div class="ui-list-info">
+                                    <h4 class="ui-nowrap">内容：{{el.MsgContent}}</h4>
+                                </div>
+                            </li>
+                        </ul>-->
+
+                        <ul>
+                            <li>
+                                <label class="label-checkbox item-content" style="padding:0;margin-left:0.5rem">
+                                    <input type="checkbox" ms-attr-itemid="el.ID" ms-change="selxx()">
+                                    <div class="item-media"  ms-if="el.isRead==0"><i class="icon icon-form-checkbox"></i></div>
+                                    <div class="item-inner" style="font-size:14px" ms-on-click="vieww(el)">
+                                        <div class="item-title">【{{el.MsgType}}】 {{el.CRDate|date("yyyy-MM-dd HH:mm:ss")}}</div>
+                                        <div class="item-after"><div class="badge" style="background-color:red;color:white;" ms-if="el.isRead==0" ms-on-click="vieww(el)">未读</div></div>
+                                    </div>
+                                </label>
+                            </li>
+                            <li class="item-content" style="padding:0;margin-left:0.5rem" ms-on-click="vieww(el)">
+                                <div class="item-inner" style="font-size:14px">
+                                    <div class="item-title">内容：{{el.MsgContent}}</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" ms-if="issj==0">
+
+                    <div class="list-block">
+                        <ul class="ui-list ui-list-text">
+                            <li class="ui-border-t">
+                                <div class="ui-list-info">
+                                    <h4 class="ui-nowrap">无消息</h4>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="infinite-scroll-preloader">
+                <div class="preloader"></div>
+            </div>
+        </div>
+
+        <nav class="bar bar-tab" ms-if="ids">
+            <div class="content-block" style="margin:0px;">
+                <div class="row">
+                    <div class="col-100"><a href="javascript:void(0);" style="top:0px;" ms-click="bwyd()" class="button button-big button-fill button-success external">标为已读</a></div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="panel-overlay"></div>
+        <div class="panel panel-right panel-cover theme-dark" id='panel-right'>
+            <header class="bar bar-nav">
+                <button class="button pull-right close-panel" style="color:#fff;border:none;">
+                    关闭
+                </button>
+            </header>
+            <div class="list-block contacts-block">
+                <div class="list-group">
+                    <ul>
+                        <li ms-click="seltype('')">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title">全部消息</div>
+                                </div>
+                            </div>
+                        </li>
+                        <li ms-repeat-el="msgTypeData" ms-click="seltype(el)">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title">{{el.MsgType}}</div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script src="/View_Mobile/JS/raty/jquery.raty.js?v=1.3"></script>
+    <script>
+
+        window.localStorage.removeItem("page");
+        window.localStorage.setItem("page", 1);
+
+        window.localStorage.removeItem("isjz");
+        window.localStorage.setItem("isjz", 0);
+
+        var height = 0;
+        var width = 0;
+
+        var model = avalon.define({
+            $id: "XXList",
+            ctData: [],
+            msgTypeData: [],
+            msgTypes: ComFunJS.getQueryString("msgTypes"),
+            msgType: "",
+            issj: 1,
+            ids: "",
+            vieww: function (el) {
+
+                $.getJSON("/API/VIEWAPI.ashx?Action=XTGL_UPDTEREADSTATES&r=" + Math.random(), { P1: el.ID, s: "1" }, function (r) {
+                    if (r.ErrorMsg == "") {
+                        el.isRead = 1;
+                        if (el.wxLink) {
+                            window.location = el.wxLink + "&r=" + Math.random();
+                        }
+                    }
+                })
+
+            },
+            getmsgtype: function () {
+                $.getJSON("/API/VIEWAPI.ashx?Action=XTGL_GETUSERCENTERTYPE&r=" + Math.random(), { P1: model.msgTypes }, function (r) {
+                    if (r.ErrorMsg == "") {
+                        model.msgTypeData = r.Result;
+                    }
+                })
+
+            },
+            seltype: function (el) {
+                if (el) {
+                    model.msgType = el.MsgType;
+                } else {
+                    model.msgType = "";
+                }
+                $.closePanel("#panel-right");
+                window.localStorage.setItem("page", 1);
+                model.ctData.clear();
+                loadMore();
+
+            },
+            selxx: function () {
+
+                var html = '';
+                $("input[type=checkbox]:checked").each(function (index, obj) {
+                    var xzid = $(obj).attr("itemid");
+                    if (html) {
+                        html = html + ',' + xzid;
+                    }
+                    else {
+                        html = xzid;
+                    }
+                })
+
+                model.ids = html;
+            },
+            bwyd: function () {
+                $.showIndicator();
+                $.getJSON("/API/VIEWAPI.ashx?Action=XTGL_UPDTEREADSTATES&s=1&r=" + Math.random(), { P1: model.ids }, function (data) {
+                    $.hideIndicator();
+                    if (data.ErrorMsg == "") {
+                        $(model.ids.split(',')).each(function (index, obj) {
+                            $(model.ctData).each(function (inx, ele) {
+                                if (ele.ID == obj) {
+                                    ele.isRead = 1;
+                                }
+                            })
+                        })
+                        $.toast("操作成功");
+                    }
+                })
+            }
+        })
+
+        function loadMore() {
+            var isjz = window.localStorage.getItem("isjz");
+            if (isjz == 0) {
+                window.localStorage.setItem("isjz", 1);
+                var page = window.localStorage.getItem("page");
+
+                if (page != "0") {
+                    $.getJSON("/API/VIEWAPI.ashx?Action=XTGL_GETXXZXIST_PAGE&r=" + Math.random(), { p: page, msgTypes: model.msgTypes, msgType: model.msgType }, function (r) {
+
+                        if (r.ErrorMsg == "") {
+                            if (r.Result.length > 0) {
+                                model.ctData.pushArray(r.Result);
+                                if (r.Result.length < 8) {
+                                    window.localStorage.setItem("page", 0);
+
+                                    // 加载完毕，则注销无限加载事件，以防不必要的加载
+                                    $.detachInfiniteScroll($('.infinite-scroll'));
+                                    // 删除加载提示符
+                                    $('.infinite-scroll-preloader').remove();
+                                }
+                                else {
+                                    var page = window.localStorage.getItem("page");
+                                    window.localStorage.setItem("page", parseInt(page) + 1);
+                                }
+                            } else {
+                                var page = window.localStorage.getItem("page");
+                                if (page == "1") {
+                                    // 加载完毕，则注销无限加载事件，以防不必要的加载
+                                    $.detachInfiniteScroll($('.infinite-scroll'));
+                                    // 删除加载提示符
+                                    $('.infinite-scroll-preloader').remove();
+                                    model.issj = 0;
+                                }
+                                else {
+                                    window.localStorage.setItem("page", 0);
+
+                                    // 加载完毕，则注销无限加载事件，以防不必要的加载
+                                    $.detachInfiniteScroll($('.infinite-scroll'));
+                                    // 删除加载提示符
+                                    $('.infinite-scroll-preloader').remove();
+                                }
+                            }
+                            $.refreshScroller();
+                        } else {
+
+                        }
+                        window.localStorage.setItem("isjz", 0);
+                    })
+                }
+            }
+        }
+
+        avalon.ready(function () {
+
+
+            // 注册'infinite'事件处理函数
+            $(document).on('infinite', '.infinite-scroll-bottom', function () {
+                loadMore();
+            });
+
+            $.init();
+            loadMore();
+            model.getmsgtype();
+
+        })
+
+
+
+    </script>
+
+</body>
+
+
+
+</html>

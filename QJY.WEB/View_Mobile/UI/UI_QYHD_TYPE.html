@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>企业活动</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        .card-header p {
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .item-title {
+            -webkit-box-flex: 1;
+        }
+    </style>
+
+</head>
+
+<body ms-controller="HYSList">
+    <div class="page">
+        <header class="bar bar-nav">
+            <h1 class='title'>企业活动</h1>
+        </header>
+        <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50" style="margin-bottom:48px">
+            <div class="list-block media-list" style="margin:0">
+                <ul>
+                    <li class="item-link">
+                        <label class="label-checkbox item-content">
+                            <input type="radio" name="hdlx" value="0" checked="checked">
+                            <div class="item-media"><i class="icon icon-form-checkbox"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title-row">
+                                    <div class="item-title">活动报名</div>
+                                </div>
+                            </div>
+                        </label>
+                    </li>
+                    <li class="item-link">
+                        <label class="label-checkbox item-content">
+                            <input type="radio" name="hdlx" value="1">
+                            <div class="item-media"><i class="icon icon-form-checkbox"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title-row">
+                                    <div class="item-title">企业投票</div>
+                                </div>
+                            </div>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        <nav class="bar bar-tab">
+            <div class="content-block" style="margin:0px;">
+                <div class="row">
+                    <div class="col-100"><a href="javascript:void(0);" class="button button-big button-fill button-success external" ms-click="addhd()">新增活动</a></div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script>
+
+        var model = avalon.define({
+            $id: "HYSList",
+            ctData: [],
+            addhd: function () {
+                var hdtype = $("input[name=hdlx]:checked").val();
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=QYHD&hdtype=" + hdtype + "&r=" + Math.random();
+            }
+        })
+
+        avalon.ready(function () {
+        })
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,194 @@
+﻿<div ms-controller="LCSPTJ">
+    <div class="btn-add">
+        <a class="btn btn-info" ms-click="dcLC()"><i class="iconfont icon-dc mr5"></i>导出</a>
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <!-- 搜索 -->
+            <div class="oh">
+                <h5 class="pull-left tr">流程：</h5>
+                <ul class="tab-type ft14" style="height:40px;">
+                    <li ms-repeat-el="TypeData" ms-click="SelectXJType(el.ID)"><span ms-class-1="active:$first">{{el.ProcessName}}</span></li>
+                </ul>
+            </div>
+            <div class="oh mr20">
+                <div class="input-group ml15" style="width:500px;float:left;">
+                    <input type="search" class="form-control szhl_form_date_year" ms-duplex="curYear" placeholder="请选择年份">
+                    <div class="input-group-btn">
+                        <select class="form-control " ms-duplex="curMonth" style="width:150px">
+                            <option value="0">全部月份</option>
+                            <option value="01">1月</option>
+                            <option value="02">2月</option>
+                            <option value="03">3月</option>
+                            <option value="04">4月</option>
+                            <option value="05">5月</option>
+                            <option value="06">6月</option>
+                            <option value="07">7月</option>
+                            <option value="08">8月</option>
+                            <option value="09">9月</option>
+                            <option value="10">10月</option>
+                            <option value="11">11月</option>
+                            <option value="12">12月</option>
+                        </select>
+                    </div>
+                    <!--<input type="search" class="form-control" ms-duplex="searchcontent" placeholder="请输入您要查找的姓名和部门">-->
+                    <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+                </div>
+                <button type="button" class="btn btn-info pull-right mt5" data-toggle="modal" data-target="#myselfModal">自定义显示</button>
+            </div>
+        </div>
+        <!-- 展开更多选项 -->
+        <div class="add-tab ft14 tc mt20" style="display:none;">
+            <span>更多筛选<i class="caret"></i></span>
+        </div>
+        <!-- 表格 -->
+        <div class="default-tab ft14 pt20">
+            <table class="table table-striped table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th class="tc">
+                        </th>
+                        <th ms-repeat-im="ShowColumns" ms-visible="im.IsSel" style="min-width: 120px; white-space: nowrap">{{im.ColText}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ms-repeat-el="tmpListData">
+                        <td class="tc">
+                        </td>
+                        <td ms-repeat-im="ShowColumns" style="min-width: 120px; white-space: nowrap" ms-visible="im.IsSel">{{ComFunJS.FnFormat(el[im.ColName],im)|html}}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+                </tfoot>
+            </table>
+            <div class="ui-datatable-page ft14 pl20">
+
+                <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+                <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                    <span>共{{model.page.total}}条记录</span>
+                    <span ms-visible="model.page.total>model.pageNum[0].num">
+                        选择每页条数
+                        <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                            <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                        </select>
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+
+        var tempindex = avalon.define({
+            $id: "LCSPTJ",
+            curYear: "",
+            curMonth: "0",
+            curLeiBie: "",
+            TypeData: [],
+            tmpListData: [],
+            SelectXJType: function (type) {
+                tempindex.curLeiBie = type;
+                tempindex.GetLIST();
+            },
+            selNum: function (item) {    //选择显示的条数
+                model.page.pagecount = item;
+                tempindex.GetLIST();
+            },
+            InitWigetData: function () {
+                ComFunJS.initForm();
+
+                var now = new Date();
+                var month = now.getMonth() + 1;
+                var clock = "";
+                if (month < 10)
+                    clock += "0";
+                clock += month;
+                tempindex.curMonth = clock;
+
+                $.getJSON('/API/VIEWAPI.ashx?Action=LCSP_GETWFPDLIST', { P1: 1 }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempindex.TypeData = resultData.Result;
+                        if (resultData.Result.length > 0) {
+                            tempindex.curLeiBie = resultData.Result[0].ID;
+
+                            tempindex.GetLIST();
+                        }
+                    }
+                })
+            },
+            GetLIST: function () {
+                model.page.pageindex = 1;
+                tempindex.tmpListData.clear();
+                model.ShowColumns.clear();
+                $.getJSON('/API/VIEWAPI.ashx?Action=LCSP_GETLCSPTJLIST', { p: 1, pagecount: model.page.pagecount, P1: tempindex.curLeiBie, year: tempindex.curYear, month: tempindex.curMonth }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempindex.tmpListData = resultData.Result;
+                        tempindex.getColumns(resultData.Result2);
+                        if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                        model.page.total = resultData.Result1;
+                        laypage({
+                            cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                            pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //通过后台拿到的总页数
+                            curr: 1, //初始化当前页
+                            skin: 'molv',
+                            jump: function (e) { //触发分页后的回调
+                                if (e.curr != model.page.pageindex) {
+                                    $.getJSON('/API/VIEWAPI.ashx?Action=LCSP_GETLCSPTJLIST', { p: e.curr, pagecount: model.page.pagecount, P1: tempindex.curLeiBie, year: tempindex.curYear, month: tempindex.curMonth }, function (resultData) {
+                                        if (resultData.ErrorMsg == "") {
+                                            tempindex.tmpListData = resultData.Result;
+                                        }
+                                    })
+                                    model.page.pageindex = e.curr;
+                                }
+                            }
+                        });
+                    }
+                })
+
+            },
+            getColumns: function (obj) {
+                model.ShowColumns.clear();
+                model.ShowColumns.pushArray([
+                    { "ColName": "ProcessName", "ColText": "流程", "IsSel": true }
+                ]);
+                if (obj) {
+                    obj.forEach(function (itm) {
+                        model.ShowColumns.push({ "ColName": itm.TableFiledName, "ColText": itm.TableFiledName, "IsSel": true, "len": "20" });
+                    })
+                }
+
+                model.ShowColumns.pushArray([
+                    { "ColName": "ShenQingRen", "ColText": "申请人", "IsSel": true },
+                    { "ColName": "CRDate", "ColText": "申请时间", "IsSel": true }
+                ]);
+
+                var ext = localStorage.getItem(model.SelModel.ModelCode + "ShowColumns" + tempindex.curLeiBie);
+                if (ext) {
+                    $(model.ShowColumns).each(function (idx, itm) {
+                        $(JSON.parse(ext)).each(function (index, ele) {
+                            if (itm.ColName == ele.ColName) {
+                                itm.IsSel = ele.IsSel;
+                            }
+                        })
+                    })
+                }
+            },
+            ReSetShow: function (el) {
+                if (el) {
+                    el.IsSel = !el.IsSel;
+                    localStorage.setItem(model.SelModel.ModelCode + "ShowColumns" +tempindex.curLeiBie, JSON.stringify(model.ShowColumns));
+                }
+            },
+            dcLC: function () {
+                if (tempindex.tmpListData.size() > 0) {
+                    $(this).attr("href", '/API/VIEWAPI.ashx?Action=LCSP_EXPORTLC&P1=' + tempindex.curLeiBie + '&year=' + tempindex.curYear + '&month=' + tempindex.curMonth );
+                }
+                else {
+                    top.ComFunJS.winwarning("无数据");
+                }
+            }
+        })
+        //# sourceURL=LCSPTJ.js;
+    </script>

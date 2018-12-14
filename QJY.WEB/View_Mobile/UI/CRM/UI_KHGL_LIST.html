@@ -1,0 +1,469 @@
+﻿﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>客户管理</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link href="/View_Mobile/CSS/szhlextend.css?ver=20160904" rel="stylesheet" />
+
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        #plus_list {
+            height: 2.65rem;
+            width: 2.65rem;
+            position: fixed;
+            right: 0.82rem;
+            bottom: 6rem;
+        }
+
+            #plus_list img {
+                width: 100%;
+                height: auto;
+            }
+    </style>
+</head>
+<body ms-controller="KHList">
+    <div class="page-group">
+        <div class="page page-current" id="pageindex1">
+            <div class="buttons-tab">
+                <a ms-if="DataID=='-1'" ms-on-click="getdata(1)" class="tab-link button external" ms-class-1="active:type=='1'">我创建的</a>
+                <a ms-if="DataID=='-1'" ms-on-click="getdata(2)" class="tab-link button external" ms-class-1="active:type=='2'">我负责的</a>
+                <a ms-if="DataID=='-1'" ms-on-click="getdata(3)" class="tab-link button external" ms-class-1="active:type=='3'">下属客户</a>
+                <a ms-if="DataID!='-1'" class="tab-link button external active">客户管理</a>
+
+            </div>
+
+            <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50" style="margin-top:2rem" id="touchcontent">
+                <div class="list-container">
+
+                    <div class="card facebook-card animated fadeInUp no-head" ms-repeat-el="ctData">
+                        <div class="ribbon-wrapper-green" ms-if="el.TypeName"><div class="ribbon-green">{{el.TypeName}}</div></div>
+                       
+                        <div class="card-header no-border" ms-class-1="no-bottom:el.isfold" ms-on-click="showdetil(el)" ms-class-1="no-bottom:el.isfold" >
+                          
+                            <div class="facebook-date">
+                                <span class="c999 title-item">客户名称：</span>
+                                <span>{{covtitle(el.KHName)}}</span>
+                            </div>
+                            <div class="facebook-date" ms-visible="el.KHLXR&&el.KHLXR.size()>0">
+                                <span class="c999 title-item">联系人：</span>
+                                <span>{{el.KHLXR[0].UserXM}}</span>
+
+                            </div>
+                            <div class="facebook-date" ms-visible="el.KHLXR&&el.KHLXR.size()>0">
+                                <span class="c999 title-item">联系电话：</span>
+                                <span><a ms-attr-href="tel:{{el.KHLXR[0].TelePhone}}" external><i class="fa  fa-mobile-phone"></i>{{el.KHLXR[0].TelePhone}}</a></span>
+                                <span class="tell-meil">
+                                    <a ms-attr-href="tel:{{el.KHLXR[0].TelePhone}}" external><img src="/View_Mobile/Images/phone-plusp.png" /></a>
+                                    <a ms-attr-href="sms:{{el.KHLXR[0].TelePhone}}" external><img src="/View_Mobile/Images/phone-plusm.png" /></a>
+                                </span>   
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="card-content  " ms-visible="el.isfold">
+                           
+                            <div class="card-item" ms-if="el.FixNo"><span class="c999 title-item">传真：</span>{{el.FixNo}}</div>
+                            <div class="card-item" ms-if="el.WebSite"><span class="c999 title-item">网址：</span>{{el.WebSite}}</div>
+                            <div class="card-item" ms-if="el.Email"><span class="c999 title-item">邮箱：</span>{{el.Email}}</div>
+                            <div class="card-item" ms-if="el.PostCode"><span class="c999 title-item">邮编：</span>{{el.PostCode}}</div>
+                            <div class="card-item" ms-if="el.Address"><span class="c999 title-item">地址：</span><span>{{el.Address}}</span></div>
+                            <div class="card-item" ms-if=" el.status"><span class="c999 title-item">跟进状态：</span> <span>{{el.GJZT}}</span></div>
+                            <div class="card-item" ms-if="el.Source"><span class="c999 title-item">客户来源：</span> <span>{{el.KHLY}}</span></div>
+                            <div class="card-item" ms-if="el.Industry"><span class="c999 title-item">所属行业：</span> <span>{{el.SSHY}}</span></div>
+                            <div class="card-item" ms-if="el.Scale"><span class="c999 title-item">人员规模：</span> <span>{{el.RYGM}}</span></div>
+                            <div class="card-item" ms-if="el.FZUser"><span class="c999 title-item">负责人：</span>{{ComFunJS.convusers(el.FZUser)}}</div>
+                            <div class="card-item" ms-if="el.CYUser"><span class="c999 title-item">参与人：</span>{{ComFunJS.convusers(el.CYUser)}}</div>
+                            <div class="card-item" ms-if="el.Remark"><span class="c999 title-item">备注：</span> <span>{{el.Remark|html}}</span></div>
+                            <div class="card-item" ms-repeat-ext="el.SubExt"><span class="c999 title-item">{{ext.TableFiledName}}：</span> <span>{{ext.ExtendDataValue}}</span></div>
+                            <div class="card-item" ms-if="el.Files">
+                                <ul class="filelist">
+                                    <li ms-repeat-file="el.FileList">
+                                        <img ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="ComFunJS.getfile(file.ID)" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'"/>
+                                        <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div ms-visible="el.PLList.size()>0">
+                                <div class="lookright-box">
+                                    <div class="menu-general">
+                                        <ul>
+                                            <li ms-on-click="getpldata(el,1)" ms-class-1="active:el.pltype=='1'" ms-if="el.KHLXR.size() !=0">
+                                                <a>联系人</a>
+                                            </li>
+                                            <li ms-on-click="getpldata(el,2)" ms-class-1="active:el.pltype=='2'" ms-if="el.GJJL.size() !=0">
+                                                <a>跟进状况</a>
+                                            </li>
+                                            <li ms-on-click="getpldata(el,3)" ms-class-1="active:el.pltype=='3'" ms-if="el.KHHT.size() !=0">
+                                                <a>合同</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div id="map">
+                                    <!--联系人-->
+                                    <div ms-visible="el.pltype=='1'">
+                                        <div class="crm-dt" ms-repeat-itemlxr="el.KHLXR">
+                                            <span class="crm-yuan"></span>
+                                            <div class="crm-dt-cont">
+                                                <div class="m5">
+                                                    <div class="card-content  ">
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">姓名：</span> <span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{itemlxr.UserXM}}</span><a style="float:right;" ms-click="editLXR(itemlxr)" ms-if="nowuser==itemlxr.CRUser">&nbsp;编辑&nbsp;</a></div>
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-if="itemlxr.UserSex"><span style="color:gray">性别：</span> {{itemlxr.UserSex}}</div>
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">手机：</span><a ms-attr-href="tel:{{itemlxr.TelePhone}}" external><i class="fa  fa-mobile-phone"></i>{{itemlxr.TelePhone}}</a></div>
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-if="itemlxr.Department"><span style="color:gray">部门：</span><span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{itemlxr.Department}}</span></div>
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-repeat-ext="itemlxr.SubExt"><span style="color:gray">{{ext.TableFiledName}}：</span> <span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{ext.ExtendDataValue}}</span></div>
+                                                        <div class="card-content-inner" style="padding-top: 0; padding-top: 0.4rem; padding-bottom: 0;" ms-if="itemlxr.Files">
+                                                            <ul class="filelist">
+                                                                <li ms-repeat-file="itemlxr.FileList">
+                                                                    <img ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="ComFunJS.getfile(file.ID)"  onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'"/>
+                                                                    <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!--跟进-->
+                                    <div ms-visible="el.pltype=='2'">
+                                        <!--评论样式-->
+                                        <div class="crm-dt" ms-repeat-pl="el.GJJL">
+                                            <span class="crm-yuan"></span>
+                                            <div class="crm-dt-cont">
+
+                                                <div class="m5">
+                                                    <p class="c999">{{ComFunJS.convuser(pl.CRUser)}} <span class=" ft14 pull-right">{{pl.CRDate|date("MM月dd日")}}</span></p>
+                                                    <h3 class="crm-xg ft14 mt5" style="word-break:break-all;word-wrap:break-word;">
+                                                        {{ComFunJS.bqhContent(pl.Details)|html}}
+                                                    </h3>
+                                                    <ul class="filelist">
+                                                        <li ms-repeat-file="pl.FileList">
+                                                            <img ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="ComFunJS.getfile(file.ID)" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'"/>
+                                                            <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div ms-visible="el.pltype=='3'">
+                                        <div class="crm-dt" ms-repeat-itemht="el.KHHT" ms-visible="el.pltype=='3'">
+                                            <span class="crm-yuan"></span>
+                                            <div class="crm-dt-cont">
+                                                <div class="m5">
+                                                    <div class="card-content  ">
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;"><span style="color:gray">合同标题：</span> <span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{itemht.Title}}</span><a style="float:right;" ms-click="editHT(itemht)" ms-if="nowuser==itemht.CRUser">&nbsp;编辑&nbsp;</a></div>
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-if="itemht.Price"><span style="color:gray">合同总金额：</span>{{itemht.Price}}</div>
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-if="itemht.DanWei"><span style="color:gray">合同开始时间：</span>{{itemht.HTStartTime|date('yyyy-MM-dd')}}</div>
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-if="itemht.ChengBen"><span style="color:gray">合同结束时间：</span>{{itemht.HTEndTime|date('yyyy-MM-dd')}}</div>
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-if="itemht.TypeName"><span style="color:gray">合同状态：</span><span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{itemht.HTStatus}}</span></div>
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-if="itemht.HTCode"><span style="color:gray">合同编号：</span> <span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{itemht.HTCode}}</span></div>
+                                                        <div class="card-content-inner" style="padding-bottom:0;    padding-top: 0.4rem;" ms-repeat-ext="itemht.SubExt"><span style="color:gray">{{ext.TableFiledName}}：</span> <span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{ext.ExtendDataValue}}</span></div>
+                                                        <div class="card-content-inner" style="padding-top: 0; padding-top: 0.4rem; padding-bottom: 0;" ms-if="itemht.Files">
+                                                            <ul class="filelist">
+                                                                <li ms-repeat-file="itemht.FileList">
+                                                                    <img ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="ComFunJS.getfile(file.ID)" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                                                                    <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="buttons-tab list-op">
+                                <a class="tab-link button external" ms-click="editKHGL(el)" ms-if="nowuser==el.CRUser">
+                                    <i class="iconfont icon-bianji2"></i>编辑
+                                </a>
+                                <a class="tab-link button external" ms-click="delKHGL(el)" ms-if="nowuser==el.CRUser">
+                                    <i class="iconfont icon-remove"></i>删除
+                                </a>
+                                <a class="tab-link button external" ms-click="moreaction(el,this)">
+                                    <i class="iconfont icon-add3"></i>新增
+                                </a>
+                                <a class="tab-link button external" ms-click="backKH()" ms-if="DataID!='-1'">
+                                    <i class="iconfont icon-chexiao"></i>返回
+                                </a>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="card facebook-card animated" ms-if="loadtip">
+                        <div class="card-header no-border">
+                            {{loadtip}}
+                        </div>
+                    </div>
+                    <div class="infinite-scroll-preloader">
+                        <div class="preloader"></div>
+                    </div>
+                </div>
+
+                <div class="right-panel">
+                    <ul>
+                        <li>
+
+                            <a class="mod-li-icon" ms-click="show()"><img src="/View_Mobile/images/plus-serch.png"></a>
+                        </li>
+                        <li>
+
+                            <a class="mod-li-icon" ms-if="DataID=='-1'" ms-click="changefold()"><img ms-attr-src="'/View_Mobile/images/'+(isfold?'plus-zhedie':'plus-zhankai')+'.png'" src="/View_Mobile/images/plus-zhedie.png"></a>
+
+
+                        </li>
+                        <li>
+
+                            <a class="mod-li-icon" ms-if="DataID=='-1'" ms-click="addKHGL()"><img src="/View_Mobile/images/plus-add.png"></a>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+            <div class="page" id="pageindex2">
+            </div>
+            <div class="search-top" ms-if="isShow">
+
+                <div class="searchbar searchbar-active">
+                    <a class="searchbar-cancel" ms-click="GetList()">搜索</a>
+                    <a class="searchbar-cancel search-close" ms-click="show()"><i class="iconfont icon-cuo"></i></a>
+                    <div class="search-input">
+                        <label class="icon icon-search" for="search"></label>
+                        <input type="search" id="search" placeholder="搜索客户名称" ms-duplex="search">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+        <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+        <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+        <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+        <script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+        <script src="/View_Mobile/JS/touch/toucher.js"></script>
+        <script src="/View_Mobile/JS/avalon1.47.js"></script>
+        <script src="/View_Mobile/JS/raty/jquery.raty.js?v=1.3"></script>
+        <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+        <script>
+         
+            var model = avalon.define({
+                $id: "KHList",
+                ctData: [],//数据源
+                loading: false,
+                isShow: false,
+                search: "",
+                loadtip: "",//切换页时显示信息
+                nowuser: ComFunJS.getnowuser(),//当前用户
+                isfold: localStorage.getItem("khglisfold") == "Y" ? true : false,//是否折叠显示
+                show: function () {
+                    if (model.search) {
+                        model.search = "";
+                        model.GetList();
+                    }
+                    if (model.isShow)
+                        model.isShow = false;
+                    else {
+                        model.isShow = true;
+                        $("#search").focus();
+                    }
+                },
+                GetList: function () {
+                    model.ctData.clear();
+                    model.loadtip = "";
+                    model.page = 1;
+                    model.loadMore();
+                },
+                changefold: function () {
+                    model.isfold = !model.isfold;
+                    model.ctData.forEach(function (item) {
+                        item.isfold = model.isfold;
+                    })
+                    localStorage.setItem("khglisfold", model.isfold ? "Y" : "N");
+                },//改变折叠状态
+                page: 1,
+                pagecount: 8,
+                DataID: ComFunJS.getQueryString("ID", "-1"),//数据ID
+                type: ComFunJS.getQueryString("type", "0"),//
+                covtitle: function (title) {
+                    return ComFunJS.convstr($("<div>" + title + "</div>").text(), 20);
+                },//转化 TITLE信息
+                showdetil: function (item) {
+                    item.isfold = !item.isfold
+                },//展开显示信息
+                backKH: function () {  //返回客户列表
+                    window.location = "/View_Mobile/UI/CRM/UI_KHGL_LIST.html?r=" + Math.random();
+                },
+                vieww: function (el) {
+                    window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=KHGL&id=" + el.ID + "&r=" + Math.random();
+                },
+                editKHGL: function (el) {
+                    //路由加载
+                    //window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=HYGL&id=" + el.ID + "&r=" + Math.random();
+                    window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=KHGL&id=" + el.ID + "&r=" + Math.random();
+                },
+                addKHGL: function (el) {
+                    window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=KHGL&r=" + Math.random();
+                },
+                delKHGL: function (el) {
+                    $.confirm("确认要删除客户吗，删除后客户下的联系人、合同、跟进记录都将删除", function () {
+                        $.getJSON('/API/VIEWAPI.ashx?Action=CRM_DELKHGL', { "P1": el.ID }, function (result) {
+                            if (result.ErrorMsg == "") {
+                                ComFunJS.winsuccess("删除成功");
+                                model.ctData.remove(el);
+                                if (model.ctData.size() == 0) {
+                                    model.loadtip = '没有找到数据哦'
+                                }
+                            }
+                        })
+                    })
+                },
+                editLXR: function (el) {
+                    window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=KHLXR&id=" + el.ID + "&r=" + Math.random();
+                },
+                editHT: function (el) {
+                    window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=HTGL&id=" + el.ID + "&r=" + Math.random();
+                },
+                loadMore: function () {
+                    if (model.loading) return;
+                    model.loading = true;
+                    $.getJSON("/API/VIEWAPI.ashx?Action=CRM_GETKHGLLIST&r=" + Math.random(), { "p": model.page, P1: model.type, Content: model.search, ID: model.DataID }, function (r) {
+                        model.loading = false;
+                        if (r.ErrorMsg == "") {
+                            if (model.page == 1 && r.Result.length == 0) {
+                                model.loadtip = '没有找到数据哦'
+                            }
+                            for (var i = 0; i < r.Result.length; i++) {
+                                r.Result[i].isfold = model.isfold;
+                                if (model.DataID != "-1") {//如果有数据ID，则展开显示
+                                    r.Result[i].isfold = true;
+                                }
+                                r.Result[i].pltype = "1";
+                            }
+
+                            model.ctData.pushArray(r.Result);
+                            //判断是否加载完毕
+                            if (r.Result.length < model.pagecount) {
+                                // 加载完毕，则注销无限加载事件，以防不必要的加载
+                                $.detachInfiniteScroll($('.infinite-scroll'));
+                                // 删除加载提示符
+                                $('.infinite-scroll-preloader').hide();
+                                return;
+                            }
+                            $.refreshScroller();
+                            model.page += 1;
+                        }
+
+                    });
+
+                },
+                viewfile: function (file) {
+                    if (ComFunJS.isPic(file.FileExtendName)) {
+                        ComFunJS.viewbigimg(this)
+                        return;
+                    }
+                    if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                        window.location = file.YLUrl;
+                        return;
+                    }
+                },//文件查看方法
+                getdata: function (type) {
+                    $.attachInfiniteScroll($('.infinite-scroll'))
+                    model.loadtip = "";
+                    $('.infinite-scroll-preloader').show();
+                    model.type = type;
+                    model.ctData.clear();
+                    //model.loadtip = "正在加载数据... ...";
+                    //setTimeout("model.loadtip = '没有找到数据哦'", 1500)
+                    model.page = 1;
+                    model.loadMore();
+                },
+                getpldata: function (el, type) {
+                    el.pltype = type;
+                },
+                addGJ: function (el) {
+                    window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=GJJL&khid=" + el.ID + "&r=" + Math.random();
+                },
+                addLXR: function (el) {
+                    window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=KHLXR&khid=" + el.ID + "&r=" + Math.random();
+                },
+                addHT: function (el) {
+                    window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=HTGL&khid=" + el.ID + "&r=" + Math.random();
+                },
+                addCP: function (el) { },
+                moreaction: function (el, dom, index) {
+                    var actions = [{ text: '请选择', label: true }];
+
+                    actions.push({
+                        text: '新增跟进',
+                        onClick: function () {
+                            model.addGJ(el)
+                        }
+                    });
+                    actions.push({
+                        text: '新增联系人',
+                        onClick: function () {
+                            model.addLXR(el)
+                        }
+                    });
+                    actions.push({
+                        text: '新增合同',
+                        onClick: function () {
+                            model.addHT(el)
+                        }
+                    });
+                    var qx = [{ text: '取消', bg: 'danger' }];
+                    var groups = [actions, qx];
+                    $.actions(groups);
+
+                    $(".modal-overlay").one('click', function () {
+                        $(this).remove();
+                        $(".actions-modal").remove();
+
+                    })
+                }//更多操作的方法
+            })
+            avalon.ready(function () {
+                // 注册'infinite'事件处理函数
+                $(document).on('infinite', '.infinite-scroll-bottom', function () {
+                    model.loadMore();
+                });
+
+                $.init();
+                if (model.DataID == "-1") {//如果参数中没有数据ID，则默认抓取当前用户数据
+                    if (model.type == "0") {
+                        model.type = "1";
+                    }
+                    util.toucher(document.getElementById('touchcontent'))
+                        .on('swipeLeft', '.list-container', function () {
+                            model.type = model.type == 3 ? 1 : model.type * 1 + 1;
+                            model.getdata(model.type)
+                            return false;
+                        })
+                        .on('swipeRight', '.list-container', function () {
+                            model.type = model.type == 1 ? 3 : model.type * 1 - 1;
+                            model.getdata(model.type)
+                            return false;
+                        })//左右滑动事件
+                }
+                model.getdata(model.type);
+            })
+        </script>
+</body>
+
+</html>

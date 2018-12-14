@@ -1,0 +1,108 @@
+﻿<div class="form-horizontal" ms-controller="CPGL">
+    <div style="margin: 0 80px;">
+        <div>
+            <!--<div class="fg-item"><span>基本信息</span></div>-->
+            <ul class="clearfix" style="display: block;padding:0">
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label"><i>*</i>产品名称</label>
+                    <div class="add-ic">
+                        <input type="text" maxlength="50" class="form-control  szhl_require" ms-duplex="modelData.Name">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label"><i>*</i>产品编号</label>
+                    <div class="add-ic">
+                        <input type="text" maxlength="50" class="form-control  szhl_require" ms-duplex="modelData.BianHao">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label"><i>*</i>标准单价(元)</label>
+                    <div class="add-ic">
+                        <input onkeyup="if (isNaN(value)) execCommand('undo')" onafterpaste="if (isNaN(value)) execCommand('undo')" type="text" maxlength="50" class="form-control  szhl_require" ms-duplex="modelData.Price">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label"><i>*</i>销售单位</label>
+                    <div class="add-ic">
+                        <input type="text" maxlength="50" class="form-control  szhl_require" placeholder="比如：个" ms-duplex="modelData.DanWei">
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label"><i>*</i>产品分类</label>
+                    <div class="add-ic">
+                        <select class="form-control szhl_require" ms-duplex="modelData.LeiBie">
+                            <option ms-repeat-item="ColumnData" ms-attr-value="item.ID" ms-attr-selected="item.ID==modelData.LeiBie?'selected':''">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label"><i>*</i>单位成本(元)</label>
+                    <div class="add-ic">
+                        <input type="text" maxlength="50" class="form-control  szhl_require" ms-duplex="modelData.ChengBen">
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">产品介绍</label>
+                    <div class="add-ic">
+                        <textarea class="span2 szhl_UEEDIT" id="cpjs" ms-duplex="modelData.PContent"></textarea>
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">产品图片</label>
+                    <div class="add-ic">
+                        <input type="text"class="span2  szhl_Upload form-control" ms-duplex="modelData.Files" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="extdiv"></div>
+    </div>
+</div>
+
+<script>
+
+    var tempmodel = avalon.define({
+        $id: "CPGL",
+        name: "产品管理",
+        iswf: false,//是否属于流程表单
+        ColumnData: [],
+        modelData: {
+            "Name": "", "BianHao": "", "Price": "", "DanWei": "", "Files": "", "ChengBen": "", "PContent": ""
+            , "LeiBie": ""
+        },
+        inittemp: function (strId) {
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 15 }, function (resultData) {
+                    tempmodel.ColumnData = resultData.Result;
+                    if (tempmodel.ColumnData.size() > 0 && !tempmodel.modelData.LeiBie) {
+                        tempmodel.modelData.LeiBie = resultData.Result[0].ID;
+                    }
+            })
+
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETCPMODEL', { P1: strId }, function (resultData) {
+                        tempmodel.modelData = resultData.Result;
+                        if (tempmodel.modelData.RBDate && tempmodel.modelData.RBDate.length > 10) {
+                            tempmodel.modelData.RBDate = tempmodel.modelData.RBDate.substring(0, 10);
+                        }
+
+                        setTimeout("ComFunJS.initForm()", 500)
+                })
+            } else {
+                pmodel.isDraft = true;
+                ComFunJS.initForm();
+            }
+
+        },//初始化
+        SaveData: function (callback, btdom) {
+            if (!tempmodel.modelData.LeiBie) {
+                top.ComFunJS.winwarning("请选择产品分类");
+                $(btdom).attr("disabled", false).find(".fa").hide();//转圈样式去掉
+                return;
+            }
+            $.post("/API/VIEWAPI.ashx?ACTION=CRM_ADDCP", { P1: JSON.stringify(tempmodel.modelData.$model) }, function (result) {
+                return callback.call(this, result);
+            });
+        }
+    });
+</script>

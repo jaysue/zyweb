@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>话题列表</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.css" rel="stylesheet" />
+    <link href="/View_Mobile/CSS/szhlextend.css?ver=20160904" rel="stylesheet" />
+    <link rel="stylesheet" href="/View_Mobile/CSS/animate.css">
+
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body ms-controller="SQList">
+    <div class="page-group">
+        <div class="page page-current" id="pageindex1">
+            <div class="buttons-tab">
+                <a href="#" class="tab-link button external active">社区话题</a>
+            </div>
+            <div class="content infinite-scroll infinite-scroll-bottom touchcontent" data-distance="50" style="margin-top: 2rem;" id="touchcontent">
+                <div class="list-container">
+                    <div class="card facebook-card animated fadeInUp" ms-repeat-el="ctData">
+                        <div class="card-header no-border">
+                            <div class="facebook-avatar"><img ms-src="{{ComFunJS.getfile()+'&ype=TX&user='+el.CRUser}}" style="border-radius: 3px;width:32px;height:32px"></div>
+                            <div class="facebook-date">{{ComFunJS.convusers(el.CRUser)}}</div>
+                            <div class="facebook-date">{{$.timeago(el.CRDate)}}</div>
+                        </div>
+                        <div class="card-content" style="margin-top:15px">
+                            <div class="card-content-inner" style="padding-bottom:0; padding-top: 0.4rem;"><span style="color:gray">标题：</span> <span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{el.Title}}</span></div>
+                            <div class="card-content-inner" style="padding-bottom:0; padding-top: 0.4rem;"><span style="color:gray">内容：</span> <span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{el.Description|html}}</span></div>
+                            <!--<div class="card-content-inner" style="padding-bottom:0; padding-top: 0.4rem;"><span style="color:gray">链接：</span> <span style="overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{el.URL|html}}</span></div>-->
+                            <div class="card-content-inner" style="padding-top: 0; padding-top: 0.4rem; padding-bottom: 0;" ms-if="el.FileId">
+                                <ul class="filelist">
+                                    <li ms-repeat-file="el.FileList">
+                                        <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="mall_pcp:ComFunJS.isPic(file.FileExtendName)" class="" ms-on-click="viewfile(file)" ms-src="{{ComFunJS.getfile(file.ID)}}" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                                        <img ms-if="!ComFunJS.isPic(file.FileExtendName)" class="file" ms-on-click="viewfile(file)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+
+                                        <span class="fileinfo" ms-if="!ComFunJS.isPic(file.FileExtendName)">{{file.Name}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-footer no-border" style="padding:0">
+                            <a href="#" ms-if="el.CRUser==nowuser" ms-on-click="vieww(el)"><i class="fa fa-save"></i>&nbsp;保存为话题&nbsp;</a>
+                            <a href="#" ms-if="el.URL" ms-attr-href="el.URL" external><i class="fa fa-link"></i>&nbsp;原始链接&nbsp;</a>
+                        </div>
+                    </div>
+                    <div class="card facebook-card animated" ms-if="loadtip">
+                        <div class="card-header no-border">
+                            {{loadtip}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="infinite-scroll-preloader">
+                    <div class="preloader"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="/View_Mobile/JS/touch/toucher.js"></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/raty/jquery.raty.js?v=1.3"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script>
+        var model = avalon.define({
+            $id: "SQList",
+            ctData: [],
+            loading: false,
+            loadtip: "",//切换页时显示信息
+            nowuser: ComFunJS.getnowuser(),
+            DataID: ComFunJS.getQueryString("ID", "-1"),
+            type: 0,
+            vieww: function (el) {
+                //路由加载
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=TSSQ&linkid=" + el.ID + "&r=" + Math.random();
+            },
+            loadMore: function () {
+                if (model.loading) return;
+                model.loading = true;
+                $.getJSON("/API/VIEWAPI.ashx?Action=TSSQ_GETFXLJMODEL&r=" + Math.random(), { P1: model.DataID }, function (r) {
+                    model.loading = false;
+                    if (r.ErrorMsg == "") {
+                        if (!r.Result) {
+                            model.loadtip = '没有找到数据哦'
+                        }
+                        r.Result.FileList = r.Result1;
+                        model.ctData.push(r.Result);
+
+                        // 加载完毕，则注销无限加载事件，以防不必要的加载
+                        $.detachInfiniteScroll($('.infinite-scroll'));
+                        // 删除加载提示符
+                        $('.infinite-scroll-preloader').hide();
+
+                    }
+                    model.loading = true;
+
+                });
+
+            },
+            viewfile: function (file) {
+                if (ComFunJS.isPic(file.FileExtendName)) {
+                    ComFunJS.viewbigimg(this)
+                    return;
+                }
+                if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                    window.location = file.YLUrl;
+                    return;
+                }
+            },
+            getdata: function (type) {
+                $.attachInfiniteScroll($('.infinite-scroll'))
+                model.loadtip = "";
+                $('.infinite-scroll-preloader').show();
+                model.type = type;
+                model.loadMore();
+            }
+        })
+
+        avalon.ready(function () {
+            // 注册'infinite'事件处理函数
+            $(document).on('infinite', '.infinite-scroll-bottom', function () {
+                model.loadMore();
+            });
+
+            $.init();
+            model.getdata(model.type);
+        })
+    </script>
+
+</body>
+
+
+</html>

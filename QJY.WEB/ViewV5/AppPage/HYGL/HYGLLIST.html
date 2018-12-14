@@ -1,0 +1,200 @@
+﻿<div ms-controller="HYGLLIST">
+    <!-- 添加按钮 -->
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="AddView('HYGL')"><i class="iconfont icon-jiahao ft12 mr5"></i>添加会议</button>
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">事项类型：</h5>
+            <ul class="tab-type ft14">
+                <!--<li><span class="active" ms-click="SelectType('0')">全部</span></li>-->
+                <li ms-click="SelectType('1')"><span class="active">我创建的</span></li>
+                <li ms-click="SelectType('2')"><span>我参与的</span></li>
+                <li ms-click="SelectType('3')"><span>待我审核的</span></li>
+                <li ms-click="SelectType('4')"><span>我已审核的</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">会议室：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectHYS('')"><span class="active">全部</span></li>
+                <li ms-repeat-el="TypeData" ms-click="SelectHYS(el.ID)"><span>{{el.Name}}</span></li>
+            </ul>
+        </div>
+
+        <!-- 搜索 -->
+        <div class="oh">
+            <div class="input-group ml15" style="width:295px;">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" placeholder="搜索会议标题">
+                <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+            </div>
+        </div>
+    </div>
+    <!-- 展开更多选项 -->
+    <div class="add-tab ft14 tc mt20" style="display:none;">
+        <span>更多筛选<i class="caret"></i></span>
+    </div>
+    <!-- 表格 -->
+    <div class="default-tab ft14 pt20">
+        <table class="table table-striped table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th class="tc">
+                        序号
+                    </th>
+                    <th ms-repeat-im="ShowColumns" ms-visible="im.IsSel" ms-attr-width="im.width">{{im.ColText}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-el="tmpListData" >
+                    <td class="tc">
+                        {{$index+1+page.pagecount*(page.pageindex-1)}}
+                    </td>
+                    <td ms-repeat-im="ShowColumns" ms-class-1="lk:im.type=='link'" ms-visible="im.IsSel" ms-click="View(el.ID,el.intProcessStanceid,this)">{{ComFunJS.FnFormat(el[im.ColName],im)|html}}</td>
+                    <td>
+                        <a class="cz-btn ft18 js-color tip" data-toggle="tooltip" title="审批" ms-click="EditForm('HYGL_HYGL',el.ID,el.intProcessStanceid,$event)" ms-if="el.StateName!='-1'&&search.seartype==3">
+                            <i class="iconfont icon-shenhe"></i>
+                        </a>
+                     
+                    </td>
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+            </tfoot>
+        </table>
+        <div class="ui-datatable-page ft14 pl20">
+
+            <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+            <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                <span>共{{model.page.total}}条记录</span>
+                <span ms-visible="model.page.total>model.pageNum[0].num">
+                    选择每页条数
+                    <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                        <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                    </select>
+                </span>
+            </div>
+
+        </div>
+    </div>
+    
+</div>
+
+<script>
+
+    var tempindex = avalon.define({
+        $id: "HYGLLIST",
+        curHYS: "",
+        tmpListData:[],
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        SelectHYS: function (type) {
+            tempindex.curHYS = type;
+            tempindex.GetLIST();
+        },
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        InitWigetData: function () {
+
+            //显示的列名
+            model.ShowColumns.clear();
+            model.ShowColumns.pushArray([
+                { "ColName": "Title", "ColText": "会议主题", "IsSel": true, "format": "text", "type": "link" },
+                { "ColName": "StartTime", "ColText": "开始时间", "IsSel": true, "format": "timeformat"},
+                { "ColName": "EndTime", "ColText": "结束时间", "IsSel": true, "format": "timeformat"},
+                { "ColName": "CYUser", "ColText": "参与人", "IsSel": true, "format": "username","len":10 },
+                { "ColName": "Name", "ColText": "会议室", "width": "10%", IsSel: true, "format": "text" },
+                { "ColName": "Details", "ColText": "会议内容", "IsSel": false, "format": "text" },
+                { "ColName": "StateName", "ColText": "审核状态", "width": "10%", "IsSel": true, "format": "statename" },
+                { "ColName": "JLUser", "ColText": "纪要人", "width": "5%", "IsSel": false, "format": "username" },
+                { "ColName": "ZCUser", "ColText": "主持人", "width": "5%", "IsSel": false, "format": "username" },
+                { "ColName": "SXUser", "ColText": "摄像人", "width": "5%", "IsSel": false, "format": "username" },
+                { "ColName": "HYJL", "ColText": "会议纪要", "width": "10%", "IsSel": false, "format": "bqh" },
+                { "ColName": "HYFW", "ColText": "会议服务", "width": "5%", "IsSel": false, "format": "text" }
+            ]);
+            //类型数据
+            tempindex.GetHYS();
+            tempindex.GetLIST();
+        },
+        GetHYS: function () {
+            $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_GETKYHYSLIST', {}, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    model.TypeData = resultData.Result;
+                }
+            })
+        },
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_GETHYGLLIST', { p: 1, P1: model.search.seartype, pagecount: model.page.pagecount, Content: model.search.searchcontent, lb: tempindex.curHYS }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempindex.tmpListData = resultData.Result;
+                    if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                    model.page.total = resultData.Result1;
+                    laypage({
+                        cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                        pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //通过后台拿到的总页数
+                        curr: 1, //初始化当前页
+                        skin: 'molv',
+                        jump: function (e) { //触发分页后的回调
+                            if (e.curr != model.page.pageindex) {
+                                $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_GETHYGLLIST', { p: e.curr, P1: model.search.seartype, pagecount: model.page.pagecount, Content: model.search.searchcontent, lb: tempindex.curHYS }, function (resultData) {
+                                    if (resultData.ErrorMsg == "") {
+                                        tempindex.tmpListData = resultData.Result;
+                                    }
+                                })
+                                model.page.pageindex = e.curr;
+                            }
+                        }
+                    });
+                }
+            })
+        },
+        View: function (id, piid, event) {
+            if ($(event).hasClass("lk")) {
+                ComFunJS.winviewform("/ViewV5/AppPage/HYGL/HYGLView.html?ID=" + id + "&PIID=" + piid + "&r=" + Math.random(), "详细信息");
+            }
+        },
+        UpHYJL: function (el, event) {
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            }
+            top.ComFunJS.winbtnwin("/View/Base/APP_COMMENT.html?contentdec=会议纪要&content=" + el.HYJL + "&r=" + Math.random(), "会议纪要", 600, 400, {}, function (layero, index) {
+                var frameid = $("iframe", $(layero)).attr('id');
+                var plnr = ComFunJS.isIE() ? top.window.frames[frameid].getpl() : top.window.frames[frameid].contentWindow.getpl();
+
+                $.post('/API/VIEWAPI.ashx?Action=HYGL_UPDATEHYJL&r=' + Math.random(), { "P1": el.ID, "P2": plnr }, function (resultData) {
+                    top.layer.close(index);
+                    var resultData = JSON.parse(resultData);
+                    if (resultData.ErrorMsg == "") {
+                        el.HYJL = plnr;
+
+                        top.ComFunJS.winsuccess("操作成功！！");
+                    }
+                    else {
+                        top.ComFunJS.winwarning("操作失败！！");
+                    }
+                })
+            })
+        },
+        isxsHYJL: function (el) {
+            var JLUserList = [];
+            if (el.JLUser) {
+                JLUserList = el.JLUser.split(',');
+            }
+            if (JLUserList.indexOf(model.UserData.UserName) != -1 || el.FQUser.split(',').indexOf(model.UserData.UserName) != -1) {
+                return "Y";
+            }
+            else {
+                return "";
+            }
+        }
+    })
+</script>

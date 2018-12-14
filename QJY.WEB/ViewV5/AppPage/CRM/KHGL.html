@@ -1,0 +1,195 @@
+﻿<div class="form-horizontal" ms-controller="CRM">
+    <div style="padding: 0 80px;">
+        <div>
+            <!--<div class="fg-item"><span>基本信息</span></div>-->
+            <ul class="clearfix" style="display: block; padding: 0">
+
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label"><i>*</i>客户名称</label>
+                    <div class="add-ic">
+                        <div class="input-group ">
+                            <input type="search" class="form-control" maxlength="25" ms-duplex="modelData.KHName" class="form-control szhl_require">
+                            <span class="input-group-addon" ms-click="checkKH()">查重</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label"><i>*</i>客户类型</label>
+                    <div class="add-ic">
+                        <select name="conType" id="conType" ms-duplex="modelData.KHType" class="form-control">
+                            <option ms-repeat-item="ColumnData" ms-attr-value="item.ID">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">电话</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.TelePhone" class="form-control " />
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label"><i>*</i>负责人</label>
+                    <div class="add-ic" style="height: 34px;">
+                        <input type="text" ms-duplex="modelData.FZUser" class="form-control szhl_getPeoples hidden" signle="Y" />
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">地址</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.Address" class="form-control " />
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label">跟进状态</label>
+                    <div class="add-ic">
+                        <select ms-duplex="modelData.Status" class="form-control">
+                            <option value="">选择跟进状态</option>
+                            <option ms-repeat-item="ColumnData1" ms-attr-value="item.ID">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">备注信息</label>
+                    <div class="add-ic">
+                        <textarea ms-duplex="modelData.Remark" rows="2" class="span2   form-control "></textarea>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+        <div class="extdiv"></div>
+        <div ms-if="!modelData.ID">
+            <div class="fg-item"><span>联系人信息</span></div>
+            <ul class="clearfix" style="padding: 0">
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label"><i>*</i>联系人姓名</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="lxrData.UserXM" class="form-control szhl_require" />
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right ">
+                    <label class="add-item-label"><i>*</i>联系人电话</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="lxrData.TelePhone" class="form-control szhl_require" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <div class="fg-item"><span>更多信息</span><i id="btnOtherInfo"></i></div>
+            <ul class="clearfix" style="padding: 0" id="OtherInfo">
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">邮箱</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.Email" class="form-control" />
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right ">
+                    <label class="add-item-label">邮编</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.PostCode" class="form-control" />
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">传真</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.FixNo" class="form-control" />
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label">网址</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.WebSite" class="form-control" />
+                    </div>
+                </li>
+                <li class="add-item add-width fl-right">
+                    <label class="add-item-label">客户来源</label>
+                    <select ms-duplex="modelData.Source" class="form-control">
+                        <option value="">选择客户来源</option>
+                        <option ms-repeat-item="ColumnData2" ms-attr-value="item.ID">{{item.TypeName}}</option>
+                    </select>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">所属行业</label>
+                    <div class="add-ic">
+                        <select ms-duplex="modelData.Industry" class="form-control">
+                            <option value="">选择所属行业</option>
+                            <option ms-repeat-item="ColumnData3" ms-attr-value="item.ID">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width fl-left">
+                    <label class="add-item-label">人员规模</label>
+                    <div class="add-ic">
+                        <select ms-duplex="modelData.Scale" class="form-control">
+                            <option value="">选择人员规模</option>
+                            <option ms-repeat-item="ColumnData4" ms-attr-value="item.ID">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">附件</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.Files" class="span2  szhl_Upload form-control" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+    var tempmodel = avalon.define({
+        $id: "CRM",
+        ColumnData: [],
+        ColumnData1: [],
+        ColumnData2: [],
+        ColumnData3: [],
+        ColumnData4: [],
+        name: "客户管理",
+        iswf: false,//是否属于流程表单
+        checkKH: function () {
+            top.ComFunJS.winviewform("/ViewV5/AppPage/CRM/KHCCLIST.html?name=" + tempmodel.modelData.KHName, "客户查重", "700", "500");
+        },
+        inittemp: function (strId) {
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 10 }, function (resultData) {
+                tempmodel.ColumnData = resultData.Result;
+                if (!tempmodel.modelData.KHType) {
+                    tempmodel.modelData.KHType = resultData.Result[0].ID
+                };
+            })
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 11 }, function (resultData) {
+                tempmodel.ColumnData1 = resultData.Result;
+            })
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 12 }, function (resultData) {
+                tempmodel.ColumnData2 = resultData.Result;
+            })
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 13 }, function (resultData) {
+                tempmodel.ColumnData3 = resultData.Result;
+            })
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 14 }, function (resultData) {
+                tempmodel.ColumnData4 = resultData.Result;
+
+            })
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETKHGLMODEL', { P1: strId }, function (resultData) {
+                    tempmodel.modelData = resultData.Result[0];
+                    setTimeout("ComFunJS.initForm()", 500)
+
+                })
+            } else {
+
+                pmodel.isDraft = true;
+                ComFunJS.initForm();
+            }
+        },//初始化
+        modelData: { "KHType": "", "KHName": "", "TelePhone": "", "FixNo": "", "WebSite": "", "PostCode": "", "Address": "", "Status": "", "Lev": "", "Source": "", "FZUser": ComFunJS.getnowuser(), "CYUser": "", "Remark": "", "Files": "", "Industry": "", "Scale": "", "Email": "" },
+        lxrData: { "UserXM": "", "TelePhone": "" },
+        SaveData: function (callback) {
+            $.post("/API/VIEWAPI.ashx?ACTION=CRM_ADDKHGL", { P1: JSON.stringify(tempmodel.modelData.$model), lxr: JSON.stringify(tempmodel.lxrData.$model) }, function (result) {
+                return callback.call(this, result);
+            });
+        }
+    });
+</script>

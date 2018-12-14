@@ -1,0 +1,139 @@
+﻿<div class="form-horizontal" ms-controller="JYGL">
+    <div style="margin: 0 80px;">
+        <div>
+            <ul class="clearfix" style="display: block;padding:0">
+                <li class="add-item add-width">
+                    <label>借阅人:</label><label>{{modelData.JYRName}}</label>
+                </li>
+                <li class="add-item add-width">
+                    <label class="add-item-label"><i>*</i>借阅起止时间</label>
+                    <div class="add-ic">
+                        <div style="display:block;">
+                            <div class="add-ic fl-left" style="width: 45%;">
+                                <input type="text" class="form-control szhl_form_date szhl_require" ms-class-1="null:modelData.ID" ms-duplex="modelData.StartTime">
+                            </div>
+                            <div class="add-ic" style="float: left; line-height: 30px; width: 10%; text-align: center;">：</div>
+                            <div class="add-ic fl-right" style="width: 45%;">
+                                <input type="text" class="form-control szhl_form_date szhl_require" ms-class-1="null:modelData.ID" ms-duplex="modelData.EndTime">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="add-item add-widthall pt20">
+                    <label class="add-item-label"><i>*</i>借阅图书</label>
+                    <div class="default-tab ft14 ">
+                        <table class="table table-hover table-bordered" id="tab">
+                            <thead style="background:#f7f7f7;">
+                                <tr>
+                                    <th width="50px">编码</th>
+                                    <th width="150px">名称</th>
+                                    <th width="110px">作者</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ms-repeat-item="TSData">
+                                    <td>{{item.TSNum}}</td>
+                                    <td>{{item.TSName}}</td>
+                                    <td>{{item.auther}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </li>
+                <!--<li class="add-item add-widthall">
+                    <label class="add-item-label">备注</label>
+                    <div class="add-ic">
+                        <textarea type="text" autofocus="autofocus" ms-duplex="modelData.Remark" rows="4" class="span2   form-control"></textarea>
+                    </div>
+                </li>-->
+            </ul>
+        </div>
+
+    </div>
+</div>
+<script>
+    var tempmodel = avalon.define({
+        $id: "JYGL",
+        ColumnData: [],
+        name: "借阅管理",
+        TSData: [],
+        tsids: ComFunJS.getQueryString("tsids"),
+        iswf: true,//是否属于流程表单
+        inittemp: function (strId) {
+            if (strId && strId != "0") {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_GETJYGLMODEL', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempmodel.modelData = resultData.Result;
+                        if (tempmodel.modelData.StartTime && tempmodel.modelData.StartTime.length > 16) {
+                            tempmodel.modelData.StartTime = tempmodel.modelData.StartTime.substring(0, 16);
+                        }
+                        if (tempmodel.modelData.EndTime && tempmodel.modelData.EndTime.length > 16) {
+                            tempmodel.modelData.EndTime = tempmodel.modelData.EndTime.substring(0, 16);
+                        }
+                        tempmodel.tsids = tempmodel.modelData.TSID;
+                        setTimeout(" ComFunJS.initForm()", 500)
+                        tempmodel.GetTSLIST();
+                    }
+                })
+            } else {
+
+                tempmodel.modelData.EndTime = tempmodel.getnextmon(ComFunJS.getnowdate("yyyy-mm-dd"));
+                pmodel.isDraft = true;
+                ComFunJS.initForm();
+                tempmodel.GetTSLIST();
+            }
+        },//初始化
+        modelData: { "TSID": "", "TSName": "", "StartTime": "", "EndTime": "", "Remark": "","JYR": ComFunJS.getnowuser(), "JYRName": ComFunJS.convertuser(ComFunJS.getnowuser()), "Files": "" },
+        SaveData: function (callback) {
+            var tsname = "";
+            for (var i = 0; i < tempmodel.TSData.length; i++) {
+                tsname = tsname + tempmodel.TSData[i].TSName + ",";
+            }
+            tempmodel.modelData.TSID = ComFunJS.trim(tempmodel.tsids);
+            tempmodel.modelData.TSName = ComFunJS.trim(tsname);
+            $.post("/API/VIEWAPI.ashx?ACTION=JYGL_ADDJYGL", { P1: JSON.stringify(tempmodel.modelData.$model) }, function (result) {
+                return callback.call(this, result);
+            });
+        },
+        GetTSLIST: function (tsids) {
+            $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_GETTSIST', { P1: tempmodel.tsids }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempmodel.TSData = resultData.Result;
+
+                }
+            })
+        },
+        rebackform: function () {
+            $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_MODIFYTSSTATUS', { P1: tempmodel.modelData.TSID, P2: "0" }, function (resultData) {
+
+            })
+        },
+        getnextmon: function (date) {
+                var arr = date.split('-');
+                var year = arr[0]; //获取当前日期的年份  
+                var month = arr[1]; //获取当前日期的月份  
+                var day = arr[2]; //获取当前日期的日  
+                var days = new Date(year, month, 0);
+                days = days.getDate(); //获取当前日期中的月的天数  
+                var year2 = year;
+                var month2 = parseInt(month) + 1;
+                if (month2 == 13) {
+                    year2 = parseInt(year2) + 1;
+                    month2 = 1;
+                }
+                var day2 = day;
+                var days2 = new Date(year2, month2, 0);
+                days2 = days2.getDate();
+                if (day2 > days2) {
+                    day2 = days2;
+                }
+                if (month2 < 10) {
+                    month2 = '0' + month2;
+                }
+
+                var t2 = year2 + '-' + month2 + '-' + day2;
+                return t2;
+        }
+    });//@ sourceURL=YSGL.js;
+</script>

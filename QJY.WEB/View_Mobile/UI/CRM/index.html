@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<title>企捷CRM</title>
+<link href="css/reset.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="css/default.css">
+    <style>
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+        .head-kh {
+            background: url(images/bg-account.jpg);
+            background-size: 100% 100%;
+        }
+    </style>
+<script>
+    window.onload=init;
+    function init() {
+        var plus_btn = document.getElementById("plus_btn");
+        var module_plus = document.getElementById("module_plus")
+        plus_btn.onclick = function () { module_plus.style.display = "block" }
+        module_plus.onclick = function () { module_plus.style.display = "none" }
+    }
+</script>
+</head>
+<body ms-controller="crmview">
+<section class="user-kh">
+    <div class="head-kh">
+        <div class="kh-tx">
+            <span><img ms-src="{{ComFunJS.getfile()+'&type=TX&user='+userData.User.UserName}}"></span>
+        </div>
+        <h3 class="user-name">{{userData.User.UserRealName}}</h3>
+        <!-- <h4 class="user-zh">18709836782</h4> -->
+        <div class="msg-kh">
+            <ul class="clearfix user-msg">
+                <li ms-click="openTab('UI_KHGL_LIST.html?type=2')">
+                    <a href="javascript:void(0);">
+                        <i>{{TongJiData.KHQTY}}</i>
+                        <span>  我负责的客户</span>
+                    </a>
+                </li>
+                <li class="bk" ms-click="openTab('UI_KHLXR_LIST.html')">
+                    <a href="javascript:void(0);">
+                        <i>{{TongJiData.KHQTY2}}</i>
+                        <span>联系人</span>
+                    </a>
+                </li>
+                <li ms-click="openTab('UI_KHGL_LIST.html?type=3')">
+                    <a href="javascript:void(0);">
+                        <i>{{TongJiData.KHQTY3}}</i>
+                        <span>下属客户</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+<div class="fun-crm">
+  <ul class="block_nav clearfix">
+    <li ms-click="openTab('UI_KHGL_LIST.html')">
+      <a href="#">
+        <i><img src="images/pic-kh.png"></i>
+        <span>客户管理</span>
+      </a>
+    </li>
+    <li ms-click="openTab('UI_KHLXR_LIST.html')">
+      <a href="#">
+        <i><img src="images/pic-lxr.png"></i>
+        <span>联系人</span>
+      </a>
+    </li>
+    <!--<li ms-click="openCard()">
+      <a href="#">
+        <i><img src="images/pic-pmp.png"></i>
+        <span>拍名片</span>
+      </a>
+    </li>-->
+    <li ms-click="openTab('UI_HTGL_LIST.html')">
+      <a href="#">
+        <i><img src="images/pic-ht.png"></i>
+        <span>合同</span>
+      </a>
+    </li>
+    
+    <li ms-click="openTab('UI_CPGL_LIST.html')">
+      <a href="#">
+        <i><img src="images/pic-cp.png"></i>
+        <span>产品</span>
+      </a>
+    </li>
+    <li ms-click="openTab('UI_GJJL_LIST.html')">
+      <a href="#">
+        <i><img src="images/pic-sj.png"></i>
+        <span>跟进记录</span>
+      </a>
+    </li>
+     <li>
+
+     </li>
+  </ul>
+</div>
+<!-- 加号 -->
+<span id="plus_btn"><img src="images/plus_icon.png" height="188" width="188" alt="" style=""></span>
+<div class="module_plus" id="module_plus">
+    <div class="mod-mask"></div>
+    <div class="mod-body">
+        <ul>
+            <li><a ms-click="openTab('../BASE/APP_MOBIL_WF.html?FormCode=KHGL')" href="javascript:void(0)" class="mod-li-icon"><img src="images/c-kh.png" height="188" width="188" alt=""></a>
+            <div  ms-click="openTab('../BASE/APP_MOBIL_WF.html?FormCode=KHGL')" class="mod-li-tip">新增客户</div>
+            </li>
+            <li><a ms-click="openTab('../BASE/APP_MOBIL_WF.html?FormCode=KHLXR')" href="javascript:void(0)" class="mod-li-icon"><img src="images/c-lxr.png" height="188" width="188" alt=""></a>
+            <div ms-click="openTab('../BASE/APP_MOBIL_WF.html?FormCode=KHLXR')" class="mod-li-tip">新增联系人</div>
+            </li>
+            <li><a ms-click="openTab('../BASE/APP_MOBIL_WF.html?FormCode=HTGL')" href="javascript:void(0)" class="mod-li-icon"><img src="images/c-ht.png" height="188" width="188" alt=""></a>
+            <div ms-click="openTab('../BASE/APP_MOBIL_WF.html?FormCode=HTGL')" class="mod-li-tip">新增合同</div>   </li>    
+            <li><a ms-click="openTab('../BASE/APP_MOBIL_WF.html?FormCode=CPGL')" href="javascript:void(0)" class="mod-li-icon"><img src="images/c-cp.png" height="188" width="188" alt=""></a>
+            <div ms-click="openTab('../BASE/APP_MOBIL_WF.html?FormCode=CPGL')" class="mod-li-tip">新增产品</div>   </li>
+            <li><a ms-click="openTab('../BASE/APP_MOBIL_WF.html?FormCode=GJJL')" href="javascript:void(0)" class="mod-li-icon"><img src="images/c-sj.png" height="188" width="188" alt=""></a>
+            <div ms-click="openTab('../BASE/APP_MOBIL_WF.html?FormCode=GJJL')" class="mod-li-tip">新增跟进记录</div>
+            </li>
+            
+        </ul>
+
+    </div>
+</div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20171225"></script>
+    <script type="text/javascript">
+        var model = avalon.define({
+            $id: "crmview",
+            userData: {},
+            TongJiData: { KHQTY: 0, KHQTY2: 0, KHQTY3: 0 },
+            GetGongJI: function () {
+                $.getJSON("/API/VIEWAPI.ashx?Action=CRM_GETCOUNT",{}, function (r) {
+                    if (r.ErrorMsg == "") {
+                        model.TongJiData.KHQTY = r.Result;
+                        model.TongJiData.KHQTY2 = r.Result1;
+                        model.TongJiData.KHQTY3 = r.Result2;
+                    }
+                })
+
+            },
+            openTab: function (url) {
+                if (url) {
+                    if (url.indexOf('?') > 0) {
+                        url += "&r=" + Math.random();
+                    } else {
+                        url += "?r=" + Math.random();
+                    }
+                    window.location = url;
+                }
+
+            },
+            openCard: function () {
+                alert("开发中...");
+            }
+
+        })
+
+        avalon.ready(function () {
+            $.getJSON("/API/VIEWAPI.ashx?Action=XTGL_GETUSERINFO",{}, function (r) {
+                if (r.ErrorMsg == "") {
+                    model.userData = r.Result;
+                }
+            })
+            model.GetGongJI();
+        })
+
+    </script>
+
+
+</body>
+</html>

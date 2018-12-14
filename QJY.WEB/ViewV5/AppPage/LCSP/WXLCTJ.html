@@ -1,0 +1,210 @@
+﻿<div ms-controller="WXLCTJ">
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <!-- 搜索 -->
+            <div class="oh oh pl20 pr20">
+
+                <input type="search" class="form-control szhl_form_date_year  pull-left" ms-duplex="curYear" placeholder="请选择年份" style="width:100px" ms-change="GetLIST()">
+
+                <select class="form-control  pull-left " ms-duplex="curMonth" style="width:100px;margin-left:10px;" ms-change="GetLIST()">
+                    <option value="0">全部月份</option>
+                    <option value="01">1月</option>
+                    <option value="02">2月</option>
+                    <option value="03">3月</option>
+                    <option value="04">4月</option>
+                    <option value="05">5月</option>
+                    <option value="06">6月</option>
+                    <option value="07">7月</option>
+                    <option value="08">8月</option>
+                    <option value="09">9月</option>
+                    <option value="10">10月</option>
+                    <option value="11">11月</option>
+                    <option value="12">12月</option>
+                </select>
+
+            </div>
+        </div>
+
+        <div class="default-tab ft14 pt20">
+            <div id="jqxgrid" style="border-left: 0;border-right: 0;">
+            </div>
+
+        </div>
+    </div>
+    <div class="modal fade" id="ItemData" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 500px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">表单明细</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group" ms-repeat-item="itemdata">
+                            <label class="col-xs-4 control-label"><span class="Required " style="color:red">*</span>{{item.title}}</label>
+                            <input type="text" readonly="readonly" disabled class="form-control szhl_require" style="width: 200px" ms-duplex="item.datavalue" />
+                        </div>
+
+                    </div>
+                    <div style="text-align:center">
+                        <img ms-repeat-item="files" ms-attr-src="item.fileurl" style="width:100PX;height:120PX;    MARGIN-RIGHT: 10PX;" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="/ViewV5/JS/YanGrid/jqwidgets/styles/jqx.base.css" />
+    <link rel="stylesheet" href="/ViewV5/JS/YanGrid/jqwidgets/styles/jqx.office.css" />
+    <script>
+
+        var tempindex = avalon.define({
+            $id: "WXLCTJ",
+            curYear: "",
+            curMonth: "0",
+            itemdata: [],
+            jldata: [],
+            files: [],
+            covdata: function (timestamp) {
+                var date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+                Y = date.getFullYear() + '-';
+                M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+                D = date.getDate() + ' ';
+                h = date.getHours() + ':';
+                m = date.getMinutes() + ':';
+                s = date.getSeconds();
+                return Y + M + D + h + m + s;
+
+            },
+            formatDateTime: function (timeStamp) {
+                var date = new Date();
+                date.setTime(timeStamp);
+                var y = date.getFullYear();
+                var m = date.getMonth() + 1;
+                m = m < 10 ? ('0' + m) : m;
+                var d = date.getDate();
+                d = d < 10 ? ('0' + d) : d;
+                //var h = date.getHours();
+                //h = h < 10 ? ('0' + h) : h;
+                //var minute = date.getMinutes();
+                //var second = date.getSeconds();
+                //minute = minute < 10 ? ('0' + minute) : minute;
+                //second = second < 10 ? ('0' + second) : second;
+                return y + '-' + m + '-' + d;
+            },
+            showitem: function (rowindex) {
+                tempindex.itemdata.clear();
+                var jsondata = $('#jqxgrid').jqxGrid('getrowdata', rowindex);
+                var sp_num = jsondata.sp_num;
+                for (var i = 0; i < tempindex.jldata.length; i++) {
+                    if (tempindex.jldata[i].sp_num == sp_num) {
+                        var sxdata = JSON.parse(tempindex.jldata[i].comm.apply_data);
+                        for (var sx in sxdata) {
+                            if (sxdata[sx].type == "file") {
+                                tempindex.itemdata.push({ title: "文件数量", datavalue: sxdata[sx].value.length })
+                                tempindex.files = sxdata[sx].value;
+
+                            } else if (sxdata[sx].type == "date") {
+                                tempindex.itemdata.push({ title: sxdata[sx].title, datavalue: tempindex.covdata(sxdata[sx].value) })
+
+                            } else {
+                                if (sxdata[sx].value.constructor != Array) {
+                                    var devalue = sxdata[sx].value;
+                                    if (sxdata[sx].title == "开始时间" || sxdata[sx].title == "结束时间") {
+                                        devalue = tempindex.formatDateTime(sxdata[sx].value)
+                                    }
+                                    tempindex.itemdata.push({ title: sxdata[sx].title, datavalue: devalue })
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+                $('#ItemData').modal('show');
+            },
+            InitWigetData: function () {
+                ComFunJS.initForm();
+                var now = new Date();
+                var month = now.getMonth() + 1;
+                var clock = "";
+                if (month < 10)
+                    clock += "0";
+                clock += month;
+                tempindex.curMonth = clock;
+
+                tempindex.GetLIST();
+            },
+            renderer: function (value) {
+
+                switch (value) {
+                    case 1:
+                        return "审批中";
+                        break;
+                    case 2:
+                        return "已通过";
+                        break;
+                    case 3:
+                        return "已驳回";
+                        break;
+                    case 4:
+                        return "已取消";
+                        break;
+                    case 6:
+                        return "通过后撤销";
+                        break;
+                    case 10:
+                        return "已支付";
+                        break;
+                    default:
+                        return "未定义";
+                }
+            },
+            gridoption: {
+                columns: [
+                        {
+                            text: '#', sortable: false, filterable: false, editable: false,
+                            groupable: false, draggable: false, resizable: false,
+                            datafield: '', columntype: 'number', width: 50,
+                            cellsrenderer: function (row, column, value) {
+                                return "<div style='margin:4px; margin-top: 15px;'>" + (value + 1) + "</div>";
+                            }
+                        },
+
+                      { text: '单号', dataField: 'sp_num' },
+
+                      { text: '审批类别', dataField: 'spname' },
+                      { text: '发起人姓名', dataField: 'apply_name' },
+                      { text: '发起人部门', dataField: 'apply_org' },
+                      { text: '审批状态', dataField: 'statusname' },
+                       {
+                           text: '操作', dataField: '1', cellsrenderer: function (row, column, value) {
+                               return "<div style='width: 100%;height: 100%;line-height: 45px;'> <a  style='margin:4px; margin-top: 15px;color:blue' onclick='tempindex.showitem(" + row + ")' >查看表单明细</a></div>";
+
+                           }
+                       }
+
+                ]
+            },
+            GetLIST: function () {
+
+                $.getJSON('/API/VIEWAPI.ashx?Action=LCSP_GETWXSHLIST', { P1: tempindex.curYear, P2: tempindex.curMonth }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        var griddata = resultData.Result.data;
+                        for (var i = 0; i < griddata.length; i++) {
+                            griddata[i].statusname = tempindex.renderer(griddata[i].sp_status);
+                        }
+                        tempindex.jldata = griddata;
+                        ComFunJS.inithighgrid(tempindex.gridoption.$model, griddata)
+                    }
+                })
+            },
+
+        })
+        //# sourceURL=WXLCTJ.js;
+    </script>
+
+
+</div>

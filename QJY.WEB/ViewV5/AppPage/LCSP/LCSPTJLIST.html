@@ -1,0 +1,144 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <title>企捷云</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="/ViewV5/CSS/icfont_qj/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <link href="/ViewV5/CSS/BootOver.css" rel="stylesheet" />
+    <style>
+        .ms-controller, .ms-important, [ms-controller], [ms-important] {
+            visibility: hidden;
+        }
+
+        .szhl_getPeoples {
+            display: none;
+        }
+    </style>
+</head>
+<body ms-controller="LCSPTJLIST">
+    <div class="pt20">
+        <!-- 表格 -->
+        <div class="default-tab ft14 pt20">
+            <table class="table table-striped table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th class="tc width-70">
+                            序号
+                        </th>
+                        <th>流程</th>
+                        <th ms-repeat-im="temColumns">{{im.TableFiledName}}</th>
+                        <th>创建人</th>
+                        <th>创建时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ms-repeat-el="tmpListData">
+                        <td class="tc">
+                            {{$index+1}}
+                        </td>
+
+                        <td>{{el.ProcessName}}</td>
+
+                        <td ms-repeat-im="temColumns">{{el[im.TableFiledName]}}</td>
+                        <td>{{ComFunJS.convertuser(el.CRUser)}}</td>
+                        <td>
+                            {{el.CRDate|date("yyyy-MM-dd")}}
+                        </td>
+                    </tr>
+
+                </tbody>
+                <tfoot>
+                    <tr ms-if="isnull">
+                        <td class="tc"></td>
+                        <td>暂无数据</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+        </div>
+
+        <div class="ui-datatable-page ft14 pl20">
+
+            <div id="pageDiv" ms-visible="tempindex.page.total>tempindex.pageNum[0].num" class="pull-right"></div>
+            <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                <span>共{{tempindex.page.total}}条记录</span>
+                <span ms-visible="tempindex.page.total>tempindex.pageNum[0].num">
+                    选择每页条数
+                    <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="tempindex.page.pagecount">
+                        <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==tempindex.page.pagecount?'selected':''">{{pg.num}}</option>
+                    </select>
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/JS/layer/extend/layer.ext.js"></script>
+    <script src="/ViewV5/JS/laypage/laypage.js"></script>
+    <script src="/ViewV5/JS/toastr.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script>
+
+        var tempindex = avalon.define({
+            $id: "LCSPTJLIST",
+            year: ComFunJS.getQueryString("year"),
+            month: ComFunJS.getQueryString("month"),
+            user: ComFunJS.getQueryString("username"),
+            id: ComFunJS.getQueryString("id"),
+            tmpListData: [],
+            temColumns:[],
+            isnull: true,
+            selNum: function (item) {    //选择显示的条数
+                tempindex.page.pagecount = item;
+                tempindex.GetLIST();
+            },
+            isnull:false,
+            page: { pageindex: 1, pagecount: 10, total: 0 }, //分页参数
+            pageNum: [{ "num": 10 }, { "num": 20 }, { "num": 30 }, { "num": 50 }, { "num": 100 }],
+            GetLIST: function () {
+                tempindex.page.pageindex = 1;
+                tempindex.tmpListData.clear();
+                $.getJSON('/API/VIEWAPI.ashx?Action=LCSP_GETLCSPTJLIST', { p: 1, pagecount: tempindex.page.pagecount, P1: tempindex.id, year: tempindex.year, month: tempindex.month, yhm: tempindex.user }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        tempindex.tmpListData = resultData.Result;
+                        tempindex.temColumns = resultData.Result2;
+                        if (tempindex.tmpListData.size() == 0) { tempindex.isnull = true; } else { tempindex.isnull = false; }
+                        tempindex.page.total = resultData.Result1;
+                        laypage({
+                            cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                            pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / tempindex.page.pagecount), //通过后台拿到的总页数
+                            curr: 1, //初始化当前页
+                            skin: 'molv',
+                            jump: function (e) { //触发分页后的回调
+                                if (e.curr != tempindex.page.pageindex) {
+                                    $.getJSON('/API/VIEWAPI.ashx?Action=LCSP_GETLCSPTJLIST', { p: e.curr, pagecount: tempindex.page.pagecount, P1: tempindex.id, year: tempindex.year, month: tempindex.month, yhm: tempindex.user }, function (resultData) {
+                                        if (resultData.ErrorMsg == "") {
+                                            tempindex.tmpListData = resultData.Result;
+                                        }
+                                    })
+                                    tempindex.page.pageindex = e.curr;
+                                }
+                            }
+                        });
+                    }
+                })
+            }
+        })
+        avalon.ready(function () {
+            tempindex.GetLIST();
+        })
+    </script>
+</body>
+
+
+</html>

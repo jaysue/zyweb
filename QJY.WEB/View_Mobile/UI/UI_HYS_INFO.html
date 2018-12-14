@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>会议室</title>
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <style type="text/css">
+        .list-block .item-content {
+            padding-left: 0.3em;
+        }
+
+        .list-block .item-title.label {
+            width: 25%;
+        }
+        .card-header p {
+            margin: 0;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body ms-controller="hysinfo">
+    <div class="page">
+        <header class="bar bar-nav">
+            <a class="button button-link button-nav pull-left back">
+                <span class="icon icon-left"></span>
+                返回
+            </a>
+            <h1 class='title'>{{modelData.Name}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block" style="margin:0px;">
+                <ul>
+                    <!-- Text inputs -->
+                    <li>
+                        <div class="item-content">
+                            <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+                            <div class="item-inner">
+                                <div class="item-title label">名称</div>
+                                <div class="item-after">
+                                    {{modelData.Name}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+                            <div class="item-inner">
+                                <div class="item-title label">位置</div>
+                                <div class="item-after">
+                                    {{modelData.Location}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+                            <div class="item-inner">
+                                <div class="item-title label">容纳人数</div>
+                                <div class="item-after">
+                                    {{modelData.RNRS}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+                            <div class="item-inner">
+                                <div class="item-title label">多媒体</div>
+                                <div class="item-after">
+                                    {{IS(modelData.IsDMT)}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <!--<div class="item-media"><i class="icon icon-form-name"></i></div>-->
+                            <div class="item-inner">
+                                <div class="item-title label">投影仪</div>
+                                <div class="item-after">
+                                    {{IS(modelData.IsTYY)}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="align-top">
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">备注</div>
+                                <div class="item-after">
+                                    {{modelData.Remark}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="align-top">
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">预订情况</div>
+                                <div class="item-after">
+                                    共 {{ydcount}} 条
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="list-container" style="margin-bottom:3rem;">
+
+                <div class="card facebook-card animated fadeInUp" ms-repeat-el="ctData">
+                    <div class="card-header no-border" >
+                        <div class="facebook-avatar">
+                            <img ms-src="{{ComFunJS.getfile()+'&type=TX&user='+el.CRUser}}" width="40" class="border-r">
+                        </div>
+                        <div class="facebook-date head-ft16"><span class="c999 ft14">{{ComFunJS.convuser(el.CRUser)}}</span></div>
+                        <div class="facebook-date">
+                            <span>{{el.Title}}</span>
+                        </div>
+                        <div class="facebook-date" >
+                            <span>{{el.StartTime|date("yyyy-MM-dd HH:mm")}} ~ {{el.EndTime|date("yyyy-MM-dd HH:mm")}}</span>
+                        </div>
+                        
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <nav class="bar bar-tab">
+            <div class="content-block" style="margin:0px;">
+                <div class="row">
+                    <div class="col-50"><a href="javascript:void(0);" style="top:0px;" onclick="window.history.back()" class="button button-big button-fill button-danger external">取消</a></div>
+                    <div class="col-50"><a href="javascript:void(0);" style="top:0px;" class="button button-big button-fill button-success external" ms-click="addhy()">新增会议</a></div>
+                </div>
+            </div>
+        </nav>
+
+    </div>
+
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>-->
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script>
+        //document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+        //    //隐藏右上角按钮
+        //    WeixinJSBridge.call('hideOptionMenu');
+        //});
+        var strId = ComFunJS.getQueryString("ID");
+        var model = avalon.define({
+            $id: "hysinfo",
+            modelData: {},
+            ctData: [],
+            ydcount: 0,
+            addhy: function () {
+                if (strId) {
+                    //window.location = "UI_HYGL_INPUT.html?rid=" + strId + "&r=" + Math.random();
+                    window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=HYGL&rid=" + strId + "&r=" + Math.random();
+                }
+            }
+        });
+        avalon.ready(function () {
+            if (strId != null) {
+                $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_GETHYSMODEL&r=' + Math.random(), { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        model.modelData = resultData.Result;
+                        model.ctData = resultData.Result1;
+                        model.ydcount = resultData.Result1.length;
+                    }
+                })
+
+            }
+        })
+        function IS(str) {
+            if (str) {
+                if (str == '0') {
+                    return '否';
+                }
+                else if (str == '1') {
+                    return '是';
+                }
+            }
+            else {
+                return '';
+            }
+        }
+    </script>
+</body>
+</html>

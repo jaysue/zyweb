@@ -1,0 +1,247 @@
+﻿<div ms-controller="XMGLLIST">
+    <!-- 添加按钮 -->
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="AddView('XMGL')"><i class="iconfont icon-jiahao ft12 mr5"></i>添加项目</button>
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">我的项目：</h5>
+            <ul class="tab-type ft14">
+                <!--<li><span class="active" ms-click="SelectType('0')">全部</span></li>-->
+                <li ms-click="SelectType('1')"><span class="active">我创建的</span></li>
+                <li ms-click="SelectType('2')"><span>我负责的</span></li>
+                <li ms-click="SelectType('3')"><span>我参与的</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">项目状态：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="ChangeType('')"><span class="active">全部</span></li>
+                <li ms-click="ChangeType('0')"><span>正在进行</span></li>
+                <li ms-click="ChangeType('1')"><span>已结束</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">项目类型：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectXJType('')"><span class="active">全部</span></li>
+                <li ms-repeat-el="TypeData" ms-click="SelectXJType(el.ID)"><span>{{el.TypeName}}</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">创建时间：</h5>
+            <ul class="tab-type ft14">
+                <li><span class="active" ms-click="SelectTime('')">全部</span></li>
+                <li ms-click="SelectTime('1')"><span>近一周</span></li>
+                <li ms-click="SelectTime('2')"><span>近一月</span></li>
+                <li ms-click="SelectTime('4')"><span>今年</span></li>
+                <li ms-click="SelectTime('5')"><span>上一年</span></li>
+                <li>
+                    <span ms-click="SelectTime('3','1')">自定义</span>
+                    <div class="pull-right ml10 zdy-text c999" ms-visible="curXJTime=='3'">
+                        <input type="text" class="szhl_form_date szhl_require null" ms-duplex="starTime">
+                        -
+                        <input type="text" class="szhl_form_date szhl_require null" ms-duplex="endTime">
+                        <input type="button" ms-click="SelectTime('3')" value="确定" style="width: 50px; background-color: #12B8F6; color: #ffffff" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+     
+        <!-- 搜索 -->
+        <div class="oh">
+            <div class="input-group ml15" style="width:295px;">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" placeholder="请输入项目名称">
+                <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+            </div>
+        </div>
+    </div>
+    <!-- 展开更多选项 -->
+    <div class="add-tab ft14 tc mt20" style="display:none;">
+        <span>更多筛选<i class="caret"></i></span>
+    </div>
+    <!-- 表格 -->
+    <div class="default-tab ft14 pt20 hover-btn">
+        <table class="table table-striped table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th class="tc">
+                        序号
+                    </th>
+                    <th ms-repeat-im="ShowColumns" ms-visible="im.IsSel">{{im.ColText}}</th>
+                    <th style="width:80px;">
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-el="tmpListData" >
+                    <td class="tc">
+                        {{$index+1+page.pagecount*(page.pageindex-1)}}
+                    </td>
+                    <td ms-repeat-im="ShowColumns" ms-class-1="lk:im.type=='link'" ms-click="View(el.ID,this)" ms-visible="im.IsSel">{{ComFunJS.FnFormat(el[im.ColName],im)|html}}</td>
+                    <td>
+                        <span class=" btn-click">
+                            <a class="cz-btn ft18 sc-color tip" data-toggle="tooltip" title="删除" ms-if="el.CRUser==userName" ms-click="DELXMGL(el,$event)">
+                                <i class="iconfont icon-shanchu"></i>
+                            </a>
+                            <a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="编辑" ms-if="el.CRUser==userName&&el.Status==0" ms-click="EditViewNOWF('XMGL',el.ID,'',$event)">
+                                <i class="iconfont icon-bianji"></i>
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+            </tfoot>
+        </table>
+        <div class="ui-datatable-page ft14 pl20">
+
+            <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+            <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                <span>共{{model.page.total}}条记录</span>
+                <span ms-visible="model.page.total>model.pageNum[0].num">
+                    选择每页条数
+                    <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                        <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                    </select>
+                </span>
+            </div>
+
+        </div>
+    </div>
+   
+</div>
+
+<script>
+
+    var tempindex = avalon.define({
+        $id: "XMGLLIST",
+        curXJType: "",
+        curXJTime: "",
+        curYear: "",
+        starTime: "",
+        endTime: "",
+        listType: "",
+        tmpListData: [],
+        SelectTime: function (type, item) {
+            tempindex.curXJTime = type;
+            if (!item) {
+                if (type == '3') {
+                    var a = (Date.parse(tempindex.starTime) - Date.parse(tempindex.endTime)) / 3600 / 1000;
+                    if (a > 0) {
+                        ComFunJS.winwarning("开始时间不能大于结束时间");
+                    } else {
+                        tempindex.GetLIST();
+                    }
+                } else {
+                    tempindex.starTime = "";
+                    tempindex.endTime = "";
+                    tempindex.GetLIST();
+                }
+            }
+        },
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        SelectXJType: function (type) {
+            tempindex.curXJType = type;
+            tempindex.GetLIST();
+        },
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        ChangeType: function (type) {
+            tempindex.listType = type;
+            tempindex.GetLIST();
+        },
+        InitWigetData: function () {
+            //显示的列名
+            model.ShowColumns.clear();
+            model.ShowColumns.pushArray([
+                { "ColName": "XMMC", "ColText": "项目名称", "IsSel": true, "format": "text", "type": "link" },
+                { "ColName": "XMFZR", "ColText": "负责人", "IsSel": true, "format": "username" },
+                { "ColName": "XMCYR", "ColText": "团队成员", "IsSel": true, "format": "username" },
+                { "ColName": "XMMS", "ColText": "项目描述", "IsSel": true, "format": "text", "len": "20" },
+                { "ColName": "EndDate", "ColText": "截止时间", "IsSel": true, "format": "dateformat" }
+            ]);
+            //类型数据
+
+            model.GetTypeData("18");
+            ComFunJS.initForm();
+
+            tempindex.GetLIST();
+        },
+        View: function (id, event) {
+            if ($(event).hasClass("lk")) {
+                ComFunJS.winviewform("/ViewV5/AppPage/XMGL/XMGLView.html?ID=" + id + "&r=" + Math.random(), "详细信息");
+            }
+        },
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=XMGL_GETXMGLDATA', {
+                p: 1,
+                P1: tempindex.listType,
+                P2: model.search.seartype,
+                pagecount: model.page.pagecount,
+                Content: model.search.searchcontent,
+                lb: tempindex.curXJType,
+                time: tempindex.curXJTime,
+                starTime: tempindex.starTime,
+                endTime: tempindex.endTime,
+                year: tempindex.curYear
+            }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempindex.tmpListData = resultData.Result;
+                    if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                    model.page.total = resultData.Result1;
+                    laypage({
+                        cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                        pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //通过后台拿到的总页数
+                        curr: 1, //初始化当前页
+                        skin: 'molv',
+                        jump: function (e) { //触发分页后的回调
+                            if (e.curr != model.page.pageindex) {
+                                $.getJSON('/API/VIEWAPI.ashx?Action=XMGL_GETXMGLDATA', {
+                                    p: e.curr,
+                                    P1: tempindex.listType,
+                                    P2: model.search.seartype,
+                                    pagecount: model.page.pagecount,
+                                    Content: model.search.searchcontent,
+                                    lb: tempindex.curXJType,
+                                    time: tempindex.curXJTime,
+                                    starTime: tempindex.starTime,
+                                    endTime: tempindex.endTime,
+                                    year: tempindex.curYear
+                                }, function (resultData) {
+                                    if (resultData.ErrorMsg == "") {
+                                        tempindex.tmpListData = resultData.Result;
+                                    }
+                                })
+                                model.page.pageindex = e.curr;
+                            }
+                        }
+                    });
+                }
+            })
+        }, DELXMGL: function (item, event) {
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            }
+            top.ComFunJS.winconfirm("确认要删除吗？", function () {
+                $.post('/API/VIEWAPI.ashx?Action=XMGL_DELXMGL', { "P2": item.ID }, function (result) {
+                    if (result.ErrorMsg == "") {
+                        top.ComFunJS.winsuccess("删除成功");
+                        tempindex.tmpListData.remove(item);
+                    }
+                })
+            })
+        },
+    })
+</script>
+

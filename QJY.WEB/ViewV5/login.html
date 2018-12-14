@@ -1,0 +1,417 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn" style="height: 100%;">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="”renderer”" content="”webkit|ie-comp|ie-stand”" />
+    <!--[if lte IE 9]>
+    <div id="warning_info" class="text-warning fade in mb_0">
+        <button data-dismiss="alert" class="close" type="button">×</button>
+        <strong>您正在使用低版本浏览器，</strong> 在本页面的显示效果可能有差异。
+        建议您升级到
+        <a href="http://www.google.cn/intl/zh-CN/chrome/" target="_blank">Chrome</a>
+        或以下浏览器：
+        <a href="www.mozilla.org/en-US/firefox/?" target="_blank">Firefox</a> /
+        <a href="http://www.apple.com.cn/safari/" target="_blank">Safari</a> /
+        <a href="http://www.opera.com/" target="_blank">Opera</a> /
+        <a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie" target="_blank">
+            Internet Explorer 10</a>
+    </div>
+    <![endif]-->
+    <!--[if lte IE 8]>
+    <script>
+    
+    </script>
+    <![endif]-->
+    <title>步步高置业移动办公</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<meta content="width=device-width, initial-scale=1.0" name="viewport">-->
+    <meta content="" name="description">
+    <meta content="" name="author">
+    <link href="/ViewV5/web/login/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="/ViewV5/web/login/uniform.default.css" rel="stylesheet" type="text/css">
+    <link href="/ViewV5/web/login/components.css" id="style_components" rel="stylesheet" type="text/css">
+    <link href="/ViewV5/web/login/css.css" rel="stylesheet" type="text/css">
+    <link href="/ViewV5/web/login/index.css" rel="stylesheet" type="text/css">
+    <style>
+        #w0-error {
+            color: red;
+            font-size: 14px;
+        }
+
+        .div-form {
+            width: 400px;
+            margin-top: 135px;
+            margin: 0 auto;
+        }
+
+            .div-form h1 {
+                font-size: 28px;
+                text-align: center;
+                font-style: normal;
+                font-weight: normal;
+                color: #ffffff;
+            }
+
+            .div-form .p-01 {
+                margin-top: 42px;
+                font-size: 16px;
+                color: #fff;
+                line-height: 44px;
+                height: 44px;
+            }
+
+            .div-form .p-02 {
+                margin-top: 5px;
+                text-align: center;
+            }
+
+            .div-form .p-03 {
+                margin-top: 70px;
+            }
+
+                .div-form .p-03 a {
+                    width: 120px;
+                    height: 50px;
+                    font-size: 20px;
+                    background: #48cfc9;
+                    display: block;
+                    margin: 0 auto;
+                    line-height: 50px;
+                    text-align: center;
+                    color: #fff;
+                }
+
+            .div-form .p-02 input {
+                border: 1px solid #80ded9;
+                background: #16c4bb;
+                width: 100%;
+                height: 50px;
+                line-height: 50px;
+                color: #fff;
+            }
+
+            .div-form .p-04 {
+                margin-top: 100px;
+                text-align: center;
+            }
+
+                .div-form .p-04 a {
+                    color: #fff;
+                    font-size: 16px;
+                }
+
+        .con-box-foot2 {
+            width: 1170px;
+            margin: 0 auto;
+            margin-top: 229px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .con-box-foot3 {
+            width: 1170px;
+            margin: 0 auto;
+            margin-top: 130px;
+            text-align: center;
+            color: #fff;
+        }
+
+        #email-error {
+            color: red;
+        }
+
+        #w0-image {
+            position: absolute;
+            top: 20px;
+            right: 0;
+            border: 0px solid #ccc;
+            width: 100px;
+            height: 50px;
+        }
+
+        .xian {
+            font-size: 20px;
+            height: 30px;
+            display: inline-block;
+            ;
+            margin-right: 10px;
+            border-left: 1px solid #ccc;
+            float: left;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body onkeypress="jptj(event)" style="height: 100%;">
+    <div class="login_nav">
+        <div class="container pad">
+            <table border="0" style="float: left">
+                <tbody>
+                    <tr>
+                        <td class="login_nav_td"><a></a></td>
+                        <td style="font-size: 28px; line-height: 36px"><span class="xian"></span>步步高置业&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+                        <td>&nbsp;</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- <div><a href="../index.html" class="login_help">帮助中心</a></div> -->
+            <div style="float: right; font-size: 18px; margin-top: 10px;">
+
+                <img src="/ViewV5/web/images/erweima.png" class="erweima">
+                <b class="sm" style="line-height: 29px;">扫描二维码关注企业号</b>
+                <div class="erweima_pic" style="display: none">
+                    <span class="sanjiao"></span>
+                    <img src="/ViewV5/images/qrcode.png" id="qyewm" style="top: 8px; position: absolute; z-index: 33333">
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="menu-toggler sidebar-toggler">
+    </div>
+
+    <div>
+        <div class="con-box" style="background-color: #43c1ef;">
+            <link href="login/ie9tips.css" rel="stylesheet" type="text/css">
+            <div id="ie9-tips" class="clearfix" style="display: none;">
+                <div id="tipsPanel">
+                    <div id="tipsDesc">系统检测到您所使用的浏览器版本较低，推荐使用ie9及以上版本浏览器，或<a href="http://www.firefox.com.cn/download/" target="_blank">Firefox</a>或<a href="http://rj.baidu.com/soft/detail/14744.html" target="_blank">Chrome</a>浏览器打开，否则将无法体验完整产品功能。</div>
+                    <a id="stopSuggestA" href="javascript:;">×</a>
+                </div>
+            </div>
+            <div class="con-box-con pad">
+                <div id="myCarousel" class="carousel slide" style="width: 500px; height: 480px; float: left">
+                    <!-- 轮播（Carousel）指标 -->
+                    <ol class="carousel-indicators">
+                        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                        <li data-target="#myCarousel" data-slide-to="1"></li>
+                        <li data-target="#myCarousel" data-slide-to="2"></li>
+                    </ol>
+                    <!-- 轮播（Carousel）项目 -->
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img src="/ViewV5/web/login/lonnew.png" alt="First slide">
+                        </div>
+                        <div class="item">
+                            <img src="/ViewV5/web/login/lg2.png" alt="Second slide">
+                        </div>
+                        <div class="item">
+                            <img src="/ViewV5/web/login/lg3.png" alt="Third slide">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="login-hu fr">
+                    <ul class="caidan clear">
+                        <li class="fl li-active" style="width: 100%">账户登录
+                        </li>
+
+                    </ul>
+                    <div class="con">
+
+                        <ul class="tabCon1">
+                            <li>
+                                <p class="text-center" style="margin-bottom: 10px;">
+                                    <span class="QYName" style="font-size: 24px; color: #ff6c00; font-weight: 600;"></span>
+                                </p>
+                                <p class="login-p" style="margin-bottom: 20px; display: none" id="qywz">
+                                    <img src="/ViewV5/web/login/ueser.png" width="13" height="15" class="user-img">
+                                    <input class="yx youxiang-no" type="text" autocomplete="off" placeholder="请输入企业域名" id="ym" name="ym" style="width: 60%" onblur="GetQYInfo(1)">
+                                    <span style="position: absolute; right: 0; height: 50px; font-family: Microsoft YaHei; line-height: 50px; color: #959595; font-size: 16px;"></span>
+                                </p>
+                                <p class="login-p">
+                                    <img src="/ViewV5/web/login/ueser.png" width="13" height="15" class="user-img">
+                                    <input class="yx youxiang-no" type="text" autocomplete="off" placeholder="请输入用户名/手机号" id="username" name="username">
+                                </p>
+                                <span class="help-block" for="username" style="color: red;"></span>
+                                <p class="login-p2">
+                                    <img src="/ViewV5/web/login/lock.png" width="13" height="15" class="user-img">
+                                    <input class="youxiang-no mm" type="password" autocomplete="off" placeholder="请输入密码" id="password" name="password">
+                                </p>
+                                <p class="login-p2">
+                                    <input class="youxiang-no mm" type="text" autocomplete="off" placeholder="请输入验证码" style="width: 60%" id="chkcode" name="chkcode">
+                                    <label style="float: right; width: 30%; height: 100%;">
+                                        <img src="/Tools/YZMCode.aspx" style="width: 100%; height: 100%; padding: 1px;" onclick="changecode(this)">
+                                    </label>
+                                </p>
+                                <span class="help-block" for="password" style="color: red;"></span>
+                                <p class="login-check" style="margin-top: 20px;">
+                                    <label class="fl rememberme check">
+                                        <input type="checkbox" id="isJZMM" checked="checked"><span style="color: #8b8b8b; font-size: 14px;">保持登录</span>
+                                    </label>
+                                    <a href="find-cold.html?type=1" class="fr findpass hidden">忘记密码？</a>
+                                </p>
+                                <p class="login-end" style="margin-top: 30px;">
+                                    <a class="uppercase">登录</a>
+                                </p>
+                                <div class="alert alert-danger msgcom" style="margin-top: 10px; margin-bottom: 0; padding: 5px; display: none">
+                                    <button class="close" data-close="alert"></button>
+                                    <span id="m_info">请输入企业域名</span>
+                                </div>
+                                <p class="login-check">
+
+                                    <!--                                    <a href="adminlogin.html" class="gl-btn">管理员登陆>></a>-->
+                                </p>
+                                <div class="create-account" style="display: none;">
+                                    <p>
+
+                                        <a href="###" id="register-btn"></a>
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="footer-login">
+            <p>高效管理从使用步步高置业云微信办公平台开始</p>
+     
+        </div>
+        <script src="/ViewV5/web/js/jquery-1.9.1.min.js"></script>
+        <script src="/ViewV5/web/login/bootstrap.min.js"></script>
+        <script src="/ViewV5/web/js/layer/layer.js"></script>
+        <script type="text/javascript">
+            $.ajaxSettings.async = false;
+            var ComID = "";
+            var SelTypeId = 0;
+            $(function () {
+
+
+                $(".uppercase").click(function (e) {
+                    if ($(this).hasClass("disabled-link")) {
+                        return;
+                    }
+                    e.preventDefault();
+                    $(".uppercase").text("正在登陆")
+                    $.getJSON('/API/WXAPI.ashx?Action=LOGIN', { "password": $("#password").val(), "UserName": $("#username").val(), "ComID": ComID, "chkcode": $("#chkcode").val() }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            setCookie('szhlcode', resultData.Result);
+                            location.href = "/ViewV5/index.html";
+                            setCookie('username', resultData.Result1, 20000);
+                            if ($("#isJZMM").prop("checked")) {
+                                setCookie('zt', "0", 20000);
+                            } else {
+                                setCookie('zt', "1", 20000);
+                            }
+
+                            $(".msgcom").hide();
+                        } else if (resultData.ErrorMsg == "-1") {
+                            $(".msgcom").show();
+                            $(".msgcom #m_info").text("请输入企业域名");
+                            $(".uppercase").text("登录")
+                            $("#qywz").show();
+
+                        } else {
+                            $(".msgcom").show();
+                            $(".msgcom #m_info").text(resultData.ErrorMsg);
+                            $(".uppercase").text("登录")
+                        }
+                    })
+                });
+            });
+            function jptj(event) {
+                if (event.keyCode == 13 || event.keyCode == 10) {
+                    $(".uppercase").trigger('click');
+                }
+            }
+            function changecode(obj) {
+                $(obj).attr("src", "/Tools/YZMCode.aspx?r=" + Math.random());
+            }
+
+            function setCookie(name, value) {
+
+                var Days = 30;
+                var exp = new Date();
+                exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+                document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString() + ";path=/";
+
+            }
+        </script>
+        <script>
+
+
+            (function () {
+
+                $('.yx').on({
+                    focus: function () {
+
+                        $(this).removeClass('youxiang-no').addClass('youxiang');
+
+                    },
+                    blur: function () {
+                        $(this).removeClass('youxiang').addClass('youxiang-no');
+
+                    }
+                })
+                $('.mm').on({
+                    focus: function () {
+                        $(this).removeClass('youxiang-no').addClass('youxiang');
+
+                    },
+                    blur: function () {
+                        $(this).removeClass('youxiang').addClass('youxiang-no');
+
+                    }
+                })
+                $('.yzm').on({
+                    focus: function () {
+                        $(this).removeClass('yzm').addClass('yzm-active');
+
+                    },
+                    blur: function () {
+                        $(this).removeClass('yzm-active').addClass('yzm');
+
+                    }
+                })
+
+            })();
+        </script>
+        <script language="javascript">
+            var isIE6 = !!navigator.userAgent.match(/MSIE 6.0/),
+                isIE7 = !!navigator.userAgent.match(/MSIE 7.0/),
+                isIE8 = !!navigator.userAgent.match(/MSIE 8.0/),
+                isIE9 = !!navigator.userAgent.match(/MSIE 9.0/),
+                isIE10 = !!navigator.userAgent.match(/MSIE 10.0/),
+                isltIe7;
+            if (isIE6 || isIE7 || isIE8) {
+                isltIe7 = true;
+            }
+
+            $(function () {
+                if (isltIe7) {
+                    $('#ie9-tips').show().find('#stopSuggestA').click(function () {
+                        $('#ie9-tips').hide();
+                    });
+                } else {
+                    $('#ie9-tips').hide();
+                }
+
+            })
+        </script>
+        <script type="text/javascript">
+            $(function () {
+                $(".sm").hover(function (e) {
+                    $(this).next().toggle();
+                });
+
+                $(".caidan li").each(function (i) {
+                    $(this).click(function () {
+                        $(this).addClass("li-active").siblings().removeClass("li-active");
+                        $(".con>ul:eq(" + i + ")").show().siblings().hide();
+                    });
+                });
+
+            });
+            $('#myCarousel').carousel({
+                interval: 5000
+            });
+        </script>
+    </div>
+
+</body>
+</html>

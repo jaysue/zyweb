@@ -1,0 +1,37 @@
+﻿
+<div style="background-color:#F8F8F8" ms-controller="WQQDVIEW">
+
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "WQQDVIEW",
+            InitWigetData: function (strId) {
+                model.title = "签到信息";
+                model.ShowColumns.pushArray(
+                [
+                { "ColName": "BranchName", "ColText": "部门", "IsSel": true },
+                { "ColName": "CRUser", "ColText": "签到人", "IsSel": true, "format": "username" },
+                { "ColName": "CRDate", "ColText": "签到时间", "IsSel": true },
+                { "ColName": "QDContent", "ColText": "签到备注", "IsSel": false, },
+                { "ColName": "Position", "ColText": "签到位置", "IsSel": true },
+                { "ColName": "HBUser", "ColText": "汇报对象", "IsSel": true, "format": "username" },
+                ]);
+
+                if (strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=WQQD_GETWQQDMODEL', { P1: strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+
+                            model.modelData = resultData.Result;
+                            model.tpData = resultData.Result1;
+
+                            model.isEdit = false;
+
+                            setTimeout(" ComFunJS.initForm()", 500)
+                        }
+                    })
+                }
+            }
+        });
+    </script>
+</div>

@@ -1,0 +1,156 @@
+﻿<div ms-controller="GJJLLIST">
+    <!-- 添加按钮 -->
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="AddView('CRM_GJJL')"><i class="iconfont icon-jiahao ft12 mr5"></i>添加跟进</button>
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">类型：</h5>
+            <ul class="tab-type ft14">
+                <!--<li><span class="active" ms-click="SelectType('0')">全部</span></li>-->
+                <li ms-click="SelectType('1')"><span class="active">我创建的</span></li>
+                <li ms-click="SelectType('2')"><span>下属跟进</span></li>
+            </ul>
+        </div>
+
+        <!-- 搜索 -->
+        <div class="oh mr20 mt20">
+            <div class="input-group ml15" style="width: 500px; float: left">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" placeholder="搜索跟进描述,跟进记录人员，客户等">
+                <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+            </div>
+        </div>
+    </div>
+    <!-- 展开更多选项 -->
+    <div class="add-tab ft14 tc mt20" style="display: none;">
+        <span>更多筛选<i class="caret"></i></span>
+    </div>
+    <!-- 表格 -->
+    <div class="default-tab ft14 pt20 table-responsive hover-btn">
+        <table class="table table-striped table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th class="tc">序号
+                    </th>
+                    <th ms-repeat-im="ShowColumns" ms-visible="im.IsSel">{{im.ColText}}</th>
+                    <th style="width: 80px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-el="tmpListData">
+                    <td class="tc">{{$index+1+page.pagecount*(page.pageindex-1)}}
+                    </td>
+                    <td ms-repeat-im="ShowColumns" ms-click="ViewFormNew('CRM_GJJL',el.ID,'',$event)" ms-class-1="lk:im.type=='link'" style="min-width: 120px;" ms-visible="im.IsSel">{{ComFunJS.FnFormat(el[im.ColName],im)|html}}</td>
+                    <td style="min-width: 100px;">
+                        <span class="btn-click">
+                            <a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="编辑" ms-if="el.CRUser==userName" ms-click="EditForm('CRM_GJJL',el.ID,'',$event)">
+                                <i class="iconfont icon-bianji"></i>
+                            </a>
+                            <a class="cz-btn ft18 sc-color tip" data-toggle="tooltip" title="删除" ms-if="el.CRUser==userName" ms-click="DELGJJL(el,$event)">
+                                <i class="iconfont icon-shanchu"></i>
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr ms-if="isnull">
+                    <td class="tc"></td>
+                    <td>暂无数据</td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="ui-datatable-page ft14 pl20">
+
+            <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+            <div class="pull-right" ms-visible="tmpListData.size()!=0">
+                <span>共{{model.page.total}}条记录</span>
+                <span ms-visible="model.page.total>model.pageNum[0].num">选择每页条数
+                    <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                        <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                    </select>
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    var tempindex = avalon.define({
+        $id: "GJJLLIST",
+        curXJType: "",
+        seartype2: "",
+        tmpListData: [],
+        TypeData1: [{ "TypeName": "电话" }, { "TypeName": "QQ" }, { "TypeName": "微信" }, { "TypeName": "拜访" }, { "TypeName": "邮件" }, { "TypeName": "短信" }, { "TypeName": "其他" }],
+        SelectFSType: function (type) {
+            tempindex.seartype2 = type;
+            tempindex.GetLIST();
+        },
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        SelectXJType: function (type) {
+            tempindex.curXJType = type;
+            tempindex.GetLIST();
+        },
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        InitWigetData: function () {
+
+            //显示的列名
+            model.ShowColumns.clear();
+            model.ShowColumns.pushArray([
+                { "ColName": "KHName", "ColText": "客户", "IsSel": true, "format": "text", "type": "link" },
+                { "ColName": "CRUser", "ColText": "跟进记录人员", "IsSel": true, "format": "username" },
+                { "ColName": "GJZT", "ColText": "状态", "IsSel": true, "format": "text" },
+                //{ "ColName": "Type", "ColText": "方式", "IsSel": true, "format": "text" },
+                { "ColName": "Details", "ColText": "描述", "IsSel": true, "format": "text", "len": "20" },
+                { "ColName": "CRDate", "ColText": "时间", "IsSel": true, "format": "dateformat" }
+            ]);
+            //类型数据
+
+            model.GetTypeData("11");
+            tempindex.GetLIST();
+        },
+        DELGJJL: function (item) {
+            top.ComFunJS.winconfirm("确认要删除吗", function () {
+                $.post('/API/VIEWAPI.ashx?Action=CRM_DELGJJL', { "P1": item.ID }, function (result) {
+                    top.ComFunJS.winsuccess("删除成功");
+                    tempindex.tmpListData.remove(item);
+
+                })
+            }, function () { })
+        },
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETGJJLLIST', { p: 1, P1: model.search.seartype, pagecount: model.page.pagecount, Content: model.search.searchcontent, lb: tempindex.curXJType, P2: tempindex.seartype2 }, function (resultData) {
+                tempindex.tmpListData = resultData.Result;
+                if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                model.page.total = resultData.Result1;
+                laypage({
+                    cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                    pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //通过后台拿到的总页数
+                    curr: 1, //初始化当前页
+                    skin: 'molv',
+                    jump: function (e) { //触发分页后的回调
+                        if (e.curr != model.page.pageindex) {
+                            $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETGJJLLIST', { p: e.curr, P1: model.search.seartype, pagecount: model.page.pagecount, Content: model.search.searchcontent, lb: tempindex.curXJType, P2: tempindex.seartype2 }, function (resultData) {
+                                tempindex.tmpListData = resultData.Result;
+                            })
+                            model.page.pageindex = e.curr;
+                        }
+                    }
+                });
+            })
+        }
+    })
+</script>

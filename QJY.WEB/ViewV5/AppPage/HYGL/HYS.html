@@ -1,0 +1,85 @@
+﻿<script>
+    var tempmodel = avalon.define({
+        $id: "HYSI",
+        name: "会议室",
+        ColumnData: [],
+        modelData: { "Name": "", "Location": "", "Files": "", "AdminUser": "", "Remark": "", "RNRS": "", "IsDMT": "", "IsTYY": "" },
+        iswf: false,//是否属于流程表单
+        inittemp: function (strId) {
+
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_GETHYSMODEL', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+
+                        tempmodel.modelData = resultData.Result;
+                        setTimeout(" ComFunJS.initForm()", 500)
+                    }
+                })
+            } else {
+                ComFunJS.initForm();
+
+            }
+        },
+        SaveData: function (callback) {
+
+            var modelValue = JSON.stringify(tempmodel.modelData.$model)
+            $.post("/API/VIEWAPI.ashx?ACTION=HYGL_ADDHYS", { P1: modelValue }, function (result) {
+                return callback.call(this,result);
+            });
+        }
+    });
+</script>
+<div class="form-horizontal" ms-controller="HYSI">
+    <div style="margin: 0 80px;">
+        <div>
+            <!--<div class="fg-item"><span>基本信息</span></div>-->
+            <ul class="clearfix" style="display: block;padding:0">
+                <li class="add-item add-width2">
+                    <label class="add-item-label"><i>*</i>会议室名称</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control szhl_require" ms-duplex="modelData.Name" />
+                    </div>
+                </li>
+                <li class="add-item add-width2">
+                    <label class="add-item-label">位置</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control" ms-duplex="modelData.Location" />
+                    </div>
+                </li>
+                <li class="add-item add-width2">
+                    <label class="add-item-label">可容纳人数</label>
+                    <div class="add-ic">
+                        <input type="text" class="form-control" ms-duplex="modelData.RNRS" />
+                    </div>
+                </li>
+                <li class="add-item add-width2">
+                    <label class="add-item-label">是否有多媒体</label>
+                    <div class="add-ic">
+                        <select class="form-control" ms-duplex="modelData.IsDMT">
+                            <option value="">请选择</option>
+                            <option value="是">是</option>
+                            <option value="否">否</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width2">
+                    <label class="add-item-label">是否有投影仪</label>
+                    <div class="add-ic">
+                        <select class="form-control" ms-duplex="modelData.IsTYY">
+                            <option value="">请选择</option>
+                            <option value="是">是</option>
+                            <option value="否">否</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">备注</label>
+                    <div class="add-ic">
+                        <textarea ms-duplex="modelData.Remark" rows="4" class="form-control"></textarea>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

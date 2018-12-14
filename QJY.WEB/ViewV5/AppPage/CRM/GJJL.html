@@ -1,0 +1,96 @@
+﻿<div class="form-horizontal" ms-controller="GJJL">
+    <div style="margin: 0 80px;">
+        <div>
+            <!--<div class="fg-item"><span>基本信息</span></div>-->
+            <ul class="clearfix" style="display: block;padding:0">
+                <li class="add-item add-width2" ms-visible="!khid">
+                    <label class="add-item-label"><i>*</i>客户</label>
+                    <div class="add-ic">
+                        <select name="conType" id="conType" ms-duplex="modelData.KHID" class="form-control szhl_require">
+                            <!--<option value="">请选择</option>-->
+                            <option ms-repeat-item="ColumnData" ms-attr-value="item.ID" ms-attr-selected="item.ID==modelData.KHID?'selected':''">{{item.KHName}}</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="add-item add-width2">
+                    <label class="add-item-label"><i>*</i>状态</label>
+                    <div class="add-ic">
+                        <select ms-duplex="modelData.Status" class="form-control">
+                            <option ms-repeat-item="ColumnData1" ms-attr-value="item.ID">{{item.TypeName}}</option>
+                        </select>
+                    </div>
+                </li>
+              
+                <li class="add-item add-width2">
+                    <label class="add-item-label"><i>*</i>描述</label>
+                    <div class="add-ic">
+                        <textarea type="text" autofocus="autofocus" ms-duplex="modelData.Details" rows="3" class="span2 form-control szhl_require"></textarea>
+                    </div>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">附件</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.Files" class="span2  szhl_Upload form-control" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    var tempmodel = avalon.define({
+        $id: "GJJL",
+        ColumnData: [],
+        ColumnData1: [],
+        name: "跟进记录",
+        iswf: false,//是否属于流程表单
+        istx: 'N',
+        khid: ComFunJS.getQueryString("khid"),
+        isTX: function (dom) {
+            if ($(dom).prop("checked")) {
+                tempmodel.modelData.IsTX = "Y";
+                tempmodel.istx = 'Y';
+            }
+            else {
+                tempmodel.modelData.IsTX = "N";
+                tempmodel.istx = 'N';
+            }
+        },
+        inittemp: function (strId) {
+            $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETALLKH', {}, function (resultData) {
+                    tempmodel.ColumnData = resultData.Result;
+                    if (tempmodel.khid) {
+                        $('#conType').attr("disabled", "disabled");
+                        tempmodel.modelData.KHID = tempmodel.khid;
+                    }
+                    else if (tempmodel.ColumnData.size() > 0) {
+                        tempmodel.modelData.KHID = tempmodel.ColumnData[0].ID;
+                    }
+            })
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETZIDIANLIST', { P1: 11 }, function (resultData) {
+                    tempmodel.ColumnData1 = resultData.Result;
+                    if (!tempmodel.modelData.Status) {
+                        tempmodel.modelData.Status = resultData.Result[0].ID
+                    };
+            })
+            if (strId) {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETGJJLMODEL', { P1: strId }, function (resultData) {
+                        tempmodel.modelData = resultData.Result;
+                        setTimeout("ComFunJS.initForm()", 500)
+
+                })
+            } else {
+          
+                ComFunJS.initForm();
+            }
+        },//初始化
+        modelData: { "KHID": "", "Status": "", "Date": "", "Details": "", "Type": "", "IsTX": "N", "TXDate": "", "Remark": "", "CYUser": "", "Files": "" },
+        SaveData: function (callback) {
+            $.post("/API/VIEWAPI.ashx?ACTION=CRM_ADDGJJL", { P1: JSON.stringify(tempmodel.modelData.$model), gjtype: "KHGL" }, function (result) {
+                return callback.call(this, result);
+            });
+        }
+    });//# sourceURL=GJJL.js;
+</script>

@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>详细信息</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.css" rel="stylesheet" />
+    <link href="/View_Mobile/CSS/szhlextend.css?ver=20160904" rel="stylesheet" />
+    <link rel="stylesheet" href="/View_Mobile/CSS/animate.css">
+    <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1476090774_8365302.css">
+    
+
+    <style>
+        #nickname {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 90%;
+        }
+
+        #activity-detail .page-content .text {
+            font-size: 16px;
+        }
+
+        .header {
+            margin-top: 10px;
+        }
+
+
+        #activity-name {
+            text-align: center;
+            color: #000;
+            font-size: 20px;
+            font-weight: 700;
+            white-space: pre-wrap;
+            word-wrap: normal;
+            word-break: normal;
+            padding-bottom: 10px;
+        }
+
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        .ui-dialog-bd {
+            padding: 10px;
+        }
+        em {
+            font-size:10px;
+        }
+    </style>
+</head>
+
+<body id="activity-detail" ms-controller="xxinfo">
+    <div class="page-group">
+        <div class="page page-current" id="pageindex1" style="overflow:auto">
+            <div id="img-content">
+                <div class="header" style="margin:0 5px;">
+                    <h1 id="activity-name" style="margin-bottom:0; border-bottom: 1px dotted #ccc; overflow: hidden; word-wrap: break-word; word-break: break-all; ">{{modelData.Title}}</h1>
+                    <p class="activity-info" style="margin:0;">
+                        <span>
+                        </span>
+                        <em id="post-date" class="activity-meta no-extra" style="font-style:normal">{{modelData.CRDate}}</em>
+                        <em class="activity-meta" style="font-style:normal">{{ComFunJS.convusers(modelData.CRUser)}}</em>
+                        <a href="javascript:viewProfile();" id="post-user" class="activity-meta"><span class="text-ellipsis"></span></a>
+                    </p>
+                </div>
+                <div id="details" class="text" style="overflow: hidden; word-wrap: break-word; word-break: break-all;  margin: 0 5px;">
+                    {{modelData.HTNR|html}}
+                </div>
+                <div class="list-block" style="margin:0;" ms-if="modelData.Files">
+                    <ul>
+                        <li class="item-content " ms-repeat-el="modelData.FileList" style="height: 60px;">
+                            <div class="item-media" style="height:40px">
+                                <img ms-on-click="viewfile(el)" class="mall_pcp" style="height:40px;width:40px" ms-if="ComFunJS.xstp(el.FileExtendName)" ms-attr-src="{{ComFunJS.getfile(el.ID)}}" />
+                                <img style="height:40px;width:40px" ms-if="!ComFunJS.xstp(el.FileExtendName)" ms-attr-src="/View_Mobile/Images/qywd/{{el.FileExtendName}}.png" onerror="javascript: this.src = '/View_Mobile/Images/qywd/file.png'" />
+                            </div>
+                            <div class="item-inner" style="height:40px">
+                                <div class="item-title" style="-webkit-box-flex: 1;" ms-on-click="viewfile(el)">{{el.Name}}.{{el.FileExtendName}}<br />{{Math.round(el.FileSize/1024)}}kb</div>
+                                <div class="item-after" style="">
+                                    <a ms-attr-href="{{ComFunJS.getfile(el.ID)}}" class="external">
+                                        <img style="height:20px;width:20px;float:right;" src="../Images/down.png" />
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <p class="page-toolbar" style="margin-bottom: 0; margin-top: 5px; margin-left: 10px;">
+                    <em class="activity-meta" style="font-style:normal;margin-left:0"><a ms-click="pl()"><i class="iconfont icon-liuyan"></i>评论({{modelData.PLList.size()}})</a></em>&nbsp;&nbsp;
+                    <em class="activity-meta" style="font-style:normal;margin-left:0"><a ms-click="zan()"><i class="iconfont icon-down"></i>赞({{modelData.ZanList.size()}})</a></em> &nbsp;&nbsp;
+                </p>
+            </div>
+            <div class="list-block media-list" style="margin: 0px;">
+                <ul>
+                    <li ms-repeat-pl="modelData.PLList">
+                        <div class="item-content">
+                            <div class="item-media" style="display:block">
+                                <img ms-src="{{ComFunJS.getfile()+'&type=TX&user='+pl.CRUser}}" style="border-radius: 3px;width:34px;height:30px" onerror="javascript: this.src = '/Upload/TX/def.jpg'">
+                                <span style="display: block; font-size: .6rem; text-align: center; color:gray">{{pl.CRUserName}}</span>
+                            </div>
+                            <div class="item-inner" style=" padding-top: .4rem;">
+                                <div class="item-title-row" style="font-size: .6rem; margin-top: 5px;">
+                                    <div class="item-title" style="color:gray">{{$.timeago(pl.CRDate)}}</div><span></span>
+                                </div>
+                                <div class="item-subtitle" style="color: #5f646e; font-size: .7rem; white-space: normal; word-wrap: break-word;">{{ComFunJS.bqhContent(pl.MSGContent)|html}}</div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script src="/View_Mobile/JS/watermark.js"></script>
+    <script>
+        //document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+        //    //隐藏右上角按钮
+        //    WeixinJSBridge.call('hideOptionMenu');
+        //});
+
+        var strId = ComFunJS.getQueryString("ID");
+
+        var model = avalon.define({
+            $id: "xxinfo",
+            modelData: {},
+            nowuser: ComFunJS.getnowuser(),
+            pl: function () {
+                ComFunJS.showCommentNew(function (result) {
+
+                    $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_ADDCOMENT&r=' + Math.random(), { "P1": result.comment, "Points": result.point, "MsgType": "TSSQ", "MsgLYID": model.modelData.ID }, function (resultData) {
+
+                        if (resultData.ErrorMsg == "") {
+                            model.modelData.PLList.push(resultData.Result);
+                            ComFunJS.winsuccess("评论成功");
+                        }
+                    })
+
+                }, false);
+            },
+            zan: function (el) {
+
+                $.getJSON('/API/VIEWAPI.ashx?Action=TSSQ_ZANHTBYID', { "P1": strId }, function (result) {
+                    if (result.ErrorMsg == "") {
+                        //ComFunJS.winsuccess("点赞成功");
+                        model.modelData.ZanList.push(result.Result);
+                        model.modelData.IsZan = "Y";
+                    } else {
+                        if (result.ErrorMsg == "del") {
+                            $(model.modelData.ZanList).each(function (inx, itm) {
+                                if (itm.CRUser == model.nowuser) {
+                                    model.modelData.ZanList.remove(itm);
+                                }
+                            })
+                            model.modelData.IsZan = "N";
+                        }
+                    }
+                })
+
+            },
+            viewfile: function (file) {
+                if (ComFunJS.isPic(file.FileExtendName)) {
+                    ComFunJS.viewbigimg(this)
+                    return;
+                }
+                if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                    window.location = file.YLUrl;
+                    return;
+                }
+            },
+            getModelData: function (strId) {
+
+                $.getJSON('/API/VIEWAPI.ashx?Action=TSSQ_GETHTLIST&r=' + Math.random(), { P1: "all", ID: strId }, function (resultData) {
+
+                    if (resultData.ErrorMsg == "") {
+                        if (resultData.Result.length > 0) {
+                            model.modelData = resultData.Result[0];
+
+
+                            //setTimeout("setwatermark()", 300);
+                        }
+                        else {
+                            window.location.replace("UI_Error.html?msg=信息不存在或已删除");
+                        }
+                    }
+                })
+            }
+        });
+        avalon.ready(function () {
+
+            model.getModelData(strId);
+
+        });
+
+        function setwatermark() {
+            var curuser = ComFunJS.convuser(ComFunJS.getCookie("username"));
+            if (curuser && model.modelData.IsSecret.toLowerCase() == "true") {
+                watermark({ watermark_txt: curuser, watermark_y: $(".header").height() + 20, watermark_page_width: $("#details").width(), watermark_page_height: $("#details").height() });
+
+            }
+        }
+    </script>
+
+</body>
+
+</html>

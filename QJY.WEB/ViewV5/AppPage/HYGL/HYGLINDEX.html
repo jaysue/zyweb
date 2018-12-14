@@ -1,0 +1,80 @@
+﻿
+<div ms-controller="HYGLINDEX">
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="AddView('HYGL')"><i class="iconfont icon-jiahao ft12 mr5"></i>添加会议</button>
+    </div>
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">会议室：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectHYS('0')"><span class="active">全部</span></li>
+                <li ms-repeat-el="TypeData" ms-click="SelectHYS(el.ID)"><span>{{el.Name}}</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="form-horizontal">
+        <div class="form-group" style="margin:0px;">
+            <div class="col-xs-12" style=" margin-top: 20px;">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    var tempindex = avalon.define({
+        $id: "HYGLINDEX",
+        nowmodel: top.model.SelModel,
+        CommonData: [],
+        curHYS: 0,
+        InitWigetData: function () {
+            $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_GETKYHYSLIST', {}, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    model.TypeData = resultData.Result;
+                }
+            })
+            tempindex.BindData();
+        },
+        BindData: function () {
+            $('#calendar').html("");
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,basicWeek'  //basicDay
+                },
+                monthNames: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+                //defaultView: "basicWeek",
+                firstDay: "1",
+                events: function (start, end, callback) {
+                    var st = $.fullCalendar.formatDate(start, "yyyy-MM-dd");
+                    var ed = $.fullCalendar.formatDate(end, "yyyy-MM-dd");
+
+                    $.getJSON("/API/VIEWAPI.ashx?action=HYGL_GETHYGLVIEW", { P1: tempindex.curHYS }, function (r) {
+                        r.Result.forEach(function (item) {
+                            var userstatus = "";
+                           
+                            item.title = "[" + ComFunJS.convertuser(item.FQUser) + "]" + item.title + "   " + userstatus;
+                        })
+                        if (r.Result.length > 0) {
+                            callback(r.Result);
+                        }
+                    })
+                },
+                eventClick: function (calEvent, jsEvent, view) {
+
+                    var id = calEvent.ID;
+                    var piid = calEvent.intProcessStanceid;
+                    top.ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=HYGL_HYGL&ID=" + id + "&PIID=" + piid + "&r=" + Math.random(), "查看数据", "1000", "");
+                }
+            });
+        },
+        SelectHYS: function (ID) {
+            tempindex.curHYS = ID;
+            tempindex.BindData();
+        }
+    });
+</script>
+

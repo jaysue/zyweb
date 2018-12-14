@@ -1,0 +1,85 @@
+﻿<style>
+    #tab.table > thead > tr > th, #tab.table > tbody > tr > th, #tab.table > tfoot > tr > th, #tab.table > thead > tr > td, #tab.table > tbody > tr > td, #tab.table > tfoot > tr > td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .default-tab input, .default-tab select {
+        border: none;
+        box-shadow: none !important;
+    }
+</style>
+<div ms-controller="JFBXVIEW">
+    <div class="detail-item" style="margin-bottom:10px;">
+        <span class="item-tit">消费记录</span>
+    </div>
+    <div class="detail-item" style="padding-left:0px;">
+        <table class="table table-hover table-bordered" id="tab">
+            <thead style="background:#f7f7f7;">
+                <tr>
+                    <th width="100px">消费类型</th>
+                    <th width="110px">金额(元)</th>
+                    <th width="110px">时间</th>
+                    <th width="100px">是否有票</th>
+                    <th width="300px">事由</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-item="JFBXJLData">
+                    <td>{{item.TypeName}}</td>
+                    <td>{{item.BXJE}}</td>
+                    <td>{{item.BXDate|date('yyyy-MM-dd')}}</td>
+                    <td>{{item.IsHasFP==1?"是":"否"}}</td>
+                    <td style="word-break:break-all">{{item.BXContent}}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        合计：
+                    </td>
+                    <td>{{modelData.BXZJE}}(元)</td>
+                    <td colspan="4"></td>
+
+                </tr>
+
+            </tfoot>
+        </table>
+    </div>
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "JFBXVIEW",
+            JFBXJLData: [],
+            InitWigetData: function (strId) {
+                model.title = "经费报销";
+                model.isExport = true;
+                model.ShowColumns.clear();
+                model.ShowColumns.pushArray(
+                [{ "ColName": "JFBXTitle", "ColText": "经费报销标题", "IsSel": true },
+                { "ColName": "ShenQingRen", "ColText": "申请人", "IsSel": true },
+                { "ColName": "BranchName", "ColText": "申请部门", "IsSel": true },
+                { "ColName": "XMMC", "ColText": "关联项目", "IsSel": true },
+                { "ColName": "BXDate", "ColText": "报销日期", "IsSel": true, "format": "dateformat" },
+                { "ColName": "BXContent", "ColText": "描述", "IsSel": true },
+                { "ColName": "CRDate", "ColText": "申请日期", "IsSel": true, "format": "dateformat" },
+                ]);
+
+                if (strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=JFBX_GETJFBXMODEL', { P1: strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            if (resultData.Result3) {
+                                resultData.Result.XMMC = resultData.Result3.XMMC;
+                            }
+                            model.modelData = resultData.Result;
+                            model.tpData = resultData.Result2;
+                            tempindex.JFBXJLData = resultData.Result1;
+                            setTimeout(" ComFunJS.initForm()", 500)
+                        }
+                    })
+                }
+            }
+        });
+    </script>
+</div>

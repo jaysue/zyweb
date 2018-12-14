@@ -1,0 +1,288 @@
+﻿<div ms-controller="HTGLLIST">
+    <!-- 添加按钮 -->
+    <div class="btn-add">
+        <button type="button" class="btn btn-info btn-lg" ms-click="AddView('CRM_HTGL')"><i class="iconfont icon-jiahao ft12 mr5"></i>添加合同</button>
+        <button type="button" class="btn btn-info btn-lg" ms-click="drHT()"><i class="iconfont icon-dr ft12  mr5"></i>导入</button>
+        <a class="btn btn-info btn-lg" ms-click="dcHT()"><i class="iconfont icon-dc ft12  mr5"></i>导出</a>
+    </div>
+    <!-- 按条件选择 -->
+    <div class="tab-filter-type">
+        <div class="oh">
+            <h5 class="pull-left tr">类型：</h5>
+            <ul class="tab-type ft14">
+                <!--<li><span class="active" ms-click="SelectType('0')">全部</span></li>-->
+                <li ms-click="SelectType('1')"><span class="active">我创建的</span></li>
+                <li ms-click="SelectType('2')"><span>下属合同</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">合同类型：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectHTType('')"><span class="active">全部</span></li>
+                <li ms-repeat-el="TypeData" ms-click="SelectHTType(el.ID)"><span>{{el.TypeName}}</span></li>
+            </ul>
+        </div>        
+     
+        <div class="oh">
+            <h5 class="pull-left tr">合同状态：</h5>
+            <ul class="tab-type ft14">
+                <li ms-click="SelectHTType1('2','')"><span class="active">全部</span></li>
+                <li ms-repeat-el="TypeData2" ms-click="SelectHTType1('2',el.ID)"><span>{{el.TypeName}}</span></li>
+            </ul>
+        </div>
+        <div class="oh">
+            <h5 class="pull-left tr">创建时间：</h5>
+            <ul class="tab-type ft14">
+                <li><span class="active" ms-click="SelectTime('')">全部</span></li>
+                <li ms-click="SelectTime('1')"><span>近一周</span></li>
+                <li ms-click="SelectTime('2')"><span>近一月</span></li>
+                <li ms-click="SelectTime('4')"><span>今年</span></li>
+                <li ms-click="SelectTime('5')"><span>上一年</span></li>
+                <li>
+                    <span ms-click="SelectTime('3','1')">自定义</span>
+                    <div class="pull-right ml10 zdy-text c999" ms-visible="curXJTime=='3'">
+                        <input type="text" class="szhl_form_date szhl_require null" ms-duplex="starTime">
+                        -
+                        <input type="text" class="szhl_form_date szhl_require null" ms-duplex="endTime">
+                        <input type="button" ms-click="SelectTime('3')" value="确定" style="width: 50px; background-color: #12B8F6; color: #ffffff" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+      
+        <!-- 搜索 -->
+        <div class="oh mr20">
+            <div class="input-group ml15" style="width: 295px; float: left">
+                <input type="search" class="form-control" ms-duplex="search.searchcontent" placeholder="搜索合同标题">
+                <span class="input-group-addon" ms-click="GetLIST()">搜索</span>
+            </div>
+            <button type="button" class="btn btn-info pull-right mt5" data-toggle="modal" data-target="#myselfModal">自定义显示</button>
+        </div>
+    </div>
+    <!-- 展开更多选项 -->
+    <div class="add-tab ft14 tc mt20" style="display:none;">
+        <span>更多筛选<i class="caret"></i></span>
+    </div>
+    <!-- 表格 -->
+    <div class="default-tab ft14 pt20 table-responsive hover-btn">
+        <table class="table table-striped table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th class="tc">
+                     
+                        序号
+                    </th>
+                    <th ms-repeat-im="ShowColumns" ms-visible="im.IsSel">{{im.ColText}}</th>
+                    <th style="width:80px;">
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ms-repeat-el="tmpListData" >
+                    <td class="tc">
+                        {{$index+1+page.pagecount*(page.pageindex-1)}}
+                    </td>
+                    <td ms-repeat-im="ShowColumns" ms-click="View(el.ID,this)" ms-class-1="lk:im.type=='link'" style="min-width:120px;" ms-visible="im.IsSel">{{ComFunJS.FnFormat(el[im.ColName],im)|html}}</td>
+                    <td style="min-width:100px;">
+                        <span class="btn-click">
+                            <a class="cz-btn ft18 bj-color tip" data-toggle="tooltip" title="编辑" ms-if="el.CRUser==userName" ms-click="EditForm('CRM_HTGL',el.ID,'',$event)">
+                                <i class="iconfont icon-bianji"></i>
+                            </a>
+                            <a class="cz-btn ft18 sc-color tip" data-toggle="tooltip" title="删除" ms-if="el.CRUser==userName" ms-click="DELHT(el,$event)">
+                                <i class="iconfont icon-shanchu"></i>
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr ms-if="isnull"><td class="tc"></td><td>暂无数据</td></tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="ui-datatable-page ft14 pl20">
+
+        <div id="pageDiv" ms-visible="model.page.total>model.pageNum[0].num" class="pull-right"></div>
+        <div class="pull-right" ms-visible="tmpListData.size()!=0">
+            <span>共{{model.page.total}}条记录</span>
+            <span ms-visible="model.page.total>model.pageNum[0].num">
+                选择每页条数
+                <select style="height: 25px; width: 50px;" ms-change="selNum(this.value)" ms-duplex="model.page.pagecount">
+                    <option ms-repeat-pg="pageNum" ms-attr-value="pg.num" ms-attr-selected="pg.num==model.page.pagecount?'selected':''">{{pg.num}}</option>
+                </select>
+            </span>
+        </div>
+
+    </div>
+   
+</div>
+
+<script>
+
+    var tempindex = avalon.define({
+        $id: "HTGLLIST",
+        curHTType: "",
+        curHTType1: "",
+        curHTType2: "",
+        curXJTime: "",
+        curYear:"",
+        starTime: "",
+        endTime: "",
+        tmpListData:[],
+        TypeData1: [],
+        TypeData2: [{ "ID": "0", "TypeName": "未开始" }, { "ID": "1", "TypeName": "执行中" },
+            { "ID": "2", "TypeName": "成功结束" }, { "ID": "3", "TypeName": "意外终止" }],
+
+        SelectType: function (type) {
+            model.search.seartype = type;
+            tempindex.GetLIST();
+        },
+        SelectHTType: function (type) {
+            tempindex.curHTType = type;
+            tempindex.GetLIST();
+        },
+        View: function (id,event) {
+            if ($(event).hasClass("lk")) {
+                ComFunJS.winviewform("/ViewV5/AppPage/CRM/HTGLView.html?ID=" + id + "&r=" + Math.random(), "详细信息");
+            }
+        },
+        SelectHTType1: function (str, type) {
+            if (str == '1') { tempindex.curHTType1 = type; }
+            if (str == '2') { tempindex.curHTType2 = type; }
+            tempindex.GetLIST();
+        },
+        SelectTime: function (type, item) {
+            tempindex.curXJTime = type;
+            if (!item) {
+                if (type == '3') {
+                    var a = (Date.parse(tempindex.starTime) - Date.parse(tempindex.endTime)) / 3600 / 1000;
+                    if (a > 0) {
+                        ComFunJS.winwarning("开始时间不能大于结束时间");
+                    } else {
+                        tempindex.GetLIST();
+                    }
+                } else {
+                    tempindex.starTime = "";
+                    tempindex.endTime = "";
+                    tempindex.GetLIST();
+                }
+            }
+        },
+        selNum: function (item) {    //选择显示的条数
+            model.page.pagecount = item;
+            tempindex.GetLIST();
+        },
+        InitWigetData: function () {
+            //显示的列名
+            model.ShowColumns.clear();
+            model.ShowColumns.pushArray([
+                 { "ColName": "Title", "ColText": "合同标题", "IsSel": true, "format": "text", "type": "link" },
+                 { "ColName": "FZR", "ColText": "负责人", "IsSel": true, "format": "username" },
+                 { "ColName": "QYDate", "ColText": "签约时间", "IsSel": true, "format": "dateformat" },
+                 { "ColName": "KHName", "ColText": "对应客户", "IsSel": true, "format": "text" },
+                 { "ColName": "HTStatus", "ColText": "合同状态", "IsSel": true, "format": "text" },
+                { "ColName": "TypeName", "ColText": "合同类型", "IsSel": true, "format": "text" },
+                { "ColName": "Price", "ColText": "合同总金额(元)", "IsSel": true, "format": "text" },
+                { "ColName": "HTStartTime", "ColText": "合同开始时间", "IsSel": false, "format": "dateformat" },
+                { "ColName": "HTEndTime", "ColText": "合同结束时间", "IsSel": false, "format": "dateformat" },
+                 { "ColName": "Remark", "ColText": "备注", "IsSel": false, "format": "text" },
+                //{ "ColName": "FSName", "ColText": "付款方式", "IsSel": true, "format": "text" },
+                 { "ColName": "CPName", "ColText": "关联产品", "IsSel": false, "format": "text" },
+                  { "ColName": "ExpiryDate", "ColText": "有效期", "IsSel": false, "format": "dateformat" },
+                { "ColName": "FKSM", "ColText": "付款说明", "IsSel": false, "format": "text" },
+                { "ColName": "KHQYR", "ColText": "客户方签约人", "IsSel": false, "format": "text" },
+                { "ColName": "WFQYR", "ColText": "我方签约人", "IsSel": false, "format": "text" },
+                { "ColName": "HTCode", "ColText": "合同编号", "IsSel": false, "format": "text" }
+            ]);
+
+            //类型数据
+
+            model.GetTypeData("16,17", function (result) {
+                $(result).each(function (idx, ele) {
+                    if (ele.Class == '16') { model.TypeData = ele.Item; }
+                    if (ele.Class == '17') { tempindex.TypeData1 = ele.Item; }
+                })
+            });
+        
+            tempindex.GetLIST();
+            setTimeout("ComFunJS.initForm()", 500);
+        },
+        DELHT: function (item, event) {
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            }
+            top.ComFunJS.winconfirm("确认要删除吗", function () {
+                $.post('/API/VIEWAPI.ashx?Action=CRM_DELHTBYID', { "P1": item.ID }, function (result) {
+                        top.ComFunJS.winsuccess("删除成功");
+                        tempindex.tmpListData.remove(item);
+                })
+            }, function () { })
+        },
+        GetLIST: function () {
+            model.page.pageindex = 1;
+            tempindex.tmpListData.clear();
+            $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETHTLIST', {
+                p: 1,
+                P1: model.search.seartype,
+                pagecount: model.page.pagecount,
+                Content: model.search.searchcontent,
+                lb: tempindex.curHTType,
+                P2: tempindex.curHTType1 + "_" + tempindex.curHTType2,
+                time: tempindex.curXJTime,
+                starTime: tempindex.starTime,
+                endTime: tempindex.endTime,
+                year: tempindex.curYear
+            }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    tempindex.tmpListData = resultData.Result;
+                    if (tempindex.tmpListData.size() == 0) { model.isnull = true; } else { model.isnull = false; }
+                    model.page.total = resultData.Result1;
+                    laypage({
+                        cont: 'pageDiv', //容器。值支持id名、原生dom对象，jquery对象。
+                        pages: Math.ceil(parseInt(resultData.Result1) * 1.0 / model.page.pagecount), //通过后台拿到的总页数
+                        curr: 1, //初始化当前页
+                        skin: 'molv',
+                        jump: function (e) { //触发分页后的回调
+                            if (e.curr != model.page.pageindex) {
+                                $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETHTLIST', {
+                                    p: e.curr,
+                                    P1: model.search.seartype,
+                                    pagecount: model.page.pagecount,
+                                    Content: model.search.searchcontent,
+                                    lb: tempindex.curHTType,
+                                    P2: tempindex.curHTType1 + "_" + tempindex.curHTType2,
+                                    time: tempindex.curXJTime,
+                                    starTime: tempindex.starTime,
+                                    endTime: tempindex.endTime,
+                                    year: tempindex.curYear
+                                }, function (resultData) {
+                                    if (resultData.ErrorMsg == "") {
+                                        tempindex.tmpListData = resultData.Result;
+                                    }
+                                })
+                                model.page.pageindex = e.curr;
+                            }
+                        }
+                    });
+                }
+            })
+        },
+        drHT: function () {
+            top.ComFunJS.winviewform("/ViewV5/Base/APP_IMPORT.html?code=HTGL&r=" + Math.random(), "导入合同", 1000, "", function () {
+                if (tempindex) {
+                    tempindex.GetLIST();
+                }
+            })
+
+        },
+        dcHT: function () {
+            if (tempindex.tmpListData.size() > 0) {
+                $(this).attr("href", '/API/VIEWAPI.ashx?Action=CRM_EXPORTHT&P1=' + model.search.seartype + '&Content=' + model.search.searchcontent + '&lb=' + tempindex.curHTType + '&P2=' + tempindex.curHTType1 + "_" + tempindex.curHTType2 + '&time=' + tempindex.curXJTime + '&starTime=' + tempindex.starTime + '&endTime=' + tempindex.endTime);
+            }
+            else {
+                top.ComFunJS.winwarning("无数据");
+            }
+        }
+    })
+</script>

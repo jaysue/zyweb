@@ -1,0 +1,399 @@
+﻿<html class="pixel-ratio-1">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>图书库</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <!-- Google Web Fonts -->
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1476090774_8365302.css">
+    <link rel="stylesheet" type="text/css" href="/View_Mobile/CSS/add.css">
+    <link href="/View_Mobile/UI/CRM/css/reset.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/View_Mobile/UI/CRM/css/default.css">
+    <style>
+        .ms-controller, .ms-important, [ms-controller], [ms-important] {
+            visibility: hidden;
+        }
+
+        .bar-tab {
+            bottom: 0;
+            width: 100%;
+            height: 2rem;
+            padding: 0;
+            table-layout: fixed;
+        }
+
+            .bar-tab .tab-item {
+                position: relative;
+                display: table-cell;
+                width: 1%;
+                height: 2rem;
+                color: #666;
+                text-align: center;
+                vertical-align: middle;
+            }
+
+                .bar-tab .tab-item .icon ~ .tab-label {
+                    display: block;
+                    font-size: .5rem;
+                    position: relative;
+                    top: .15rem;
+                }
+
+        .icon-add3 {
+            color: #bdbcbc;
+            font-size: 28px;
+        }
+
+        .sel {
+            color: #1AAD19;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-group" ms-controller="TSLIST">
+        <div class="page page-current" id="pageindex1">
+            <div class="content native-scroll " style="padding-bottom: 2.5rem;">
+                <!-- 搜索 -->
+                <div class="search-all">
+                    <div class="searchbar">
+                        <div class="search-input">
+                            <label class="icon icon-search" for="search"></label>
+                            <input type="search" id='search' placeholder='搜索图书名称/作者' style="border-color: #fff;" ms-duplex="searstr" />
+                            <!--<span href="###" style="position:absolute;top:0;right:0;color:#ccc;" ms-click="selecttype()"><i class="iconfont icon-gavin-copy" style="font-size: 22px; color: #666; line-height: 1.4rem;"></i></span>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="list-block media-list no-margin" ms-visible="searstr">
+                    <ul class="sort_box">
+                        <li class="sort_list" ms-repeat-ts="AllTS" ms-visible="(searstr&&(ts.TSName.indexOf(searstr)!=-1||ts.auther.indexOf(searstr)!=-1))||!searstr" ms-click="chekts(ts)">
+                            <div class="item-content">
+                                <div class="item-media">
+                                    <img  ms-src="{{ComFunJS.getfile(ts.Files)}}"  onerror="javascript: this.src = '/View_Mobile/Images/book2.png'" style="width:44px;height:44px;" class="border3">
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title num_name">{{ts.TSName}}</div>
+                                    </div>
+                                    <div class="item-subtitle c999">{{el.jystatus=='0'?'':'[借阅中]'}}作者:{{ts.auther}}</div>
+                                    <div class="operation-tx" ms-if="ts.jystatus=='0'">
+                                        <a external><i class="iconfont icon-add3 " ms-class-1="sel:ts.issel" ms-click="toljy(ts)"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="group-list" ms-visible="!searstr">
+                    <div class="list-block no-margin" ms-repeat-item="TSData">
+                        <ul>
+                            <li class="item-content" ms-click="entlb(this)">
+                                <div class="item-inner">
+                                    <div class="item-title"><span class="sanjiao"></span>{{item.TypeName}}</div>
+                                    <div class="item-after">{{item.xsQty}}</div>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="showusernm" style="display:none">
+                            <div class="list-block media-list no-margin">
+                                <ul>
+                                    <li ms-repeat-el="item.Item">
+                                        <div class="item-content">
+                                            <div class="item-media" ms-click="chekuser(item)">
+                                                <img style="width:44px;height:44px;" class="border3"  ms-src="{{ComFunJS.getfile(el.Files)}}"  onerror="javascript: this.src = '/View_Mobile/Images/book2.png'">
+                                            </div>
+                                            <div class="item-inner">
+                                                <div class="item-title-row">
+                                                    <div class="item-title">{{el.TSName}}1</div>
+                                                </div>
+                                                <div class="item-subtitle c999" ms-if="el.auther">作者:{{el.auther}}</div>
+                                                <div class="operation-tx" >
+                                                    <a   ms-if="el.jystatus=='0'"><i class="iconfont icon-add3 " ms-class-1="sel:el.issel" ms-click="toljy(el)"></i></a>
+                                                    <a  ms-if="el.jystatus=='1'" style="font-size: 12px;">{{el.jystatus=='0'?'':'[借阅中]'}}<br/>{{el.dghsj}}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <nav class="bar bar-tab" style="z-index:200">
+                <div class="row">
+                    <div class="col-40" style="text-align:center;    text-align: center;height: 2rem;line-height: 2rem;font-size: 14px;">已选【{{sellen}}】</div>
+                    <div class="col-60">
+                        <a class="tab-item external active" ms-click="fqjy()" style="color: #1AAD19;">
+                            <span class="iconfont icon-add3" style="font-size:1rem;top:0;color: #1AAD19;"></span>
+                            <span class="tab-label" style=" font-size: .8rem; line-height: .8rem;">发起借阅</span>
+                        </a>
+                    </div>
+                </div>
+
+            </nav>
+        </div>
+        <div class="page" id="pageindex2">1223</div>
+    </div>
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js' charset='utf-8'></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js"></script>
+
+    <script>
+        var modeltxl = avalon.define({
+            $id: "TSLIST",
+            searstr: "",
+            entlb: function (dom) {//折叠部门
+                $(dom).parent().parent().find(".showusernm").eq(0).toggle();
+                if ($(dom).find(".sanjiao").hasClass('active')) {
+                    $(dom).find(".sanjiao").toggleClass('active');
+                }
+                else {
+                    $(dom).find(".sanjiao").toggleClass('active');
+                }
+            },
+            getseldata: function () {
+                var arrsel = [];
+                for (var i = 0; i < modeltxl.AllTS.length; i++) {
+                    if (modeltxl.AllTS[i].issel) {
+                        arrsel.push(modeltxl.AllTS[i].ID);
+                    }
+                }
+                return arrsel;
+            },
+            AllTS: [],
+            TSData: [],
+            sellen:"0",
+            show: 3,
+            xzuser: "",
+            rdm: Math.random(),
+            Temprender: function () {
+            },//组件加载完成事件
+            GetWXUser: function () {//获取用户数据接口
+                $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_GETTSLIST', {}, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        for (var i = 0; i < resultData.Result.length; i++) {
+                            for (var m = 0; m < resultData.Result[i].Item.length; m++) {
+                                resultData.Result[i].Item[m].issel = false;
+                            }
+                            modeltxl.AllTS.pushArray(resultData.Result[i].Item);
+                        }
+                        modeltxl.TSData = resultData.Result;
+
+                    }
+                })
+            },
+            chekuser: function (item) {
+                modeltxl.rdm = Math.random();
+                $.router.loadPage("#pageindex2")
+            },
+            toljy: function (el) {
+                el.issel = !el.issel;
+                for (var i = 0; i < modeltxl.AllTS.length; i++) {
+                    if (el.ID == modeltxl.AllTS[i].ID) {
+                        modeltxl.AllTS[i].issel = el.issel;
+                    }
+                }
+                modeltxl.sellen = modeltxl.getseldata().length;
+            },
+            fqjy: function () {
+                if (modeltxl.getseldata().length==0) {
+                    top.ComFunJS.winwarning("选中要借阅的图书")
+                    return;
+                }
+                var IDS = modeltxl.getseldata().join(',');
+                window.location = "/View_Mobile/UI/BASE/APP_MOBIL_WF.html?FormCode=JYGL&tsids=" + IDS + "&r=" + Math.random();
+            }
+        })
+        avalon.ready(function () {
+            modeltxl.GetWXUser();
+        })
+        //# sourceURLqytxllist.js;
+    </script>
+    <style type="text/css">
+        .search-all {
+            position: relative;
+            right: 0;
+            left: 0;
+            z-index: 10;
+            height: 2.2rem;
+            padding-right: .5rem;
+            padding-left: .5rem;
+            background-color: #efeff4;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .no-margin {
+            margin: 0;
+        }
+
+        .border3 {
+            border-radius: 3px;
+        }
+
+        .c999 {
+            color: #999;
+        }
+
+        .txl-icon {
+            color: #72b29f;
+            font-size: 1em;
+        }
+
+        .operation-tx {
+            display: inline-block;
+            position: absolute;
+            right: .85rem;
+            font-size: 1em;
+            top: 50%;
+            margin-top: -0.6em;
+        }
+
+            .operation-tx a {
+                padding: .5em .3em;
+            }
+
+        .bgfff {
+            background: #fff;
+        }
+
+        .zj-list {
+            float: left;
+            width: 20%;
+            text-align: center;
+        }
+
+        .kz {
+            overflow: hidden;
+            background: #fff;
+            padding-bottom: 1em;
+        }
+
+        .zj-list span {
+            display: block;
+            font-size: 1em;
+            margin-top: .3em;
+            color: #999;
+        }
+
+        .sanjiao {
+            width: 0;
+            height: 0;
+            border-top: .4em solid transparent;
+            border-left: .4em solid #D9D9D9;
+            border-bottom: .4em solid transparent;
+            display: inline-block;
+            margin-right: 5px;
+            padding-left: 6px;
+        }
+
+            .sanjiao.active {
+                transform: rotate(90deg);
+            }
+
+        .list-block .item-after {
+            font-size: .7em;
+        }
+
+        .left10 {
+            padding-left: 10px;
+            background: #fff;
+        }
+
+        .item-title {
+            font-size: .8em;
+        }
+
+        .list-block .item-subtitle {
+            font-size: .7em;
+            margin-top: .4em;
+        }
+
+        .list-block .item-divider, .list-block .list-group-title {
+            color: #999;
+        }
+
+
+        .user-name {
+            color: #fff;
+            font-size: 1.5em;
+            line-height: 1.3rem;
+            padding-bottom: 0rem;
+        }
+
+        .user-name2 {
+            font-size: 1em;
+        }
+
+        .ftbig {
+            font-size: 1em;
+            color: #6caf9b;
+        }
+
+        #letter {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+            font-size: 75px;
+            color: #555;
+            text-align: center;
+            line-height: 100px;
+            background: rgba(145,145,145,0.6);
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            margin: -50px 0px 0px -50px;
+            z-index: 99;
+            display: none;
+        }
+
+            #letter img {
+                width: 50px;
+                height: 50px;
+                float: left;
+                margin: 25px 0px 0px 25px;
+            }
+
+        .sort_letter {
+            height: 30px;
+            line-height: 30px;
+            padding-left: 20px;
+            color: #787878;
+            font-size: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .initials {
+            position: fixed;
+            top: 2.2rem;
+            right: 0px;
+            height: 100%;
+            width: 25px;
+            /*padding-right: 10px;*/
+            text-align: center;
+            font-size: 12px;
+            z-index: 999;
+            background: rgba(145,145,145,0);
+        }
+
+            .initials li {
+                width: 25px;
+            }
+
+        .list-group-title {
+            font-size: .5rem;
+        }
+    </style>
+</body>
+</html>

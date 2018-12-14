@@ -1,0 +1,56 @@
+﻿<style>
+    #tab.table > thead > tr > th, #tab.table > tbody > tr > th, #tab.table > tfoot > tr > th, #tab.table > thead > tr > td, #tab.table > tbody > tr > td, #tab.table > tfoot > tr > td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .default-tab input, .default-tab select {
+        border: none;
+        box-shadow: none !important;
+    }
+</style>
+<div style="background-color:#F8F8F8" ms-controller="TSGLVIEW">
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "TSGLVIEW",
+            PCode: "JYGL",
+            jyzt: function (jystatus) {
+                return jystatus == '0' ? "可借阅" : "借阅中"
+            },
+            JYJLData:[],
+            InitWigetData: function (strId) {
+                model.title = "图书";
+                model.ShowColumns.pushArray(
+                [{ ColName: "TSNum", ColText: "图书编码", IsSel: true },
+                      { ColName: "TypeName", ColText: "图书类型", IsSel: true, },
+                      { ColName: "TSName", ColText: "图书名称", IsSel: true, },
+                      { ColName: "BuyDate", ColText: "购买年月", IsSel: true, },
+                      { ColName: "Price", ColText: "购买价格(元)", IsSel: true },
+                      { ColName: "authe", ColText: "作者", IsSel: true, },
+                      { ColName: "cbs", ColText: "出版社", IsSel: true, },
+                      { ColName: "bc", ColText: "版次", IsSel: true, },
+                      { ColName: "SL", ColText: "在馆数量", IsSel: true, },
+                      { ColName: "Status", ColText: "图书状态", IsSel: true, format: "zt" },
+                      { ColName: "jystatus", ColText: "借阅状态", IsSel: true, format: tempindex.jyzt }
+
+                ]);
+
+                if (strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=JYGL_GETTSINFO', { P1: model.strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            model.modelData = resultData.Result;
+                            model.tpData = resultData.Result4;
+                            setTimeout(" ComFunJS.initForm()", 500);
+
+                            
+                        }
+                    })
+                }
+            }
+        });
+        avalon.ready(function () {
+        })
+    </script>
+</div>

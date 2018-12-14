@@ -1,0 +1,45 @@
+﻿
+<div style="background-color:#F8F8F8" ms-controller="CCXJVIEW">
+
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "CCXJVIEW",
+            PCode:"CRM",
+            InitWigetData: function (strId) {
+                model.title = "联系人";
+                model.ShowColumns.pushArray(
+                [{ ColName: "UserXM", ColText: "姓名", IsSel: true, "class": "width50" },
+                          { ColName: "KHName", ColText: "对应客户", IsSel: true, "class": "width50" },
+                          { ColName: "UserSex", ColText: "性别", IsSel: true, "class": "width50" },
+                          { ColName: "TelePhone", ColText: "手机", IsSel: true, "class": "width50" },
+                          { ColName: "MobilePhone", ColText: "电话", IsSel: true, "class": "width50" },
+                          { ColName: "Extension", ColText: "分机", IsSel: true, "class": "width50" },
+                          { ColName: "FixNo", ColText: "传真", IsSel: true, "class": "width50" },
+                          { ColName: "QQ", ColText: "QQ", IsSel: false, "class": "width50" },
+                          { ColName: "Weixin", ColText: "微信", IsSel: false, "class": "width50" },
+                          { ColName: "Education", ColText: "学历", IsSel: false, "class": "width50" },
+                          { ColName: "Company", ColText: "公司", IsSel: false, "class": "width50" },
+                          { ColName: "Department", ColText: "部门", IsSel: false, "class": "width50" },
+                          { ColName: "Position", ColText: "职位", IsSel: false, "class": "width50" },
+                          { ColName: "EMail", ColText: "邮箱", IsSel: true, "class": "width50" },
+                          { ColName: "WebSite", ColText: "网址", IsSel: false, "class": "width50" },
+                          { ColName: "Address", ColText: "地址", IsSel: false, "class": "width50" },
+                          { ColName: "PostCode", ColText: "邮编", IsSel: false, "class": "width50" },
+                          { ColName: "Birthday", ColText: "生日", IsSel: false, format: "dateformat", "class": "width50" },
+                          { ColName: "Remark", ColText: "备注", IsSel: false, "class": "width50" }
+                ]);
+
+                if (model.strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETKHLXRLIST', { P1: "all", ID: model.strId }, function (resultData) {
+                            model.modelData=resultData.Result[0];
+                            model.tpData = resultData.Result[0].FileList;
+                            setTimeout(" ComFunJS.initForm()", 500);
+                    })
+                }
+            }
+        });
+
+    </script>
+</div>

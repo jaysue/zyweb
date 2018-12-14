@@ -1,0 +1,120 @@
+﻿
+<style>
+    .user-name {
+        color: #fff;
+        font-size: 1.5em;
+        line-height: 1.3rem;
+        padding-bottom: 0rem;
+    }
+
+    .user-name2 {
+        font-size: 1em;
+    }
+
+    .item-title {
+        font-size: .7em;
+    }
+
+    .ftbig {
+        font-size: 1em;
+        color: #6caf9b;
+    }
+</style>
+<!--</head>
+<body>-->
+<div class="page-group" ms-controller="TXLUSERINFO">
+    <div class="page page-current" id="pageindex1">
+        <div class="content" style="padding-bottom:3em;">
+            <section class="user-kh">
+                <div class="head-kh">
+                    <div class="kh-tx">
+                        <span><img ms-attr-src="{{ComFunJS.getfile()+'&type=TX&user='+UserModel.UserName}}"></span>
+                    </div>
+                    <h3 class="user-name">{{UserModel.UserRealName}}</h3>
+                    <h3 class="user-name2 user-name" style="margin-bottom:10px;">{{UserModel.zhiwu}}</h3>
+                    <div class="msg-kh">
+                        <ul class="clearfix user-msg">
+                            <li>
+                                <a ms-attr-href="'tel:'+UserModel.mobphone" external><i class="iconfont icon-dianhua txl-icon"></i></a>
+                            </li>
+                            <li class="bk">
+                                <!--<a ms-attr-href="javascript:ComFunJS.openEntChat('{{UserModel.UserName}}')" external class="openwxchat"><i class="iconfont icon-weixin txl-icon"></i></a>-->
+                            </li>
+                            <li>
+                                <a ms-attr-href="'sms:'+UserModel.mobphone" external><i class="iconfont icon-duanxin txl-icon"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <div class="list-block nomargin">
+                <ul>
+                    <li class="item-content" ms-if="UserModel.mobphone">
+                        <div class="item-media"><i class="iconfont icon-iphone ftbig"></i></div>
+                        <a class="item-inner" ms-attr-href="'tel:'+UserModel.mobphone" external>
+                            <div class="item-title">{{UserModel.mobphone}}</div>
+                        </a>
+                    </li>
+                    <li class="item-content" ms-if="UserModel.telphone">
+                        <div class="item-media"><i class="iconfont icon-zuoji ftbig"></i></div>
+                        <a class="item-inner" ms-attr-href="'tel:'+UserModel.telphone" external>
+                            <div class="item-title">{{UserModel.telphone}}</div>
+                        </a>
+                    </li>
+                    <li class="item-content" ms-if="UserModel.RoomCode">
+                        <div class="item-media"><i class="iconfont icon-home ftbig"></i></div>
+                        <div class="item-inner">
+                            <div class="item-title">{{UserModel.RoomCode}}</div>
+                        </div>
+                    </li>
+                    <li class="item-content" ms-if="UserModel.mailbox">
+                        <div class="item-media"><i class="iconfont icon-youxiangdizhi ftbig"></i></div>
+                        <div class="item-inner">
+                            <div class="item-title">{{UserModel.mailbox}}</div>
+                        </div>
+                    </li>
+                    <li class="item-content" ms-if="UserModel.zhiwu">
+                        <div class="item-media"><i class="iconfont icon-zhiwei ftbig"></i></div>
+                        <div class="item-inner">
+                            <div class="item-title">{{UserModel.zhiwu}}</div>
+                        </div>
+                    </li>
+                    <li class="item-content" ms-if="UserModel.Usersign">
+                        <div class="item-media"><i class="iconfont icon-gangweizhize ftbig"></i></div>
+                        <div class="item-inner">
+                            <div style="font-size: .8em;">{{UserModel.Usersign}}</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var modeltxlinfo = avalon.define({
+        $id: "TXLUSERINFO",
+        UserModel: {},
+        userData: [],
+        user: ComFunJS.getQueryString("user", ""),
+        GetWXUser: function (user) {//获取用户数据接口
+            if (!user) return;
+            $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETUSERBYUSERNAME', { "P1": user }, function (resultData) {
+                if (resultData.ErrorMsg == "") {
+                    modeltxlinfo.userData = resultData.Result;
+                    modeltxlinfo.UserModel = resultData.Result.User;
+                }
+            })
+        }
+    })
+    avalon.ready(function () {
+        modeltxlinfo.GetWXUser();
+
+        //初始化微信配置
+        ComFunJS.initwxConfig();
+    })
+    //# sourceURLTXLUSERINFO.js;
+</script>
+
+<!--</body>
+</html>-->

@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>投票页面</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1473753044_842232.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+</head>
+<body ms-controller="TPJGVIEW" style="background-color: #F8F8F8; height: 100%;">
+    <div class="padding20">
+        <div class="card card3 mb20">
+            <div class="detail-nav">
+                <div class="tab-kh nav-bt">
+                    <span class="cur"><i class="iconfont icon-bookmark"></i>投票结果</span>
+                    <a onclick="history.go(-1)" class="c-default" style="float:right;margin-right:20px">返回</a>
+                </div>
+            </div>
+            <div class="padding20 ft14 c666">
+                <div class="tp-box pb20">
+                    <p class="list">发起方：{{modelData.FQF}}</p>
+                    <p class="list">发起时间：{{modelData.StartTime|date("yyyy-MM-dd HH:mm")}}</p>
+                    <p class="list">投票截止时间：{{modelData.EndTime|date("yyyy-MM-dd HH:mm")}}</p>
+                    <p class="list">{{modelData.TP_IsNM == 1?"匿名投票":"实名投票"}}，最多选择{{modelData.TP_Type}}项</p>
+                </div>
+                <div class="tp-box pb20 pt20">
+                    <p class="list pb10 mb10">{{modelData.Title|html}}</p>
+                    <div class="tp-progress" ms-repeat-item="tpcount">
+                        <div class="progress" style="width:60%;">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="60"
+                                 aria-valuemin="0" aria-valuemax="100" ms-css-width="{{tpshuliang!=0?((item.num/tpshuliang)*100):0}}%">
+                            </div>
+                            <div class="tp-title c666">
+                                {{item.OptionText}}
+                            </div>
+                            <div class="tp-title c666 ps">
+                                {{item.num}}票&nbsp;{{tpshuliang!=0?((item.num/tpshuliang)*100).toFixed(2):0}}%
+                            </div>
+                        </div>
+                        <div class="ckxq" style="display:block;" ms-if="modelData.TP_IsNM == 0 && item.num > 0"><a class=" c-default">查看详情</a></div>
+                        <div class="tp-man mt10 padding10 c999" style="width:60%;">
+                            <span ms-repeat-el="item.tpr" style="margin-right: 10px;">{{ComFunJS.convertuser(el)}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="c-default mt10">
+                    <i class="iconfont icon-rencopy"></i>{{tpResultitem}}人已经参与投票
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script type="text/javascript">
+        $(document).on("click", ".ckxq", function () {
+            $(this).next().slideToggle();
+        });
+        var strId = ComFunJS.getQueryString("ID");
+        var model = avalon.define({
+            $id: "TPJGVIEW",
+            modelData: {},
+            XXItem: [],
+            tpResultitem: "",
+            ISTP: "",
+            duoxuan: [],
+            edit: 0,
+            danxuan: "",
+            tpcount: [],
+            tpshuliang: "",
+            GETQYTP: function () {
+                //编辑加载数据
+                $.getJSON('/API/VIEWAPI.ashx?ACTION=QYHD_GETQYTPMODEL', { P1: strId, P2: "isuser" }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        model.modelData = resultData.Result;
+                        model.tpResultitem = resultData.Result2;
+                        model.ISTP = resultData.Result4;
+                        model.tpcount = resultData.Result1;
+                        model.tpshuliang = resultData.Result3;
+
+                    }
+                })
+            },
+            savetp: function () {
+
+                if (model.modelData.TP_Type == 1) {
+                    $.getJSON('/API/VIEWAPI.ashx?ACTION=QYHD_ADDTPITEM', { P1: strId, P2: model.danxuan }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            top.ComFunJS.winsuccessnew("操作成功");
+                        }
+                        else {
+                            top.ComFunJS.winwarning(resultData.ErrorMsg);
+                        }
+                    })
+                }
+                else {
+                    if (model.duoxuan.size() > model.modelData.TP_Type) {
+                        top.ComFunJS.winwarning("最多选择" + model.modelData.TP_Type + "项");
+                    }
+                    else {
+                        $.getJSON('/API/VIEWAPI.ashx?ACTION=QYHD_ADDTPITEM', { P1: strId, P2: model.duoxuan.toString() }, function (resultData) {
+                            if (resultData.ErrorMsg == "") {
+                                top.ComFunJS.winsuccessnew("操作成功");
+                            }
+                            else {
+                                top.ComFunJS.winwarning(resultData.ErrorMsg);
+                            }
+                        })
+                    }
+                }
+                model.GETQYTP();
+            }
+            , tpcountList: function () {
+                $.getJSON('/API/VIEWAPI.ashx?ACTION=QYHD_TPCOUNTLIST', { P1: strId }, function (resultData) {
+                    if (resultData.ErrorMsg == "") {
+                        model.tpcount = resultData.Result;
+                        model.tpshuliang = resultData.Result1;
+                    }
+                })
+            }, SEETPR: function (ID) {
+                if (model.modelData.TP_IsNM == 0) {
+                    $('#' + ID).slideToggle();
+                }
+            }, edittp: function () {
+                if (model.edit == 1)
+                    model.edit = 0;
+                else
+                    model.edit = 1;
+            }, editdate: function () {
+                $.post("/API/VIEWAPI.ashx?ACTION=QYHD_ADDQYHD", { P1: JSON.stringify(model.modelData.$model) }, function (resultData) {
+                    model.edittp();
+                });
+            }
+
+        });
+        avalon.ready(function () {
+            model.GETQYTP();
+            ComFunJS.initForm();
+        })
+        //@ sourceURL=TPJGVIEW.js;
+    </script>
+</body>
+
+</html>

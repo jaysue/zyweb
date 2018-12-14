@@ -1,0 +1,81 @@
+﻿
+<div style="background-color:#F8F8F8" ms-controller="RWGLVIEW">
+
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "RWGLVIEW",
+            InitWigetData: function (strId) {
+                model.title = "任务详细";
+                model.plTitle = "跟进";
+                model.ShowColumns.pushArray(
+                     [{ "ColName": "TypeName", "ColText": "任务分类", "IsSel": true, "class": "width50" },
+                      { "ColName": "RWFZR", "ColText": "负责人", "IsSel": true, "format": "username", "class": "width50" },
+                      { "ColName": "RWJZDate", "ColText": "截止日期", "IsSel": true, "format": "dateformat", "class": "width50" },
+                      //{ "ColName": "IsTX", "ColText": "完成时间当天提醒", "IsSel": true },
+                      { "ColName": "RWStatus", "ColText": "任务状态", "IsSel": true, "class": "width50" },
+                      { "ColName": "XMMC", "ColText": "关联项目", "IsSel": true, "class": "width50" },
+                      { "ColName": "RWCYR", "ColText": "参与人", "IsSel": true, "format": "username" },
+                      //{ "ColName": "KHFXRS", "ColText": "抄送人", "IsSel": true, "format": "username" },
+                      
+                      { "ColName": "RWTitle", "ColText": "任务标题", "IsSel": false },
+                      { "ColName": "RWContent", "ColText": "任务内容", "IsSel": false }
+                      
+                ]);
+
+                if (strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=RWGL_GETRWGLMODEL', { P1: strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+
+                            model.modelData = resultData.Result[0];
+                            model.tpData = resultData.Result2;
+                            model.plData = resultData.Result1;
+                            model.ispl = 'Y';
+                            if ((model.nowuser == model.modelData.CRUser || model.nowuser == model.modelData.RWFZR) && model.modelData.RWStatus == '0') {
+                                model.isEndTask = true;
+                            }
+                            if (model.modelData.CRUser == model.nowuser && model.modelData.RWStatus == '0') {
+                                model.isEdit = 'Y';
+                            } else {
+                                model.isEdit = "N";
+                            }
+                            if (model.modelData.RWStatus == "0") {
+                                if (model.modelData.RWJZDate < ComFunJS.getnowdate("yyyy-mm-dd")) {
+                                    model.modelData.RWStatus = "过期任务";
+                                } else {
+                                    model.modelData.RWStatus = "待办任务";
+                                }
+                            } else {
+                                model.modelData.RWStatus = "已办任务";
+                            }
+                          
+                          
+                            setTimeout(" ComFunJS.initForm()", 500)
+                        }
+                    })
+                }
+            },
+            EndTask: function (ID) {
+                ComFunJS.winconfirm("确认要结束任务吗？", function () {
+                    $.getJSON('/API/VIEWAPI.ashx?Action=RWGL_COMPLETERWGL', { "P1": ID, "P2": "1" }, function (result) {
+                        if (result.ErrorMsg == "") {
+                            model.isEndTask = false;
+                            model.modelData.RWStatus = "已办任务";
+                            ComFunJS.winsuccess("操作成功");
+                        }
+                    })
+                }, function () { })
+            }, SendTXMsg: function (ID) {
+                ComFunJS.winconfirm("确认要催办任务吗？", function () {
+                    $.getJSON('/API/VIEWAPI.ashx?Action=RWGL_SENDTXMSG', { "P1": ID }, function (result) {
+                        if (result.ErrorMsg == "") { 
+                            ComFunJS.winsuccess("催办消息已发送成功");
+                        }
+                    })
+                }, function () { })
+            }
+        });
+        //# sourceURLRWGLVIEW.js;
+    </script>
+</div>

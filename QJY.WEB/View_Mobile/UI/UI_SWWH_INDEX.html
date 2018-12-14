@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>办公助手</title>
+    <link rel="stylesheet" href="/View_Mobile/CSS/msui.css">
+    
+    <link href="/ViewV5/CSS/weixin/index.css" rel="stylesheet" />
+    <script src="/View_Mobile/JS/layer/layer.m.js"></script>
+    <script src="/View_Mobile/JS/ComFunJS.js?jsver=20160425"></script>
+    <script src="/View_Mobile/JS/zepto.min.js"></script>
+    <script src="/View_Mobile/JS/avalon1.47.js"></script>
+
+    <script>
+
+        var model = avalon.define({
+            $id: "index",
+            modelData: [],
+            userData: {},
+            ctData: [],
+            GetModelList: function () {
+
+                $.getJSON("/API/VIEWAPI.ashx?Action=XTGL_GETUSERINFO",{}, function (r) {
+
+                    if (r.ErrorMsg == "") {
+                        model.userData = r.Result;
+                    }
+
+                })
+            },
+            GetNews: function () {
+                $.getJSON("/API/VIEWAPI.ashx?Action=XTGL_GETXXZXIST_PAGE&r=" + Math.random(), { "p": 1, "msgTypes": "QYHD,KDGL,DCGL", "P1": 0 }, function (r) {
+                    layer.closeAll();
+                    if (r.ErrorMsg == "") {
+                        if (r.Result.length > 0) {
+                            model.ctData.pushArray(r.Result);
+                        }
+                    }
+                })
+            },
+            vieww: function (el) {
+
+                $.getJSON("/API/VIEWAPI.ashx?Action=XTGL_UPDTEREADSTATES&r=" + Math.random(), { "P1": el.ID, "s": "1" }, function (r) {
+
+                    if (r.ErrorMsg == "") {
+                        el.isRead = 1;
+                        if (el.wxLink) {
+                            window.location = el.wxLink + "&r=" + Math.random();
+                        }
+                    }
+                })
+
+            }
+        })
+
+        function tzurl(str) {
+            switch (str) {
+                case 1: window.location = '/View_Mobile/UI/UI_QYHD_LIST.html?r=' + Math.random(); break;//企业活动
+                case 2: window.location = '/View_Mobile/UI/CUSTOM/UI_KDGL_LIST.html?r=' + Math.random(); break;//请假出差
+                case 3: window.location = '/View_Mobile/UI/CUSTOM/UI_DCGL_YDLIST.html?r=' + Math.random(); break;//任务待办
+                case 4: window.location = '/View_Mobile/UI/UI_XXZX_LIST.html?r=' + Math.random() + "&msgTypes=QYHD,KDGL,DCGL"; break;//个人消息
+                default: break;
+            }
+        }
+
+        avalon.ready(function () {
+            layer.open({
+                type:2,
+                content: '加载中'
+            })
+            model.GetModelList();
+            model.GetNews();
+
+        })
+    </script>
+    <style type="text/css">
+        .ms-controller, [ms-controller] {
+            display: none;
+        }
+
+        .labMsg {
+            position: absolute;
+            margin-left: -40px;
+            margin-top: 2px;
+            padding: 0 5px;
+            width: 20px;
+            border-radius: 10px;
+            color: cornflowerblue;
+        }
+
+        .message li {
+            border-top: none;
+        }
+        .card-header {
+            font-size: 13px;
+        }
+
+        .card-content {
+            font-size: 13px;
+        }
+
+        .card-footer {
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body ms-controller="index" style="overflow-y:auto;">
+    <div style="background: #ffffff;">
+        <a href="UI_USERINFO.html">
+            <ul class="info clearfix">
+                <li class="logo"><img ms-src="{{ComFunJS.getfile(userData.QYinfo.LogoID)}}" /></li>
+                <li class="user">
+                    <p id="persion">{{userData.User.UserRealName}}</p>
+                    <p id="company">{{userData.QYinfo.QYName}}</p>
+                </li>
+                <li class="pic"><img src="/ViewV5/CSS/weixin/images/2.png" /></li>
+            </ul>
+        </a>
+    </div>
+    <div class="block">
+        <p class="named">办公助手</p>
+        <ul class="rows clearfix">
+            <li><a onclick="tzurl(1)"><img src="/ViewV5/CSS/weixin/images/12.png" /><p>企业活动</p></a></li>
+            <li><a onclick="tzurl(2)"> <img src="/ViewV5/CSS/weixin/images/9.png" /><p>快递管理</p></a></li>
+            <li><a onclick="tzurl(3)"><img src="/ViewV5/CSS/weixin/images/14.png" /><p>订餐管理</p></a></li>
+        </ul>
+    </div>
+    <!--<div class="ui-form block">
+        <p class="named">最新消息<a style="float:right;margin-right:10px;" onclick="tzurl(4)">更多</a></p>
+        <ul class="ui-list ui-border-t ui-list-link">
+            <li class="ui-border-b ui-list-info" ms-repeat-el="ctData" ms-click="vieww(el)" style="padding-top: 5px; padding-bottom: 5px; width: 100%; text-align: left;float:none;border:0;margin-left:0;padding-left:10px;">
+                <p class="ui-nowrap" style="font-size:12px"> <label class="ui-label-s">{{el.MsgType}}</label> {{el.MsgContent}}</p>
+            </li>
+        </ul>
+    </div>-->
+    <div class="block">
+        <p class="named">最新消息<a style="float:right;margin-right:10px;" onclick="tzurl(4)">更多</a></p>
+    </div>
+    <div class="list-container">
+        <div class="card" ms-repeat-el="ctData" ms-on-click="vieww(el)">
+
+            <div class="list-block">
+                <ul>
+                    <li class="item-content" style="padding:0;margin-left:0.5rem">
+                        <div class="item-inner" style="font-size:14px">
+                            <div class="item-title">【{{el.MsgType}}】 {{el.CRDate|date("yyyy-MM-dd HH:mm:ss")}}</div>
+                            <div class="item-after" ms-if="el.isRead==0"><span class="badge" style="background-color:red;color:white;">未读</span></div>
+                        </div>
+                    </li>
+                    <li class="item-content" style="padding:0;margin-left:0.5rem">
+                        <div class="item-inner" style="font-size:14px">
+                            <div class="item-title" style=" white-space: normal;">内容：{{el.MsgContent}}</div>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+        <div class="card" ms-if="ctData.size()==0">
+
+            <div class="list-block">
+                <ul>
+                    <li class="item-content" style="padding:0;margin-left:0.5rem">
+                        <div class="item-inner" style="font-size:14px">
+                            <div class="item-title">无未阅读消息</div>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

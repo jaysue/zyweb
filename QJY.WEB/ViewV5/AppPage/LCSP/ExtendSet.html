@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>企捷云</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="/ViewV5/CSS/icfont_qj/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <style>
+        .ms-controller, .ms-important, [ms-controller], [ms-important] {
+            visibility: hidden;
+        }
+    </style>
+    <script type="text/javascript" src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <!--<script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>-->
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/JS/layer/extend/layer.ext.js"></script>
+    <script src="/ViewV5/JS/laypage/laypage.js"></script>
+    <script src="/ViewV5/JS/toastr.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script>
+        $(document).on("click", ".icheckbox_square-blue", function () {
+            $(this).toggleClass("checked");
+        });
+        var processId = top.model.SelModel.PDID;
+        if (!processId || processId == -1) {
+            processId = ComFunJS.getQueryString("PDID");
+        }
+    </script>
+</head>
+<body>
+    <div ms-controller="extview">
+        <div class="default-tab ft14 pt20">
+            <table class="table table-striped table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th style="text-align:center">序号</th>
+                        <th>字段名称</th>
+                        <th>字段类型</th>
+                        <th>字段选项</th>
+                        <th>默认值</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ms-repeat-el="modelList">
+                        <td style="text-align:center">{{$index+1}}</td>
+
+                        <td>{{el.TableFiledName}}</td>
+                        <td>{{showtext(el.TableFileType)}}</td>
+                        <td>{{el.DefaultOption}}</td>
+                        <td>{{el.DefaultValue}}</td>
+                        <td>
+                            <a class="cz-btn ft18 sc-color tip" data-toggle="tooltip" title="删除" ms-click="DEL(el,$event)">
+                                <i class="iconfont icon-shanchu"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                </tbody>
+                <tfoot>
+                    <tr id="addwf" style=" border-bottom: 1px solid #ddd;">
+                        <td></td>
+                        <td><input type="text" class="form-control" ms-duplex="modelData.TableFiledName" placeholder="字段名称" maxlength="8"></td>
+                        <td>
+                            <select ms-duplex="modelData.TableFileType" class="form-control">
+                                <option value="1">单行文本</option>
+                                <option value="2">多行文本</option>
+                                <option value="3">日期</option>
+                                <option value="4">下拉列表</option>
+
+                            </select>
+
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" ms-duplex="modelData.DefaultOption" placeholder="多个选项值用英文逗号(,)隔开" />
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" ms-duplex="modelData.DefaultValue" placeholder="默认值">
+                        </td>
+                        <td>
+                            <a class="cz-btn ft18 tip" data-toggle="tooltip" title="添加" ms-click="ADD()">
+                                <i class="iconfont icon-jiahao ft14"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <script>
+
+        var tempindex = avalon.define({
+            $id: "extview",
+            //FormCode: ComFunJS.getQueryString("FormCode", "KHGL"),
+            PDID: ComFunJS.getQueryString("PDID", ""),
+            modelData: { TableName: "", TableFiledName: "", TableFileType: "1", DefaultOption: "", DefaultValue: "", PDID: ComFunJS.getQueryString("PDID", "") },
+            modelList: [],
+            InitWigetData: function () {
+                if (tempindex.PDID) {
+                    tempindex.modelData.TableName = "LCSP";
+                }
+                else{
+                    if (top.model.SelModel) {
+                        tempindex.modelData.TableName = top.model.SelModel.ModelCode;
+                    }
+                }
+
+                $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_GETEXTENDFIELD', { P1: tempindex.modelData.TableName, PDID: ComFunJS.getQueryString("PDID", "") }, function (r) {
+                    if (r.ErrorMsg == "") {
+                        tempindex.modelList = r.Result;
+                    } else {
+                        top.ComFunJS.winwarning(r.ErrorMsg);
+                    }
+                })
+            },
+            SelectType: function (FormCode) {
+                tempindex.FormCode = FormCode;
+                tempindex.modelData.TableName = FormCode;
+                tempindex.InitWigetData();
+            },
+            DEL: function (el, event) {
+                if (event.stopPropagation) {
+                    event.stopPropagation();
+                }
+                if (el) {
+                    top.ComFunJS.winconfirm("<span style='color:red'>确定要删除吗，删除之后扩展字段填写的内容会一起删除？</span>", function () {
+                        //top.ComFunJS.winconfirm("确认要删除吗，删除之后扩展字段填写的内容将丢失？", function () {
+                        $.post('/API/VIEWAPI.ashx?Action=XTGL_DELEXTENDFIELD', { P1: el.ID }, function (result) {
+                            if (result.ErrorMsg == "") {
+                                top.ComFunJS.winsuccess("删除成功");
+                                tempindex.modelList.remove(el);
+                            }
+                        })
+                    }, function () { })
+                }
+
+            },
+            ADD: function () {
+                if (tempindex.modelData.TableFiledName) {
+                    if (tempindex.modelData.TableFileType == '4' && !tempindex.modelData.DefaultOption) {
+                        top.ComFunJS.winwarning("请输入字段选项");
+                        return;
+                    }
+                    $.getJSON('/API/VIEWAPI.ashx?Action=XTGL_ADDEXTENDFIELD', { "P1": JSON.stringify(tempindex.modelData.$model) }, function (r) {
+                        if (r.ErrorMsg == "") {
+                            top.ComFunJS.winsuccess("保存成功");
+                            tempindex.modelList.push(r.Result);
+                            tempindex.modelData.TableFiledName = "";
+                            tempindex.modelData.DefaultValue = "";
+                            tempindex.modelData.DefaultOption = "";
+                            tempindex.modelData.TableFileType = "1";
+                        } else {
+                            top.ComFunJS.winwarning(r.ErrorMsg);
+                        }
+                    })
+
+                } else {
+                    top.ComFunJS.winwarning("请输入字段名称");
+                }
+            },
+            showtext: function (t) {
+                if (t == "1") {
+                    return "单行文本";
+                } else if (t == "2") {
+                    return "多行文本";
+                } else if (t == "3") {
+                    return "日期";
+                } else if (t == "4") {
+                    return "下拉列表";
+                }
+            }
+
+
+        })
+        avalon.ready(function () {
+            tempindex.InitWigetData();
+        });
+    </script>
+</body>
+</html>

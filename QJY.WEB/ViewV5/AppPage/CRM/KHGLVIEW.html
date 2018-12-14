@@ -1,0 +1,289 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>客户详情</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/ViewV5/CSS/icfont_qj/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <style>
+    </style>
+</head>
+
+<body style="background-color: #F8F8F8; height: 100%;" ms-controller="KHGLVIEW">
+    <div class="padding20">
+        <div class="card card3 mb20">
+            <div class="detail-nav">
+                <div class="tab-kh nav-bt">
+                    <span class="cur"><i class="iconfont icon-bookmark"></i>客户信息</span>
+                    <div class="pr20" style="float: right;">
+                        <button class="btn btn-info" ms-click="editKH()">编辑</button>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-con">
+                <div class="detail-item" ms-repeat-el="ShowColumns" ms-visible="modelData[el.ColName]" ms-class-1="{{el.class}}">
+                    <span class="item-tit">{{el.ColText}}</span>
+                    <div class="item-con">{{ComFunJS.FnFormat(modelData[el.ColName],el)|html}}</div>
+                </div>
+                <div class="detail-item" ms-repeat-ext="modelData.SubExt">
+                    <span class="item-tit">{{ext.TableFiledName}}</span>
+                    <div class="item-con">{{ext.ExtendDataValue}} </div>
+                </div>
+                <div class="detail-item" ms-if="tpData&&tpData.size()!=0">
+                    <span class="item-tit">附件</span>
+                    <div class="fj clearfix mt10">
+                        <div class="pull-left" ms-repeat-file="tpData">
+                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="img-rounded:ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="{{ComFunJS.getfile(file.ID)}}&width=45&height=45" ms-attr-imgyt="{{ComFunJS.getfile(file.ID)}}" style="cursor:zoom-in;border-radius:2px" />
+                            <img ms-click="viewfile(file)" style="height:45px;width:45px" ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                            <div class="fj-cont c999 ft12">
+                                <p class="word-break">{{file.Name}}.{{file.FileExtendName}}<span>({{Math.round(file.FileSize/1024)}}kb)</span></p>
+                                <p class="mt5">
+                                    <a ms-attr-href="{{file.YLUrl}}" ms-if="file.YLUrl" target="_blank">预览</a>
+                                    <a ms-attr-href="{{ComFunJS.getfile(file.ID)}}">下载</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="padding20">
+                <div class="lookright-box">
+                    <div class="menu-general ft14">
+                        <ul>
+                            <li class="active">
+                                <a>跟进记录</a>
+                            </li>
+                            <li>
+                                <a>联系人</a>
+                            </li>
+                            <li>
+                                <a>合同</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="map">
+                    <div>
+                        <div class="crm-dt clearfix nopadding pt20">
+                            <button class="btn btn-info pull-right" ms-click="addGJ()"><i class="iconfont icon-jiahao ft12 mr5"></i>添加跟进记录</button>
+                        </div>
+                        <div class="crm-dt" ms-repeat-item="modelData.GJJL">
+                            <span class="crm-yuan"></span>
+                            <div class="crm-dt-cont">
+                                <i class="bg"></i>
+                                <span class="wt"></span>
+                                <div style="margin:10px 30px;" class="c666">
+                                    <p class="c999">{{ComFunJS.convertuser(item.CRUser)}} > {{item.Type}}  {{item.GJZT}}<span class="pull-right">{{item.CRDate|date("yyyy年MM月dd日 HH:mm")}}</span></p>
+                                    <h3 class="crm-xg ft14 mt5">{{item.Details|html}}</h3>
+                                    <!--<p class="c999">{{item.GJZT}}</p>-->
+                                    <div class="fj clearfix mt10" ms-if="item.FileList&&item.FileList.size()!=0">
+                                        <div class="pull-left" ms-repeat-file="item.FileList">
+                                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="img-rounded:ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="{{ComFunJS.getfile(file.ID)}}&width=45&height=45" ms-attr-imgyt="{{ComFunJS.getfile(file.ID)}}" style="cursor:zoom-in;border-radius:2px" />
+                                            <img ms-click="viewfile(file)" style="height:45px;width:45px" ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                                            <div class="fj-cont c999 ft12">
+                                                <p class="word-break">{{file.Name}}.{{file.FileExtendName}}<span>({{Math.round(file.FileSize/1024)}}kb)</span></p>
+                                                <p class="mt5">
+                                                    <a ms-attr-href="{{file.YLUrl}}" ms-if="file.YLUrl" target="_blank">预览</a>
+                                                    <a ms-attr-href="{{ComFunJS.getfile(file.ID)}}">下载</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:none;">
+                        <div class="clearfix nopadding pt20">
+                            <button class="btn btn-info pull-right" ms-click="addLXR()"><i class="iconfont icon-jiahao ft12 mr5"></i>添加联系人</button>
+                        </div>
+
+                        <div class="card card3 mt20" ms-repeat-item="modelData.KHLXR">
+                            <div class="detail-nav">
+                                <div class="tab-kh nav-bt">
+                                    <span class="cur"><i class="iconfont icon-bookmark"></i>联系人信息</span>
+                                </div>
+                            </div>
+                            <div class="detail-con">
+                                <div class="detail-item" ms-repeat-el="LXRShowColumns" ms-visible="item[el.ColName]">
+                                    <span class="item-tit">{{el.ColText}}</span>
+                                    <div class="item-con">{{ComFunJS.FnFormat(item[el.ColName],el)|html}}</div>
+                                </div>
+                                <div class="detail-item" ms-repeat-ext="item.SubExt">
+                                    <span class="item-tit">{{ext.TableFiledName}}</span>
+                                    <div class="item-con">{{ext.ExtendDataValue}} </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:none;">
+                        <div class="clearfix nopadding pt20">
+                            <button class="btn btn-info pull-right" ms-click="addHT()"><i class="iconfont icon-jiahao ft12 mr5"></i>添加合同</button>
+                        </div>
+
+                        <div class="card card3 mt20" ms-repeat-item="modelData.KHHT">
+                            <div class="detail-nav">
+                                <div class="tab-kh nav-bt">
+                                    <span class="cur"><i class="iconfont icon-bookmark"></i>合同信息</span>
+                                </div>
+                            </div>
+                            <div class="detail-con">
+                                <div class="detail-item" ms-repeat-el="HTShowColumns" ms-visible="item[el.ColName]">
+                                    <span class="item-tit">{{el.ColText}}</span>
+                                    <div class="item-con">{{ComFunJS.FnFormat(item[el.ColName],el)|html}}</div>
+                                </div>
+                                <div class="detail-item" ms-repeat-ext="item.SubExt">
+                                    <span class="item-tit">{{ext.TableFiledName}}</span>
+                                    <div class="item-con">{{ext.ExtendDataValue}} </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/JS/layer/extend/layer.ext.js"></script>
+    <script src="/ViewV5/JS/laypage/laypage.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160915"></script>
+    <script type="text/javascript">
+        $(".padding20 .lookright-box .menu-general ul li").each(function (i) {
+            $(this).click(function () {
+                $(this).addClass("active").siblings().removeClass("active");
+                $("#map>div:eq(" + i + ")").show().siblings().hide();
+            });
+        });
+
+        var model = avalon.define({
+            $id: "KHGLVIEW",
+            modelData: {},
+            tpData: [],
+            ShowColumns: [],
+            LXRShowColumns: [],
+            HTShowColumns: [],
+            strId: ComFunJS.getQueryString("ID"),
+            addKH: function () {
+                top.ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=CRM_KHGL&r=" + Math.random(), "客户管理", "1000", "");
+            },
+            editKH: function () {
+                window.location.href = "/ViewV5/AppPage/APP_ADD_WF.html?FormCode=CRM_KHGL&id=" + model.strId;
+
+            },
+            addGJ: function () {
+                ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=CRM_GJJL&khid=" + model.strId + "&r=" + Math.random(), "跟进记录", "700", "650");
+            },
+            editGJ: function (ID) {
+                ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=CRM_GJJL&ID=" + ID + "&r=" + Math.random(), "跟进记录", "1000", "");
+            },
+            addLXR: function () {
+                ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=CRM_KHLXR&khid=" + model.strId + "&r=" + Math.random(), "联系人管理", "1000", "");
+            },
+            editLXR: function (ID) {
+                ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=CRM_KHLXR&ID=" + ID + "&r=" + Math.random(), "联系人管理", "1000", "");
+            },
+            addHT: function () {
+                ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=CRM_HTGL&khid=" + model.strId + "&r=" + Math.random(), "合同管理", "1000", "");
+            },
+            editHT: function (ID) {
+                ComFunJS.winviewform("/ViewV5/AppPage/APP_ADD_WF.html?FormCode=CRM_HTGL&ID=" + ID + "&r=" + Math.random(), "合同管理", "1000", "");
+            },
+            GetModelData: function () {
+                if (model.strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETKHGLMODEL', { P1: model.strId }, function (resultData) {
+                            if (resultData.Result.length > 0) {
+                                model.modelData = resultData.Result[0];
+                                model.tpData = resultData.Result1;
+                            }
+                            setTimeout(" ComFunJS.initForm()", 500)
+                    })
+                }
+            }
+           
+        });
+        avalon.ready(function () {
+            model.ShowColumns.clear();
+            model.ShowColumns.pushArray([
+                { "ColName": "KHName", "ColText": "客户名称", "IsSel": true, "class": "width50" },
+                { "ColName": "TypeName", "ColText": "客户类型", "IsSel": true, "class": "width50" },
+                { "ColName": "TelePhone", "ColText": "电话", "IsSel": true, "class": "width50" },
+                { "ColName": "FixNo", "ColText": "传真", "IsSel": true, "class": "width50" },
+                { "ColName": "WebSite", "ColText": "网址", "IsSel": true, "class": "width50" },
+                { "ColName": "Email", "ColText": "邮箱", "IsSel": true, "class": "width50" },
+                { "ColName": "Address", "ColText": "地区", "IsSel": true, "class": "width50" },
+                { "ColName": "PostCode", "ColText": "邮编", "IsSel": true, "class": "width50" },
+                { "ColName": "GJZT", "ColText": "跟进状态", "IsSel": true, "class": "width50" },
+                { "ColName": "KHLY", "ColText": "客户来源", "IsSel": true, "class": "width50" },
+                { "ColName": "SSHY", "ColText": "所属行业", "IsSel": true, "class": "width50" },
+                { "ColName": "RYGM", "ColText": "人员规模", "IsSel": true, "class": "width50" },
+                { "ColName": "Remark", "ColText": "备注", "IsSel": true },
+                { "ColName": "FZUser", "ColText": "负责人", "IsSel": true, "format": "username", "class": "width50" },
+                { "ColName": "CYUser", "ColText": "参与人", "IsSel": true, "format": "username", "class": "width50" }
+            ]);
+
+            model.LXRShowColumns.clear();
+            model.LXRShowColumns.pushArray([
+                { "ColName": "UserXM", "ColText": "姓名", "IsSel": true },
+                { "ColName": "KHName", "ColText": "所属客户", "IsSel": true },
+                { "ColName": "UserSex", "ColText": "性别", "IsSel": true },
+                { "ColName": "TelePhone", "ColText": "手机", "IsSel": true },
+                { "ColName": "MobilePhone", "ColText": "固话", "IsSel": true },
+                { "ColName": "EMail", "ColText": "邮箱", "IsSel": true },
+                { "ColName": "Position", "ColText": "职务", "IsSel": true },
+                { "ColName": "Extension", "ColText": "分机", "IsSel": false },
+                { "ColName": "FixNo", "ColText": "传真", "IsSel": false },
+                { "ColName": "QQ", "ColText": "QQ", "IsSel": false },
+                { "ColName": "Weixin", "ColText": "微信", "IsSel": false },
+                { "ColName": "Education", "ColText": "学历", "IsSel": false },
+                //{ "ColName": "Company", "ColText": "公司", "IsSel": false, "format": "text" },
+                { "ColName": "Department", "ColText": "部门", "IsSel": false },
+                { "ColName": "WebSite", "ColText": "网址", "IsSel": false },
+                { "ColName": "Address", "ColText": "地址", "IsSel": false },
+                { "ColName": "PostCode", "ColText": "邮编", "IsSel": false },
+                { "ColName": "Birthday", "ColText": "生日", "IsSel": false, "format": "dateformat" },
+                //{ "ColName": "Others", "ColText": "其他", "IsSel": false, "format": "text" },
+                { "ColName": "Remark", "ColText": "备注", "IsSel": false }
+            ]);
+
+            model.HTShowColumns.clear();
+            model.HTShowColumns.pushArray([
+                { "ColName": "TypeName", "ColText": "合同类型", "IsSel": true },
+                { "ColName": "Title", "ColText": "合同标题", "IsSel": true },
+                { "ColName": "KHName", "ColText": "对应客户", "IsSel": true },
+                { "ColName": "Price", "ColText": "合同总金额", "IsSel": true },
+                { "ColName": "HTStatus", "ColText": "合同状态", "IsSel": true },
+                { "ColName": "FSName", "ColText": "付款方式", "IsSel": true },
+                { "ColName": "KHQYR", "ColText": "客户方签约人", "IsSel": true },
+                { "ColName": "FZR", "ColText": "负责人", "IsSel": true, "format": "username" },
+                { "ColName": "QYDate", "ColText": "签约时间", "IsSel": true, "format": "dateformat" },
+                { "ColName": "HTStartTime", "ColText": "合同开始时间", "IsSel": false, "format": "dateformat" },
+                { "ColName": "HTEndTime", "ColText": "合同结束时间", "IsSel": false, "format": "dateformat" },
+                { "ColName": "CPName", "ColText": "关联产品", "IsSel": false },
+                { "ColName": "HTCode", "ColText": "合同编号", "IsSel": false },
+                { "ColName": "WFQYR", "ColText": "我方签约人", "IsSel": false },
+                { "ColName": "ExpiryDate", "ColText": "有效期", "IsSel": false, "format": "dateformat" },
+                { "ColName": "FKSM", "ColText": "付款说明", "IsSel": false },
+                { "ColName": "Remark", "ColText": "备注", "IsSel": false }
+            ]);
+
+            model.GetModelData();
+        })
+    </script>
+</body>
+
+</html>

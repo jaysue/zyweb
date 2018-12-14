@@ -1,0 +1,410 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>会议详情</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/ViewV5/CSS/icfont_qj/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/bootstrap3.3.5/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/animate.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/index.css">
+    <link rel="stylesheet" type="text/css" href="/ViewV5/CSS/default.css">
+    <style>
+    </style>
+</head>
+
+<body style="background-color: #F8F8F8; height: 100%;" ms-controller="HYGLVIEW">
+    <div class="padding20">
+        <div class="card card3 mb20">
+            <div class="detail-nav">
+                <div class="tab-kh nav-bt">
+                    <span class="cur"><i class="iconfont icon-bookmark"></i>会议信息</span>
+                    <div class="pr20" style="float: right;">
+                        <button class="btn btn-info" ms-if="isEdit=='Y' && nowuser==modelData.CRUser" ms-click="Edit()">编辑</button>
+
+                        <button class="btn btn-info" ms-if="ISCANCEL=='Y'||model.PIMODEL.IsCanceled == 'Y'" id="chehui">撤回到草稿箱</button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="detail-con">
+                <div class="detail-item" ms-repeat-el="ShowColumns" ms-visible="modelData[el.ColName]" ms-class-1="{{el.class}}">
+                    <span class="item-tit">{{el.ColText}}</span>
+                    <div class="item-con">{{ComFunJS.FnFormat(modelData[el.ColName],el)|html}}</div>
+                </div>
+           
+                <div class="detail-item" ms-if="tpData.size()!=0">
+                    <span class="item-tit">附件</span>
+                    <div class="fj clearfix mt10">
+                        <div class="pull-left" ms-repeat-file="tpData">
+                            <img ms-if="ComFunJS.isPic(file.FileExtendName)" ms-class="img-rounded:ComFunJS.isPic(file.FileExtendName)" ms-on-click="viewfile(file)" ms-attr-src="/ViewV5/Base/DownFile.aspx?fileId={{file.ID}}&width=45&height=45" ms-attr-imgyt="/ViewV5/Base/DownFile.aspx?fileId={{file.ID}}" style="cursor:zoom-in;border-radius:2px" />
+
+                            <img ms-click="viewfile(file)" style="height:45px;width:45px" ms-if="!ComFunJS.isPic(file.FileExtendName)" ms-attr-src="/ViewV5/images/qywd/{{file.FileExtendName}}.png" onerror="javascript: this.src = '/ViewV5/images/qywd/file.png'" />
+                            <div class="fj-cont c999 ft12">
+                                <p class="word-break">{{file.Name}}.{{file.FileExtendName}}<span>({{Math.round(file.FileSize/1024)}}kb)</span></p>
+                                <p class="mt5">
+                                    <a ms-attr-href="{{file.YLUrl}}" ms-if="file.YLUrl" target="_blank">预览</a>
+                                    <a ms-attr-href="'/ViewV5/Base/DownFile.aspx?MD5='+file.FileMD5">下载</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-item" ms-if="TASKDATA.size()!=0">
+                    <span class="item-tit">审核状态</span>
+                    <div class="item-con">{{shzt}}</div>
+                </div>
+                <div class="detail-item" ms-if="TASKDATA.size()!=0">
+                    <span class="item-tit">审核流程</span>
+                </div>
+                <div class="detail-item" style="padding:0;margin:20px 0;overflow-x:auto;" ms-if="TASKDATA.size()!=0">
+                    <div class="lcspstep"></div>
+                </div>
+            </div>
+            <div class="pl20 mb10">
+                <button class="btn btn-info" ms-if="(modelData.StateName=='已审批' ||modelData.StateName=='-1') && isxsCJQD()" ms-click="UpStatus('2')">确认参加</button>
+                <button class="btn btn-info" ms-if="(modelData.StateName=='已审批' ||modelData.StateName=='-1') && (plStatus && (plStatus.indexOf('2') != -1 || plStatus.indexOf('4') != -1) && plStatus.indexOf('3') ==-1)" ms-click="UpStatus('3')">签到</button>
+                <button class="btn btn-warning" ms-if="(modelData.StateName=='已审批' ||modelData.StateName=='-1') && isxsCJQD()" ms-click="UpHYQJ($event)">请假</button>
+                <button class="btn btn-info" ms-if="(modelData.StateName=='已审批' ||modelData.StateName=='-1') && isxsHYJL()" ms-click="hyjy()">纪要</button>
+            </div>
+
+            <div class="padding20" ms-if="modelData.StateName=='已审批' ||modelData.StateName=='-1'">
+                <div class="lookright-box">
+                    <div class="menu-general ft14">
+                        <ul>
+                            <!--<li class="active">
+                                <a>会议状况({{plData.size()}})</a>
+                            </li>-->
+                            <li class="active">
+                                <a>确认参加({{getnum('2')}})</a>
+                            </li>
+                            <li>
+                                <a>签到({{getnum('3')}})</a>
+                            </li>
+                            <li>
+                                <a>请假({{getnum('4')}})</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="crm-dt" ms-repeat-item="plData" ms-visible="modelData.pltype=='1' || item.MsgISShow==modelData.pltype">
+                        <span class="crm-yuan"></span>
+                        <div class="crm-dt-cont">
+                            <i class="bg"></i>
+                            <span class="wt"></span>
+                            <div style="margin:10px 30px;" class="c666">
+                                <p class="c999">{{ComFunJS.convertuser(item.CRUser)}} > <span ms-if="item.MsgISShow">【{{item.MSGContent}}】</span><span class="pull-right">{{item.CRDate|date("yyyy年MM月dd日 HH:mm")}}</span></p>
+                                <h3 class="crm-xg ft14 mt5" ms-if="!item.MsgISShow">{{ComFunJS.bqhContent(item.MSGContent)|html}}</h3>
+                                <h3 class="crm-xg ft14 mt5" ms-if="item.MsgISShow=='4'">{{ComFunJS.bqhContent(item.Remark)|html}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script src="/ViewV5/JS/jquery-1.11.2.min.js"></script>
+    <script src="/ViewV5/JS/layer/layer.js"></script>
+    <script src="/ViewV5/CSS/bootstrap3.3.5/js/bootstrap.js"></script>
+    <script src="/ViewV5/JS/avalon1.47.js"></script>
+    <script src="/ViewV5/JS/SZHLCommon.js?jsver=20160929"></script>
+    <script src="/ViewV5/JS/YSteps/Steps.js"></script>
+    <script type="text/javascript">
+        $(".padding20 .lookright-box .menu-general ul li").each(function (i) {
+            $(this).click(function () {
+                $(this).addClass("active").siblings().removeClass("active");
+                model.modelData.pltype = i + 2;
+            });
+        });
+
+        var model = avalon.define({
+            $id: "HYGLVIEW",
+            modelData: {},
+            ShowColumns: [],
+            tpData: [],
+            plData: [],
+            plStatus: "",
+            strId: ComFunJS.getQueryString("ID"),
+            PIID: ComFunJS.getQueryString("PIID"),//流程ID
+            PDID: ComFunJS.getQueryString("PDID"),//流程配置ID
+            lctype: ComFunJS.getQueryString("LCTYPE", "-1"),
+            PIMODEL: {},//流程数据
+            TASKDATA: [],//任务数据
+            shzt: "",
+            isEdit:"",
+            nowuser: ComFunJS.getnowuser(),
+            GetModelData: function () {
+                if (model.strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=HYGL_GETHYGLMODEL', { P1: model.strId }, function (resultData) {
+                        if (resultData.ErrorMsg == "") {
+                            if (resultData.Result.length > 0) {
+                                resultData.Result[0].pltype = "2";
+                                model.modelData = resultData.Result[0];
+                                model.tpData = resultData.Result1;
+                                model.plData = resultData.Result2;
+                                model.plStatus = resultData.Result3;
+                            }
+                            setTimeout(" ComFunJS.initForm()", 500)
+                        }
+                    })
+                }
+            },
+            Edit: function (ID) {
+                window.location.href = "/ViewV5/AppPage/APP_ADD_WF.html?FormCode=HYGL&id=" + model.modelData.ID + "&PIID=" + model.modelData.PIID + "&PDID=" + model.PDID;
+            },
+            viewfile: function (file) {
+                if (ComFunJS.isPic(file.FileExtendName)) {
+                    ComFunJS.viewbigimg(this)
+                    return;
+                }
+                if (ComFunJS.isOffice(file.FileExtendName) && file.ISYL == "Y") {
+                    window.open(file.YLUrl);
+                    return;
+                }
+            },
+            UpStatus: function (tltype) {
+                $.post("/API/VIEWAPI.ashx?Action=HYGL_UPDATEHYQK", { "P1": model.strId, "P2": tltype }, function (resultData) {
+                    if (result.ErrorMsg == "") {
+                        model.plData.push(result.Result);
+                        //model.plStatus = tltype;
+
+                        if (model.plStatus) {
+                            model.plStatus = model.plStatus + ',' + tltype;
+                        }
+                        else {
+                            model.plStatus = tltype;
+                        }
+                    }
+
+                })
+            },
+            UpHYQJ: function (event) {
+                if (event.stopPropagation) {
+                    event.stopPropagation();
+                }
+                ComFunJS.winbtnwin("/ViewV5/Base/APP_COMMENT.html?contentdec=请假事由&content=&r=" + Math.random(), "请假事由", 600, 400, {}, function (layero, inx) {
+                    var frameid = $("iframe", $(layero)).attr('id');
+                    var plnr = ComFunJS.isIE() ? window.frames[frameid].getpl() : window.frames[frameid].contentWindow.getpl();
+                    if (plnr) {
+                        $.post('/API/VIEWAPI.ashx?Action=HYGL_UPDATEHYQK&r=' + Math.random() + '&QJSY=' + plnr, { "P1": model.strId, "P2": "4" }, function (resultData) {
+                            layer.close(inx);
+                            if (resultData.ErrorMsg == "") {
+                                model.plData.push(resultData.Result);
+                                if (model.plStatus) {
+                                    model.plStatus = model.plStatus + ',4';
+                                }
+                                else {
+                                    model.plStatus = "4";
+                                }
+
+                                top.ComFunJS.winsuccess("操作成功！！");
+                            }
+                            else {
+                                top.ComFunJS.winwarning("操作失败！！");
+                            }
+                        })
+                    }
+                })
+            },
+            hyjy: function () {//记录
+
+                ComFunJS.winbtnwin("/ViewV5/Base/APP_COMMENT.html?contentdec=会议纪要&content=" + model.modelData.HYJL + "&r=" + Math.random(), "会议纪要", 600, 400, {}, function (layero, inx) {
+                    var frameid = $("iframe", $(layero)).attr('id');
+                    var plnr = ComFunJS.isIE() ? window.frames[frameid].getpl() : window.frames[frameid].contentWindow.getpl();
+                    if (plnr) {
+                        $.post('/API/VIEWAPI.ashx?Action=HYGL_UPDATEHYJL&r=' + Math.random(), { "P1": model.strId, "P2": plnr }, function (resultData) {
+                            layer.close(inx);
+                            if (resultData.ErrorMsg == "") {
+                                model.modelData.HYJL = plnr;
+                                top.ComFunJS.winsuccess("操作成功！！");
+                            }
+                            else {
+                                top.ComFunJS.winwarning("操作失败！！");
+                            }
+                        })
+                    }
+                })
+            },
+            isxsCJQD: function () {
+                var el = model.modelData;
+                var FQUserList = [];
+                var CYUserList = [];
+                var JLUserList = [];
+                var ZCUserList = [];
+                var SXUserList = [];
+                if (el.FQUser) {
+                    FQUserList = el.FQUser.split(',');
+                }
+                if (el.CYUser) {
+                    CYUserList = el.CYUser.split(',');
+                }
+                if (el.JLUser) {
+                    JLUserList = el.JLUser.split(',');
+                }
+                if (el.ZCUser) {
+                    ZCUserList = el.ZCUser.split(',');
+                }
+                if (el.SXUser) {
+                    SXUserList = el.SXUser.split(',');
+                }
+
+                if (FQUserList.indexOf(model.nowuser) != -1 || CYUserList.indexOf(model.nowuser) != -1 || JLUserList.indexOf(model.nowuser) != -1 || ZCUserList.indexOf(model.nowuser) != -1 || SXUserList.indexOf(model.nowuser) != -1) {
+
+                    if ((el.StateName == '已审批' || el.StateName == '-1') && (!model.plStatus || (model.plStatus && model.plStatus.indexOf('2') == -1 && model.plStatus.indexOf('4') == -1))) {
+                        return "Y";
+                    }
+                }
+                else {
+                    return "";
+                }
+            },
+            isxsHYJL: function () {
+                var el = model.modelData;
+                var JLUserList = [];
+                if (el.JLUser) {
+                    JLUserList = el.JLUser.split(',');
+                }
+                if (JLUserList.indexOf(model.nowuser) != -1 || el.FQUser.split(',').indexOf(model.nowuser) != -1) {
+                    return "Y";
+                }
+                else {
+                    return "";
+                }
+            },
+          
+            CancelWF: function () {//撤回表单到草稿箱
+                ComFunJS.winconfirm("确认要撤回此流程吗？", function () {
+                    $.getJSON("/API/VIEWAPI.ashx?ACTION=LCSP_CANCELWF", { P1: model.PIID, DataID: model.strId, ModelCode: "HYGL", P2: model.PIMODEL.PDID }, function (result) {
+                        if (result.ErrorMsg == "") {//流程数据
+
+                            $.post("/API/VIEWAPI.ashx?Action=HYGL_DELHY", { "P1": model.strId }, function (resultData) {
+                                if (result.ErrorMsg == "") {
+                                    model.ISCANCEL = "N";
+                                    top.ComFunJS.winconfirm("操作成功,该表单已撤回到草稿箱,是否要重新发起该表单", function () {
+
+                                        location.href = "/ViewV5/AppPage/APP_ADD_WF.html?FormCode=HYGL&PDID=" + model.PIMODEL.PDID + "&lctype=" + model.lctype;
+                                    }, function () {
+                                        top.layer.closeAll();
+                                    })
+                                }
+                            })
+
+
+                        
+                        }
+                    })
+                }, function () { })
+            },
+            getwfdata: function () {
+                $.getJSON("/API/VIEWAPI.ashx?ACTION=LCSP_GETWFDATA", { P1: model.PIID, strId: model.strId, ModelCode: model.FormCode, P2: model.PDID }, function (result) {
+                    if (result.ErrorMsg == "") {//流程数据
+                        if (result.Result) {
+                            model.PIMODEL = result.Result;
+                        }
+                        if (result.Result1)//任务数据
+                        {
+                            model.TASKDATA = result.Result1;
+                        }
+                        if (result.Result2) {//判断当前用户是否具有审批权限
+                            model.iscansp = result.Result2 == "Y";
+                        }
+                        if (result.Result3) {
+                            model.lctype = result.Result3;//流程类型
+                        }
+                        if (result.Result4) {
+                            model.isEdit = result.Result4;//是否可编辑
+                        }
+
+                        model.LoadWFData();
+                    }
+                })
+            },
+            LoadWFData: function () {
+                if (model.TASKDATA.size() > 0) {
+                    var lcspTaskData = [];
+                    var lcspTask = { title: "", content: "" }
+                    var lcspTaskm = { title: "", content: "", Date: "" };//手机流程数据
+                    var array = ["第一步", "第二步", "第三步", "第四步", "第五步", "第六步", "第七步", "第八步"];
+                    var stepCount = 0;
+                    $(model.TASKDATA).each(function (i, item) {
+                        var reason = "";
+                        if (model.PIMODEL.IsCanceled == 'Y') {
+                            reason = item.EndTime && item.TaskUserView ? "[" + item.TaskUserView + "]\r\n" : "";
+                        } else {
+                            reason = item.EndTime && item.TaskUserView ? "[" + item.TaskUserView + "]\r\n" : "待处理"
+                        }
+
+                        lcspTask.title = (model.lctype == 1 ? (item.TaskName ? item.TaskName : '发起表单') : array[i]) + (model.lctype == 1 && item.TaskAssInfo ? "(" + item.TaskAssInfo + ")" : (item.TaskRole ? "(" + item.TaskRole + ")" : ""));
+                        lcspTask.content = item.userrealname + reason + (item.EndTime ? item.EndTime : "");
+                        stepCount += item.EndTime ? 1 : 0;
+                        var itemData = $.extend({}, lcspTask);
+                        lcspTaskData.push(itemData);
+
+                    })
+
+                    $(".lcspstep").loadStep({
+                        size: "large",
+                        color: "green",
+                        steps: lcspTaskData
+
+                    });
+                    $(".lcspstep").setStep(stepCount);
+
+                    model.shzt = "正在审批";
+                    if (model.PIMODEL.IsCanceled == 'Y') {
+                        var dom;
+                        if (model.lctype == 0) {
+                            dom = $(".ystep-container-steps .ystep-step-undone").last();
+                        } else {
+                            dom = $(".ystep-container-steps .ystep-step-undone").eq(stepCount - 1);
+                        }
+                        $(dom).css("color", "red");
+                        $(dom).text($(dom).text() + "[退回]");
+                        model.shzt = "已退回";
+                    }
+                    if (model.PIMODEL.isComplete == 'Y') {
+                        model.shzt = "已审批";
+                    }
+                }
+            },
+            getnum: function (str) {
+                var num = 0;
+                $(model.plData).each(function (inx, itm) {
+                    if (itm.MsgISShow == str) { num++; }
+                })
+                return num;
+            }
+           
+        });
+        avalon.ready(function () {
+            model.ShowColumns.pushArray(
+                      [{ "ColName": "Title", "ColText": "会议标题", "IsSel": true, "class": "width50" },
+                { "ColName": "StartTime", "ColText": "开始时间", "IsSel": true, "class": "width50" },
+                { "ColName": "EndTime", "ColText": "结束时间", "IsSel": true, "class": "width50" },
+                { "ColName": "Name", "ColText": "会议室", IsSel: true, "class": "width50" },
+                { "ColName": "CYUser", "ColText": "参与人", "IsSel": true, "class": "width50", "format": "username" },
+                { "ColName": "JLUser", "ColText": "纪要人", "IsSel": false, "class": "width50", "format": "username" },
+                { "ColName": "ZCUser", "ColText": "主持人", "IsSel": false, "class": "width50", "format": "username" },
+                { "ColName": "SXUser", "ColText": "摄像人", "IsSel": false, "class": "width50", "format": "username" },
+                { "ColName": "HYFW", "ColText": "会议服务", "IsSel": false, "class": "width50" },
+                { "ColName": "Details", "ColText": "会议内容", "IsSel": true },
+                { "ColName": "HYJL", "ColText": "会议纪要", "IsSel": false, "format": "bqh" }
+                      ]);
+
+            model.GetModelData();
+            model.getwfdata();
+            $("#chehui").click(function () {
+                model.CancelWF();
+            })
+        })
+    </script>
+</body>
+</html>

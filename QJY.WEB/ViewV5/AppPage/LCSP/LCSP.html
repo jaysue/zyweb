@@ -1,0 +1,69 @@
+﻿<div class="form-horizontal" ms-controller="LCSP">
+    <div style="padding: 0 80px;">
+        <div>
+            <!--<div class="fg-item"><span>基本信息</span></div>-->
+            <ul class="clearfix" style="display: block; padding: 0">
+                <li class="add-item add-widthall ">
+                    <label class="add-item-label" style="margin-right: 10px;">流程名称:</label>
+                    <span class="add-ic">{{LeiBieText}}
+                    </span>
+                </li>
+                <li class="add-item add-widthall">
+                    <label class="add-item-label" style="margin-right: 10px;">申请人:</label>
+                    <span class="add-ic">{{modelData.ShenQingRen}}
+                    </span>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="extdiv"></div>
+        <div>
+            <ul class="clearfix" style="padding: 0">
+                <li class="add-item add-widthall">
+                    <label class="add-item-label">附件</label>
+                    <div class="add-ic">
+                        <input type="text" ms-duplex="modelData.Files" class="span2  szhl_Upload form-control" />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+    var tempmodel = avalon.define({
+        $id: "LCSP",
+        name: "流程审批",
+        LeiBieText: "",
+        ColumnData: [],
+        SPUserData: [],
+        modelData: { "ShenQingRen": ComFunJS.convertuser(ComFunJS.getCookie('username')), "LeiBie": "", "Content": "", "Files": "", "Tempcontent": "" },
+        PDID: ComFunJS.getQueryString("PDID", ""),
+        tempcontent: localStorage.getItem("lcsptemp") ? localStorage.getItem("lcsptemp") : "",
+        iswf: true,//是否属于流程表单
+        inittemp: function (strId) {
+            //加载初始化数据
+            if (pmodel.PDMODEL) {
+                tempmodel.CSUser = pmodel.PDMODEL.ChaoSongUser
+            }
+            $.getJSON('/API/VIEWAPI.ashx?Action=LCSP_GETLCSPMODEL', { P1: strId, P2: tempmodel.PDID }, function (resultData) {
+                if (strId) {
+                    tempmodel.modelData = resultData.Result;
+
+                } else {
+                    tempmodel.modelData.LeiBie = resultData.Result1.ID;//流程名称
+                    pmodel.isDraft = true;
+                }
+                tempmodel.LeiBieText = resultData.Result1.ProcessName;
+                setTimeout("ComFunJS.initForm()", 500);
+            })
+        },//初始化
+        SaveData: function (callback) {
+            $.post("/API/VIEWAPI.ashx?ACTION=LCSP_ADDLCSP", { P1: JSON.stringify(tempmodel.modelData.$model) }, function (result) {
+                return callback.call(this, result);
+            });
+        }
+    });//# sourceURL=LCSP.js;
+
+
+</script>

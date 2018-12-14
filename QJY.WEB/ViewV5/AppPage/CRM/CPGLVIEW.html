@@ -1,0 +1,33 @@
+﻿
+<div style="background-color:#F8F8F8" ms-controller="CPGLVIEW">
+
+    <script type="text/javascript">
+
+        var tempindex = avalon.define({
+            $id: "CPGLVIEW",
+            PCode: "CRM",
+            InitWigetData: function (strId) {
+                model.title = "产品";
+                model.ShowColumns.pushArray(
+                [{ ColName: "Name", ColText: "产品名称", IsSel: true, "class": "width50" },
+                          { ColName: "BianHao", ColText: "产品编号", IsSel: true, "class": "width50" },
+                          { ColName: "TypeName", ColText: "产品类型", IsSel: true, "class": "width50" },
+                          { ColName: "Price", ColText: "标准单价(元)", IsSel: true, "class": "width50" },
+                          { ColName: "DanWei", ColText: "销售单位", IsSel: true, "class": "width50" },
+                          { ColName: "ChengBen", ColText: "单位成本(元)", IsSel: true, "class": "width50" },
+                          { ColName: "PContent", ColText: "产品介绍", IsSel: false }
+                ]);
+
+                if (model.strId) {
+                    //编辑加载数据
+                    $.getJSON('/API/VIEWAPI.ashx?Action=CRM_GETCPLIST', { P1: "all", ID: model.strId }, function (resultData) {
+                            model.modelData = resultData.Result[0];
+                            model.tpData = resultData.Result[0].FileList;
+                            setTimeout(" ComFunJS.initForm()", 500);
+                        
+                    })
+                }
+            }
+        });
+    </script>
+</div>
